@@ -17,7 +17,7 @@
                     @if (Auth::user()->role == 'superadmin')
                         Superadmin
                     @else
-                    PT. {{ $nama_client }}</h4>
+                    {{ $nama_client }}</h4>
                     @endif
             </div>
         </div>
@@ -47,7 +47,7 @@
                         <span class="fw-semibold d-block">{{ Auth::user()->name }}</span>
                         @if (Auth::user()->roles != 'superadmin')
                             @php
-                                $role       = App\Models\Role::where('slug_role','like','%'.Auth::user()->roles.'')->first();
+                                $role       = App\Models\Role::where('slug_role',Auth::user()->roles)->first();
                                 $rolename   = $role->name_role;
                                 $table_kr   = App\Models\Karyawan::where('id_karyawan','like','%'.Auth::user()->id_karyawan.'')->first();
                                 $divisi     = App\Models\Divisi::find($table_kr->divisi)->nama_divisi;
@@ -55,6 +55,7 @@
                                 $client     = App\Models\Clients::find(Auth::user()->id_client)->nama_client;
                             @endphp
                         @endif
+                        <small class="text-muted">{{ Auth::user()->id_client != null ? $client  : ''}}</small><br>
                         <small class="text-muted">{{ Auth::user()->roles == 'superadmin' ? 'Superadmin' : $rolename }}</small><br>
                         <small class="text-muted">{{ Auth::user()->roles != 'superadmin' ? $divisi  : ''}}</small>
                     </div>

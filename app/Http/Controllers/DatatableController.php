@@ -246,10 +246,15 @@ class DatatableController extends Controller
             return Carbon::parse($row->tanggal_lembur)->translatedFormat('d F Y');
         })
         ->addColumn('id_shift',function($row) {
-            $shift  = Shift::find($row->id_shift);
+            if(Auth::user()->id_client == 3) {
+                $shift  = Shift::find($row->id_shift);
 
-            $nama_shift = $shift->type.' '.$shift->ke;
-            return $nama_shift;
+                $nama_shift = $shift->type.' '.$shift->ke;
+                return $nama_shift;
+
+            }else {
+                return "";
+            }
         })
         ->rawColumns(['aksi','status','disetujui_oleh','nama_shift'])
         ->make(true);
@@ -320,10 +325,15 @@ class DatatableController extends Controller
                 return Carbon::parse($row->tanggal_lembur)->translatedFormat('d F Y');
             })
             ->addColumn('id_shift',function($row) {
-                $shift  = Shift::find($row->id_shift);
+                if(Auth::user()->id_client == 3) {
+                    $shift  = Shift::find($row->id_shift);
 
-                $nama_shift = $shift->type.' '.$shift->ke;
-                return $nama_shift;
+                    $nama_shift = $shift->type.' '.$shift->ke;
+                    return $nama_shift;
+
+                }else {
+                    return "";
+                }
             })
             ->rawColumns(['aksi','status','disetujui_oleh','id_shift'])
             ->make(true);
