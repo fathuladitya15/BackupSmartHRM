@@ -7,9 +7,7 @@
     <title>Lembur {{ $nama_karyawan }}</title>
     <style>
 
-        @media print {
-            .pagebreak { page-break-before: always; } /* page-break-after works, as well */
-        }
+
         .row{ clear: both; }
         .col-lg-1 {width:8%;  float:left;}
         .col-lg-2 {width:16%; float:left;}
@@ -23,6 +21,9 @@
         .col-lg-10{width:83%; float:left;}
         .col-lg-11{width:92%; float:left;}
         .col-lg-12{width:100%; float:left;}
+        @media print {
+            .pagebreak {clear: both; page-break-before: always; } /* page-break-after works, as well */
+        }
         body {
             font-family: Arial, Helvetica, sans-serif;
         }
@@ -156,9 +157,8 @@
                     <div class="name_ttd" >{{ $nama_admin }}</div>
                 </div>
             </div>
-
         </div>
-        <div class="pagebreak"> </div>
+        <div class="pagebreak"></div>
     @endforeach
 </body>
 </html>

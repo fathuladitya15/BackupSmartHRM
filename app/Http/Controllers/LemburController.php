@@ -26,11 +26,13 @@ class LemburController extends Controller
     function index() {
 
         if(in_array(Auth::user()->roles,['hrd','manajer','direktur'])) {
-            $daftar_kr  = DB::table('table_karyawan as tk')
-                ->join('users as us','us.id_karyawan','=','tk.id_karyawan')
-                ->where('us.roles',['kr-project','kr-pusat'])
-                ->where('us.id_client',Auth::user()->id_client)
-                ->get();
+            $daftar_kr = User::where('roles','kr-pusat')->orWhere('roles','kr-project')->where('id_client',Auth::user()->id_client)->get();
+            // $daftar_kr  = DB::table('table_karyawan as tk')
+            //     ->join('users as us','us.id_karyawan','=','tk.id_karyawan')
+            //     ->where('us.roles',['kr-project','kr-pusat'])
+            //     ->where('us.id_client',Auth::user()->id_client)
+            //     ->get();
+                // dd($daftar_kr);
             $total_jam = DB::table('table_lembur')
                 ->selectRaw('SUM(CAST(total_jam as int)) as jam')
                 ->where('id_client',Auth::user()->id_client)
@@ -96,19 +98,25 @@ class LemburController extends Controller
                 $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
 
                 $data = Lembur::find($request->id_lembur);
+
                 if(Auth::user()->id_client == 1) {
                     if(Auth::user()->roles == 'manajer'){
+                        $data->ttd_manager = $ttd->path;
                         $data->status = 1;
                     }else if(Auth::user()->roles == 'hrd'){
+                        $data->ttd_admin_korlap = $ttd->path;
                         $data->status = 2;
                     }else if(Auth::user()->roles == 'direktur') {
                         $data->status = 3;
-
+                        $data->ttd_direktur = $ttd->path;
                     }else {
                         $data->status = 1;
                     }
+                }else {
+                    $data->status = 1;
+                    $data->ttd_admin_korlap = $ttd->path;
                 }
-                $data->ttd_admin_korlap = $ttd->path;
+
                 $data->update();
                 $pesan = ['status' => TRUE,'title' => 'Berhasil ditandatangani' ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah disetujui'];
 
@@ -177,35 +185,35 @@ class LemburController extends Controller
 
     }
 
-    function save_data($request) {
+    // function save_data($request) {
 
-        $insert = [
-            'id_karyawan'       =>$request->a,
-            'nama_karyawan'     =>$request->a,
-            'jabatan'           =>$request->a,
-            'divisi'            =>$request->a,
-            'lokasi_kerja'      =>$request->a,
-            'tanggal_lembur'    =>$request->a,
-            'batch'             =>$request->a,
-            'group'             =>$request->a,
-            'jam_mulai'         =>$request->a,
-            'jam_selesai'       =>$request->a,
+    //     $insert = [
+    //         'id_karyawan'       =>$request->a,
+    //         'nama_karyawan'     =>$request->a,
+    //         'jabatan'           =>$request->a,
+    //         'divisi'            =>$request->a,
+    //         'lokasi_kerja'      =>$request->a,
+    //         'tanggal_lembur'    =>$request->a,
+    //         'batch'             =>$request->a,
+    //         'group'             =>$request->a,
+    //         'jam_mulai'         =>$request->a,
+    //         'jam_selesai'       =>$request->a,
 
-            'jam_mulai_rl'      =>$request->a,
-            'jam_selesai_rl'    =>$request->a,
+    //         'jam_mulai_rl'      =>$request->a,
+    //         'jam_selesai_rl'    =>$request->a,
 
-            'jam_mulai_la'      =>$request->a,
-            'jam_selesai_la'    =>$request->a,
+    //         'jam_mulai_la'      =>$request->a,
+    //         'jam_selesai_la'    =>$request->a,
 
-            'total_jam'         =>$request->a,
-            'alasan_lembur'     =>$request->a,
-            'tugas'             =>$request->a,
-            'status'            =>$request->a,
-            'ttd_admin_korlap'  =>$request->a,
-            'ttd_karyawan'      =>$request->a,
-            'id_client'         =>$request->a,
-        ];
-    }
+    //         'total_jam'         =>$request->a,
+    //         'alasan_lembur'     =>$request->a,
+    //         'tugas'             =>$request->a,
+    //         'status'            =>$request->a,
+    //         'ttd_admin_korlap'  =>$request->a,
+    //         'ttd_karyawan'      =>$request->a,
+    //         'id_client'         =>$request->a,
+    //     ];
+    // }
 
     function detail(Request $request) {
         $id_lembur  = $request->id;
@@ -265,9 +273,9 @@ class LemburController extends Controller
             $id_kr_admin    = Filemanager::where('path',$data->ttd_admin_korlap)->where("slug",'signature')->first()->id_karyawan;
             $nama_admin     = User::where('id_karyawan',$id_kr_admin)->first()->name;
             $ttd_direktur   = User::where('roles','direktur')->first();
-            dd($ttd_direktur);
+            // dd($ttd_direktur);
 
-            $pdf      = PDF::loadview("layouts.pdf_view.pdfLemburDefault",['data' => $data,'nama_admin' => $nama_admin]);
+            $pdf      = PDF::loadview("layouts.pdf_view.pdfLemburPFI",['data' => $data,'nama_admin' => $nama_admin]);
             $filename = 'Form Lembur '.$data->nama_karyawan;
             $pdf->setPaper('A4', 'landscape');
         }else{
@@ -287,10 +295,17 @@ class LemburController extends Controller
         if($getData->count() != 0) {
             $data           = Lembur::where('id_karyawan',$request->id_karyawan)->get();
             $nama_karyawan  = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->nama_karyawan;
+            if(Auth::user()->id_client == 1) {
+               $pdf            = PDF::loadview("layouts.pdf_view.pdfLemburPFIMultiple",['data' => $data,'nama_karyawan' => $nama_karyawan]);
 
-            $pdf            = PDF::loadview("layouts.pdf_view.pdfLemburMultiple",['data' => $data,'nama_karyawan' => $nama_karyawan]);
+            }else {
+                $pdf            = PDF::loadview("layouts.pdf_view.pdfLemburMultiple",['data' => $data,'nama_karyawan' => $nama_karyawan]);
+
+            }
             $filename       = 'Form Lembur '.$nama_karyawan;
             $pdf->setPaper('A4', 'landscape');
+
+
             return $pdf->stream($filename.'.pdf');
 
             $data = $getData->get();

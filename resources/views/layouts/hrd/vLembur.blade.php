@@ -366,6 +366,8 @@
     </div>
 </div>
 
+
+
 @endsection
 
 @push('js')
@@ -378,12 +380,10 @@
     var url_save    = "{{ route('lembur-save') }}";
 </script>
 @if (Auth::user()->id_client == 1)
-    @if (in_array(Auth::user()->roles,['hrd','direktur']))
+    @if (in_array(Auth::user()->roles,['hrd','direktur','manajer']))
         <script src="{{ asset('assets/js/hrd/data_lembur.js') }}"></script>
-
     @endif
 @else
-
 <script src="{{ asset('assets/js/admin_korlap/data_lembur.js') }}"></script>
 @endif
 

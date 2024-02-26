@@ -126,19 +126,10 @@ function detail(id) {
                 $("#id_karyawan").val(data.id_karyawan);
                 $("#nama_karyawan").val(data.nama_karyawan);
                 $("ttd").val(1);
-                // document.getElementById("image_ttd_kr").src                 = assets + data.ttd_karyawan;
                 document.getElementById("button_ttd").style.display         = "block";
                 document.getElementById("exampleModalLongTitle").innerHTML  = "Detail Data";
-                // document.getElementById("nama_ttd_karyawan").innerHTML      = data.nama_karyawan;
                 $("#nama_ttd_korlap").css( 'margin-top', '-50px !important')
-
-                // var para  = document.getElementsByTagName('p')[2];
-                // para.setAttribute("id","nama_korlap")
-                // if(data.status == 1) {
-                //     document.getElementById("button_ttd").style.display         = "none";
-                //     document.getElementById("aksi").style.display               = "none";
-                //     document.getElementById("image_ttd").src                    = assets + data.ttd_admin_korlap;
-                // }
+                console.log(data)
             }else {
                 Swal.fire({
                     title: "Terjadi kesalahan",

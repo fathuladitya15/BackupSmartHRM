@@ -297,12 +297,12 @@ class DatatableController extends Controller
 
 
         if(Auth::user()->roles == 'manajer'){
-            $data = $dataMaster->where('status','0')->where('divisi',$divisi)->get();
+            $data = $dataMaster->where('status','>=','0')->where('divisi',$divisi)->get();
         }else if(Auth::user()->roles == 'hrd') {
-            $data = $dataMaster->where('status','1')->get();
+            $data = $dataMaster->where('status','>=','1')->get();
         }
         else if(Auth::user()->roles == 'direktur') {
-            $data = $dataMaster->where('status','2')->get();
+            $data = $dataMaster->where('status','>=','2')->get();
         }else {
             $data = $dataMaster->get();
         }
@@ -315,7 +315,33 @@ class DatatableController extends Controller
             ->addColumn('aksi', function($row) {
                 $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
                 $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
-                if(Auth::user()->id_client == 3) {
+                if(Auth::user()->id_client == 1) {
+                    $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
+
+                    if($row->status == 3){
+                        return $file;
+                    }else if(Auth::user()->roles == 'manajer' ) {
+                        if($row->status != 0) {
+                            return "";
+                        }else {
+                            return $edit;
+                        }
+                    }else if(Auth::user()->roles == 'hrd') {
+                        if($row->status != 1) {
+                            return "";
+                        }else {
+                            return $edit;
+                        };
+                    }else if(Auth::user()->roles == 'direktur') {
+                        if($row->status != 2) {
+                            return "";
+                        }else {
+                            return $edit;
+                        };
+                    }else {
+                        return $edit.'&nbsp;'.$file;
+                    }
+                }else if(Auth::user()->id_client == 3) {
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i> Download</a>';
                     $upload   = '<a href="javascript:void(0)" style=" padding-right: 20px;"  onclick="upload('.$row->id.','."'".$row->id_karyawan."'".')" class="upload btn btn-warning btn-actions btn-sm" ><i class="menu-icon tf-icons bx bx-upload"></i>Upload</a> &nbsp;';
                     $view_f   = '<a href="javascript:void(0)" style=" padding-right: 20px;"  onclick="view('.$row->id.')" id="view_'.$row->id.'" class="btn btn-info btn-actions btn-sm" ><i class="menu-icon tf-icons bx bx-folder-open"></i>Lihat File</a> &nbsp;';
@@ -329,10 +355,11 @@ class DatatableController extends Controller
                     }else {
                         return $view_f;
                     }
+
                 }else {
                     if($row->status == '1') {
                         $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
-                        return $edit.'&nbsp;'.$file;
+                        return $file;
                     }else {
                         return $edit;
                     }
@@ -341,9 +368,16 @@ class DatatableController extends Controller
             })
             ->addColumn('status', function($row) {
                 if (Auth::user()->id_client == 1){
-                    if($row->status != 4 ) {
-                        $st = "<span class='badge bg-warning'> Menuggu Persetujuan </span>";
-                    }else if($row->status == 4) {
+                    $wait           = "<span class='badge bg-warning'> Menuggu Persetujuan Manager</span>";
+                    $waitHRD        = "<span class='badge bg-warning'> Menuggu Persetujuan HRD </span>";
+                    $waitDirektur   = "<span class='badge bg-warning'> Menuggu Persetujuan Direktur </span>";
+                    if($row->status == 0 ) {
+                        $st = $wait;
+                    }else if($row->status == 1 ) {
+                        $st = $waitHRD;
+                    }else if($row->status == 2) {
+                        $st = $waitDirektur;
+                    }else {
                         $st = "<span class='badge bg-success'> Telah disetujui </span>";
                     }
                 }else if(Auth::user()->id_client == 3) {
