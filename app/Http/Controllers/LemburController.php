@@ -73,7 +73,7 @@ class LemburController extends Controller
                 ->first()->jam;
             $kr_lembur = DB::table('table_lembur')->distinct()->where('id_client',Auth::user()->id_client)->count('id_karyawan');
             $wait_lembur = Lembur::where('id_client',Auth::user()->id_client)->where('status','0')->count();
-            if(Auth::user()->id_client == 3) {
+            if(in_array(Auth::user()->id_client,[3,4])) {
                 $shift = Shift::where('id_client',Auth::user()->id_client)->get();
                 return view("layouts.lembur.vAIOSukabumiAdmin",compact('daftar_kr','kr_lembur','total_jam','wait_lembur','shift'));
             }else {
@@ -142,7 +142,7 @@ class LemburController extends Controller
                     ];
                     Lembur::create($data);
                     $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Data berhasil ditambahkan'];
-                }else if(Auth::user()->id_client == '3'){
+                }else if(in_array(Auth::user()->id_client,['3','4'])){
                     $data = [
                         'id_karyawan'           => $request->id_karyawan,
                         'nama_karyawan'         => $request->nama_karyawan,
@@ -257,7 +257,7 @@ class LemburController extends Controller
     function download_perorang($hash) {
         $enc            = EncryprVariable($hash);
         $data           = Lembur::find($enc);
-        if(Auth::user()->id_client == 3) {
+        if(in_array(Auth::user()->id_client,[3,4])) {
             $update = Lembur::find($enc);
             $update->status = 2;
             $update->update();
@@ -293,10 +293,10 @@ class LemburController extends Controller
         $dataMaster = Lembur::where('id_karyawan',$request->id_karyawan);
 
         if($getData->count() != 0) {
-            $data           = $dataMaster->where('status','>=','3')->get();
             $nama_karyawan  = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->nama_karyawan;
             if(Auth::user()->id_client == 1) {
-               $pdf            = PDF::loadview("layouts.pdf_view.pdfLemburPFIMultiple",['data' => $data,'nama_karyawan' => $nama_karyawan]);
+                $data           = $dataMaster->where('status','>=','3')->get();
+                $pdf            = PDF::loadview("layouts.pdf_view.pdfLemburPFIMultiple",['data' => $data,'nama_karyawan' => $nama_karyawan]);
 
             }else {
                 $data           = $dataMaster->where('status','>=','1')->get();

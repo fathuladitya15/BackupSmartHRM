@@ -207,7 +207,7 @@ class DatatableController extends Controller
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
                     return $file.'&nbsp;'.$hapus;
                 }
-            }else if(Auth::user()->id_client == 3) {
+            }else if(in_array(Auth::user()->id_client,[3,4])) {
                 if($row->status == 0) {
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
                     return $file.'&nbsp;'.$hapus;
@@ -243,7 +243,7 @@ class DatatableController extends Controller
                         $st = "<span class='badge bg-success'> Telah disetujui </span>";
                     }
                 }
-            }else if(Auth::user()->id_client == 3) {
+            }else if(in_array(Auth::user()->id_client,[3,4])) {
                 if($row->status != 4 ) {
                     $st = "<span class='badge bg-warning'> Menuggu Persetujuan </span>";
                 }else if($row->status == 4) {
@@ -341,7 +341,7 @@ class DatatableController extends Controller
                     }else {
                         return $edit.'&nbsp;'.$file;
                     }
-                }else if(Auth::user()->id_client == 3) {
+                }else if(in_array(Auth::user()->id_client,[3,4])) {
 
                     $file       = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i> Download</a>';
                     $upload   = '<a href="javascript:void(0)" style=" padding-right: 20px;"  onclick="upload('.$row->id.','."'".$row->id_karyawan."'".')" class="upload btn btn-warning btn-actions btn-sm" ><i class="menu-icon tf-icons bx bx-upload"></i>Upload</a> &nbsp;';
@@ -383,7 +383,7 @@ class DatatableController extends Controller
                     }else {
                         $st = "<span class='badge bg-success'> Telah disetujui </span>";
                     }
-                }else if(Auth::user()->id_client == 3) {
+                }else if(in_array(Auth::user()->id_client,[3,4])) {
                     if($row->status == 0) {
                     $st = "<span class='badge bg-warning'> Perlu ditandatangani </span>";
                     }else if($row->status == 1) {
