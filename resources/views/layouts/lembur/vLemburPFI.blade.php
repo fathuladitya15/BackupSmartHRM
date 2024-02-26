@@ -176,13 +176,6 @@
 
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group col-md-12">
-                            <label class="col-form-label" for="basic-default-name">Lampiran</label>
-                            <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required" name="lampiran" id="lampiran" type="file" >
-                        </div>
-                    </div>
                     <hr>
                     <div class="row">
                         <div class="form-group col-md-12">
@@ -205,9 +198,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <div id="aksi">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+
                 </div>
             </form>
         </div>
@@ -220,8 +216,10 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="{{ asset("assets/js/jquery.signature.js") }}"></script>
 <script>
-    var url_data = "";
+    var url_data = "{{ route('lembur-data',['hash' => HashVariable(Auth::user()->id_client)]) }}";
     var url_save = "{{ route('lembur-save') }}";
+    var url_detail  = "{{ route('lembur-detail') }}";
+    var assets      = "{{ asset('') }}";
 </script>
 <script src="{{ asset('assets/js/lembur.js') }}"></script>
 

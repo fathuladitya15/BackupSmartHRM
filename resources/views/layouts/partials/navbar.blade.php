@@ -12,7 +12,11 @@
               <i class="bx bx-buildings fs-4 lh-0"></i>
                 <h4 style="margin-bottom: 2px; margin-left: 20px; color:black">
                     @php
-                        $nama_client = App\Models\Clients::find(Auth::user()->id_client)->nama_client;
+                        if(Auth::user()->id_client != null) {
+                            $nama_client = App\Models\Clients::find(Auth::user()->id_client)->nama_client;
+                        }else {
+                            $nama_client = "";
+                        }
                     @endphp
                     @if (Auth::user()->role == 'superadmin')
                         Superadmin

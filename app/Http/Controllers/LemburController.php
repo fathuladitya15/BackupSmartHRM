@@ -26,9 +26,18 @@ class LemburController extends Controller
     function index() {
 
         if(Auth::user()->roles == 'hrd') {
-            return view('layouts.hrd.vLembur');
-
-
+            $daftar_kr  = DB::table('table_karyawan as tk')
+                ->join('users as us','us.id_karyawan','=','tk.id_karyawan')
+                ->where('us.roles',['kr-project','kr-pusat'])
+                ->where('us.id_client',Auth::user()->id_client)
+                ->get();
+            $total_jam = DB::table('table_lembur')
+                ->selectRaw('SUM(CAST(total_jam as int)) as jam')
+                ->where('id_client',Auth::user()->id_client)
+                ->first()->jam;
+            $kr_lembur = DB::table('table_lembur')->distinct()->where('id_client',Auth::user()->id_client)->count('id_karyawan');
+            $wait_lembur = Lembur::where('id_client',Auth::user()->id_client)->where('status','0')->count();
+            return view('layouts.hrd.vLembur',compact('daftar_kr'));
         }else if(in_array(Auth::user()->roles,['kr-pusat','kr-project'])) {
             $datakr         = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first();
             $jabatan        = Jabatan::find($datakr->jabatan)->nama_jabatan;
@@ -83,7 +92,7 @@ class LemburController extends Controller
 
 
         if($request->ttd == '1') {
-            if(in_array(Auth::user()->roles,['admin','korlap'])) {
+            if(in_array(Auth::user()->roles,['admin','korlap','hrd'])) {
                 $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
 
                 $data = Lembur::find($request->id_lembur);
@@ -92,9 +101,9 @@ class LemburController extends Controller
                 $data->update();
                 $pesan = ['status' => TRUE,'title' => 'Berhasil ditandatangani' ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah disetujui'];
 
-            }else if(Auth::user()->roles == 'karyawan'){
+            }else if(in_array(Auth::user()->roles,['karyawan','kr-pusat'])){
                 $ttd = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','signature')->first();
-                if(in_array(Auth::user()->id_client,['2'])) {
+                if(in_array(Auth::user()->id_client,['2','1'])) {
                     $data = [
                         'id_karyawan'           => $request->id_karyawan,
                         'nama_karyawan'         => $request->nama_karyawan,

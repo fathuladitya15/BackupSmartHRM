@@ -193,7 +193,14 @@ class DatatableController extends Controller
             $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Edit</a>';
             $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
 
-            if(Auth::user()->id_client == 3) {
+            if(Auth::user()->id_client == 1) {
+                if(in_array($row->status,[1,2,3,4])) {
+                    return "";
+                }else {
+                    $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
+                    return $file.'&nbsp;'.$hapus;
+                }
+            }else if(Auth::user()->id_client == 3) {
                 if($row->status == 0) {
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
                     return $file.'&nbsp;'.$hapus;
@@ -216,7 +223,20 @@ class DatatableController extends Controller
 
         })
         ->addColumn('status', function($row) {
-            if(Auth::user()->id_client == 3) {
+            if (Auth::user()->id_client == 1){
+                if (Auth::user()->id_client == 1){
+                    if($row->status == 1 ) {
+                        $st = "<span class='badge bg-warning'> Menuggu Persetujuan  Manager Divisi</span>";
+                    }else if($row->status == 2 ) {
+                        $st = "<span class='badge bg-warning'> Menuggu Persetujuan  HRD</span>";
+                    }else if($row->status == 3 ){
+                        $st = "<span class='badge bg-warning'> Menuggu Tanda Tangan Direktur</span>";
+                    }
+                    else if($row->status == 4) {
+                        $st = "<span class='badge bg-success'> Telah disetujui </span>";
+                    }
+                }
+            }else if(Auth::user()->id_client == 3) {
                 if($row->status != 4 ) {
                     $st = "<span class='badge bg-warning'> Menuggu Persetujuan </span>";
                 }else if($row->status == 4) {
@@ -298,7 +318,13 @@ class DatatableController extends Controller
                 }
             })
             ->addColumn('status', function($row) {
-                if(Auth::user()->id_client == 3) {
+                if (Auth::user()->id_client == 1){
+                    if($row->status != 4 ) {
+                        $st = "<span class='badge bg-warning'> Menuggu Persetujuan </span>";
+                    }else if($row->status == 4) {
+                        $st = "<span class='badge bg-success'> Telah disetujui </span>";
+                    }
+                }else if(Auth::user()->id_client == 3) {
                     if($row->status == 0) {
                     $st = "<span class='badge bg-warning'> Perlu ditandatangani </span>";
                     }else if($row->status == 1) {

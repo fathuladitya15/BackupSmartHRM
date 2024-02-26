@@ -107,7 +107,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('/karyawan/data-hrd',[DatatableController::class,'data_karyawan_hrd'])->name('data-kr-hrd');
             });
 
-            Route::middleware(['role:korlap:admin'])->group(function() {
+            Route::middleware(['role:korlap:admin:hrd'])->group(function() {
                 Route::get('/karyawan/data-admin',[DatatableController::class,'data_karyawan_admin'])->name('data-kr-admin');
             });
             Route::post('/check-tanda-tangan',[HomeController::class,'checking_tanda_tangan'])->name('check-tanda-tangan');
