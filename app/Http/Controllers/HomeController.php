@@ -33,7 +33,15 @@ class HomeController extends Controller
         // dd(Auth::user()->roles);
         $table_kr   = Karyawan::where('id_karyawan','like','%'.Auth::user()->id_karyawan.'')->first();
         // dd($table_kr);
-        return view('layouts.Dashboard.vHome');
+        if(Auth::user()->roles == 'superadmin'){
+            // dd("TES");
+            $dataKr = Karyawan::count();
+            return view('layouts.Dashboard.vSuperadmin',compact('dataKr'));
+
+        }else {
+
+            return view('layouts.Dashboard.vHome');
+        }
     }
 
     function checking_tanda_tangan(Request $request) {
