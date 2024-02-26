@@ -342,7 +342,8 @@ class DatatableController extends Controller
                         return $edit.'&nbsp;'.$file;
                     }
                 }else if(Auth::user()->id_client == 3) {
-                    $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i> Download</a>';
+
+                    $file       = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i> Download</a>';
                     $upload   = '<a href="javascript:void(0)" style=" padding-right: 20px;"  onclick="upload('.$row->id.','."'".$row->id_karyawan."'".')" class="upload btn btn-warning btn-actions btn-sm" ><i class="menu-icon tf-icons bx bx-upload"></i>Upload</a> &nbsp;';
                     $view_f   = '<a href="javascript:void(0)" style=" padding-right: 20px;"  onclick="view('.$row->id.')" id="view_'.$row->id.'" class="btn btn-info btn-actions btn-sm" ><i class="menu-icon tf-icons bx bx-folder-open"></i>Lihat File</a> &nbsp;';
                     $send_f   = '<a href="javascript:void(0)" style=" padding-right: 20px;"  onclick="send('.$row->id.')" id="send_'.$row->id.'" class="btn btn-primary btn-actions btn-sm" ><i class="menu-icon tf-icons bx bx-mail-send"></i>Setujui dan Kirim File</a> &nbsp;';
@@ -352,8 +353,10 @@ class DatatableController extends Controller
                         return $file.'&nbsp;'.$upload;
                     }else if($row->status == '3'){
                         return $view_f.'&nbsp;'.$send_f;
-                    }else {
+                    }else if($row->status == '4'){
                         return $view_f;
+                    }else {
+                        return $edit.'&nbsp'.$view_f;
                     }
 
                 }else {
@@ -424,8 +427,14 @@ class DatatableController extends Controller
     }
 
     function data_lembur_karyawan_spv(Request $request) {
-        $data = Lembur::where('id_client',Auth::user()->id_client)->where('status',1)->get();
+        $dataMaster = Lembur::where('id_client',Auth::user()->id_client);
 
+        if(Auth::user()->id_client == "3"){
+            $data = $dataMaster->where('status',4)->get();
+
+        }else {
+            $data = $dataMaster->where('status',1)->get();
+        }
         if($request->filled('from_date') || $request->filled('to_date')){
             $data = $data->whereBetween('tanggal_lembur', [$request->from_date, $request->to_date]);
         }
@@ -434,13 +443,25 @@ class DatatableController extends Controller
             ->addColumn('aksi', function($row) {
                 $edit   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-edit-alt"></i>Detail</a>';
                 $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
-                return $edit;
+                $view_f   = '<a href="javascript:void(0)" style=" padding-right: 20px;"  onclick="view('.$row->id.')" id="view_'.$row->id.'" class="btn btn-info btn-actions btn-sm" ><i class="menu-icon tf-icons bx bx-folder-open"></i>Lihat File</a> &nbsp;';
+
+               if(Auth::user()->id_client == 3) {
+                return $view_f;
+               }else {
+                   return $edit;
+
+               }
             })
             ->addColumn('status', function($row) {
-                if($row->status == 0) {
-                    $st = "<span class='badge bg-warning'> Perlu ditandatangani </span>";
-                }else if($row->status == 1) {
-                    $st = "<span class='badge bg-success'> Telah disetujui Admin Korlap </span>";
+                if(Auth::user()->id_client == "3"){
+
+                    if($row->status == 0) {
+                        $st = "<span class='badge bg-warning'> Perlu ditandatangani </span>";
+                    }else if($row->status == 1) {
+                        $st = "<span class='badge bg-success'> Telah disetujui Admin Korlap </span>";
+                    }else {
+                        $st = "";
+                    }
                 }
                 return $st;
             })
