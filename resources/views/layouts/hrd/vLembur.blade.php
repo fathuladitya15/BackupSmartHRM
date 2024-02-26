@@ -336,13 +336,16 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-6">
-                            <label class="col-form-label" for="basic-default-name">Tanda Tangan</label> <br/>
-                            <img class="image_ttd" src="" alt="" id="image_ttd_kr" width="100"> <br  />
-                            <div class="over_text" style="">
-                                <p id="nama_ttd_karyawan">tes</p>
+                        @if (Auth::user()->id_client != 1)
+                            <div class="col-lg-6">
+                                <label class="col-form-label" for="basic-default-name">Tanda Tangan</label> <br/>
+                                <img class="image_ttd" src="" alt="" id="image_ttd_kr" width="100"> <br  />
+                                <div class="over_text" style="">
+                                    <p id="nama_ttd_karyawan">tes</p>
+                                </div>
                             </div>
-                        </div>
+
+                        @endif
                         <div class="col-lg-6">
                             <label class="col-form-label" for="basic-default-name">Tanda Tangan</label> <br/>
                             <a href="javascript:void(0)" onclick="ttd('{{ Auth::user()->id_karyawan }}')" class="btn btn-primary btn-sm" id="button_ttd">Tanda Tangani</a>
@@ -374,6 +377,14 @@
     var url_detail  = "{{ route('lembur-detail') }}";
     var url_save    = "{{ route('lembur-save') }}";
 </script>
+@if (Auth::user()->id_client == 1)
+    @if (in_array(Auth::user()->roles,['hrd','direktur']))
+        <script src="{{ asset('assets/js/hrd/data_lembur.js') }}"></script>
+
+    @endif
+@else
+
 <script src="{{ asset('assets/js/admin_korlap/data_lembur.js') }}"></script>
+@endif
 
 @endpush

@@ -35,6 +35,8 @@ return new class extends Migration
             $table->string('tugas')->nullable();
             $table->string('status');
             $table->string('ttd_admin_korlap')->nullable();
+            $table->string('ttd_direktur')->nullable();
+            $table->string('ttd_manager')->nullable();
             $table->string('ttd_karyawan')->nullable();
             $table->string('id_client')->nullable();
             $table->string('id_shift')->nullable();

@@ -25,7 +25,7 @@ class LemburController extends Controller
 
     function index() {
 
-        if(Auth::user()->roles == 'hrd') {
+        if(in_array(Auth::user()->roles,['hrd','manajer','direktur'])) {
             $daftar_kr  = DB::table('table_karyawan as tk')
                 ->join('users as us','us.id_karyawan','=','tk.id_karyawan')
                 ->where('us.roles',['kr-project','kr-pusat'])
@@ -92,11 +92,22 @@ class LemburController extends Controller
 
 
         if($request->ttd == '1') {
-            if(in_array(Auth::user()->roles,['admin','korlap','hrd'])) {
+            if(in_array(Auth::user()->roles,['admin','korlap','hrd','manajer','direktur'])) {
                 $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
 
                 $data = Lembur::find($request->id_lembur);
-                $data->status = 1;
+                if(Auth::user()->id_client == 1) {
+                    if(Auth::user()->roles == 'manajer'){
+                        $data->status = 1;
+                    }else if(Auth::user()->roles == 'hrd'){
+                        $data->status = 2;
+                    }else if(Auth::user()->roles == 'direktur') {
+                        $data->status = 3;
+
+                    }else {
+                        $data->status = 1;
+                    }
+                }
                 $data->ttd_admin_korlap = $ttd->path;
                 $data->update();
                 $pesan = ['status' => TRUE,'title' => 'Berhasil ditandatangani' ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah disetujui'];
@@ -250,6 +261,15 @@ class LemburController extends Controller
             $pdf        = PDF::loadview("layouts.pdf_view.pdfLemburAIOSukabumi",['data' => $data,'nama_admin' => $nama_admin,'filename'=> $filename]);
             $pdf->setPaper('A4', 'potrait');
 
+        }elseif (Auth::user()->id_client == 1){
+            $id_kr_admin    = Filemanager::where('path',$data->ttd_admin_korlap)->where("slug",'signature')->first()->id_karyawan;
+            $nama_admin     = User::where('id_karyawan',$id_kr_admin)->first()->name;
+            $ttd_direktur   = User::where('roles','direktur')->first();
+            dd($ttd_direktur);
+
+            $pdf      = PDF::loadview("layouts.pdf_view.pdfLemburDefault",['data' => $data,'nama_admin' => $nama_admin]);
+            $filename = 'Form Lembur '.$data->nama_karyawan;
+            $pdf->setPaper('A4', 'landscape');
         }else{
             $id_kr_admin    = Filemanager::where('path',$data->ttd_admin_korlap)->where("slug",'signature')->first()->id_karyawan;
             $nama_admin     = User::where('id_karyawan',$id_kr_admin)->first()->name;

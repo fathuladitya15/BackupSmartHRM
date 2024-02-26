@@ -45,6 +45,23 @@
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Lembur /</span>Data Lembur</h4>
 <div class="row">
     <div class="col-xxl">
+        @if(session()->has('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session()->get('success') }}
+                <button type="button" class="btn btn-default " style="float: right;" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+        @if(session()->has('error'))
+            <div class="alert alert-error alert-dismissible fade show" role="alert">
+                {{ session()->get('error') }}
+                <button type="button" class="btn btn-default " style="float: right;" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
         <div class="card mb-4">
             <div class="card-header d-flex align-items-center justify-content-between" >
                 <h5 class="mb-0">Data Lembur</h5>
@@ -216,8 +233,8 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="{{ asset("assets/js/jquery.signature.js") }}"></script>
 <script>
-    var url_data = "{{ route('lembur-data',['hash' => HashVariable(Auth::user()->id_client)]) }}";
-    var url_save = "{{ route('lembur-save') }}";
+    var url_data    = "{{ route('lembur-data',['hash' => HashVariable(Auth::user()->id_client)]) }}";
+    var url_save    = "{{ route('lembur-save') }}";
     var url_detail  = "{{ route('lembur-detail') }}";
     var assets      = "{{ asset('') }}";
 </script>

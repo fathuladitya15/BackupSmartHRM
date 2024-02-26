@@ -77,7 +77,7 @@
                     </a>
                 </li>
 
-                @if (in_array(Auth::user()->roles,['superadmin','admin','korlap','hrd','spv-internal','kr-pusat','kr-project','karyawan']))
+                @if (in_array(Auth::user()->roles,['superadmin','admin','korlap','hrd','spv-internal','kr-pusat','kr-project','karyawan','manajer']))
                     <li class="menu-header small text-uppercase">
                         <span class="menu-header-text">Manajemen</span>
                     </li>
@@ -205,6 +205,26 @@
                         </ul>
                     </li>
 
+                @endif
+
+
+
+                @if (Auth::user()->roles == 'direktur')
+                    {{-- LEMBUR --}}
+                    <li class="menu-item {{ menuOpen('lembur') }}">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-time"></i>
+                        <div data-i18n="Authentications">Lembur</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item {{ menuActive('lembur') }}">
+                                <a href="{{ route('lembur') }}" class="menu-link" >
+                                <div data-i18n="Basic">Data Lembur</div>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
                 @endif
 
             </ul>

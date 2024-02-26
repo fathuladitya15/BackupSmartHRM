@@ -40,11 +40,18 @@ class DatatableController extends Controller
             ->addColumn('face_id',function($row) {
                 return "";
             })
+            ->addColumn('jabatan',function($row) {
+                return Jabatan::find($row->jabatan)->nama_jabatan;
+            })
+            ->addColumn('divisi',function($row) {
+                return Divisi::find($row->divisi)->nama_divisi;
+            })
             ->addColumn('photo',function($row) {
                 return "";
             })
             ->addColumn('aksi',function($row) {
-                return "";
+                $edit   = '<a href="'.route('karyawan-edit',['hash' => HashVariable($row->id_karyawan)]).'" class="btn btn-primary btn-sm"  ><i class="bx bx-edit-alt"></i>Edit</a>';
+                return $edit;
             })
             ->addColumn('disetujui_oleh',function($row) {
                 return "";
@@ -185,7 +192,7 @@ class DatatableController extends Controller
 
     function data_lembur_karyawan(Request $request) {
 
-        $data = Lembur::where('id_karyawan',Auth::user()->id_karyawan)->where('id_client',Auth::user()->id_client)->get();
+        $data     = Lembur::where('id_karyawan',Auth::user()->id_karyawan)->where('id_client',Auth::user()->id_client)->get();
 
         $dt = DataTables::of($data)
         ->addIndexColumn()
@@ -194,7 +201,7 @@ class DatatableController extends Controller
             $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
 
             if(Auth::user()->id_client == 1) {
-                if(in_array($row->status,[1,2,3,4])) {
+                if(in_array($row->status,[0,1,2])) {
                     return "";
                 }else {
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
@@ -225,14 +232,14 @@ class DatatableController extends Controller
         ->addColumn('status', function($row) {
             if (Auth::user()->id_client == 1){
                 if (Auth::user()->id_client == 1){
-                    if($row->status == 1 ) {
+                    if($row->status == 0 ) {
                         $st = "<span class='badge bg-warning'> Menuggu Persetujuan  Manager Divisi</span>";
-                    }else if($row->status == 2 ) {
+                    }else if($row->status == 1) {
                         $st = "<span class='badge bg-warning'> Menuggu Persetujuan  HRD</span>";
-                    }else if($row->status == 3 ){
+                    }else if($row->status == 2 ){
                         $st = "<span class='badge bg-warning'> Menuggu Tanda Tangan Direktur</span>";
                     }
-                    else if($row->status == 4) {
+                    else if($row->status == 3) {
                         $st = "<span class='badge bg-success'> Telah disetujui </span>";
                     }
                 }
@@ -283,7 +290,22 @@ class DatatableController extends Controller
     }
 
     function data_lembur_karyawan_admin(Request $request) {
-        $data = Lembur::where('id_client',Auth::user()->id_client)->get();
+        $dataMaster     = Lembur::where('id_client',Auth::user()->id_client);
+
+        $dataKaryawan   = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first();
+        $divisi         = Divisi::find($dataKaryawan->divisi)->nama_divisi;
+
+
+        if(Auth::user()->roles == 'manajer'){
+            $data = $dataMaster->where('status','0')->where('divisi',$divisi)->get();
+        }else if(Auth::user()->roles == 'hrd') {
+            $data = $dataMaster->where('status','1')->get();
+        }
+        else if(Auth::user()->roles == 'direktur') {
+            $data = $dataMaster->where('status','2')->get();
+        }else {
+            $data = $dataMaster->get();
+        }
 
         if($request->filled('from_date') || $request->filled('to_date')){
             $data = $data->whereBetween('tanggal_lembur', [$request->from_date, $request->to_date]);
@@ -368,6 +390,36 @@ class DatatableController extends Controller
     }
 
     function data_lembur_karyawan_spv(Request $request) {
+        $data = Lembur::where('id_client',Auth::user()->id_client)->where('status',1)->get();
+
+        if($request->filled('from_date') || $request->filled('to_date')){
+            $data = $data->whereBetween('tanggal_lembur', [$request->from_date, $request->to_date]);
+        }
+        $dt = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('aksi', function($row) {
+                $edit   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-edit-alt"></i>Detail</a>';
+                $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+                return $edit;
+            })
+            ->addColumn('status', function($row) {
+                if($row->status == 0) {
+                    $st = "<span class='badge bg-warning'> Perlu ditandatangani </span>";
+                }else if($row->status == 1) {
+                    $st = "<span class='badge bg-success'> Telah disetujui Admin Korlap </span>";
+                }
+                return $st;
+            })
+            ->addColumn("tanggal_lembur", function($row) {
+                return Carbon::parse($row->tanggal_lembur)->translatedFormat('d F Y');
+            })
+            ->rawColumns(['aksi','status','disetujui_oleh'])
+            ->make(true);
+
+            return $dt;
+    }
+
+    function data_lembur_karyawan_manajer(Request $request) {
         $data = Lembur::where('id_client',Auth::user()->id_client)->where('status',1)->get();
 
         if($request->filled('from_date') || $request->filled('to_date')){

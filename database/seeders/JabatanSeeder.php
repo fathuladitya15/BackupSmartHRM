@@ -11,52 +11,44 @@ class JabatanSeeder extends Seeder
 
     public function run(): void
     {
-        Jabatan::create([
-            'nama_jabatan' => 'Supervisor',
-            'id_client'    => '1'
-        ]);
+
         Jabatan::create([
             'nama_jabatan' => 'Supervisor',
             'id_client'    => '2'
         ]);
+
+        Jabatan::create([
+            'nama_jabatan' => 'Koordinator Lapangan',
+            'id_client'    => '2'
+        ]);
+
+
         Jabatan::create([
             'nama_jabatan' => 'Supervisor',
             'id_client'    => '3'
         ]);
+
+        Jabatan::create([
+            'nama_jabatan' => 'Supervisor',
+            'id_client'    => '1'
+        ]);
+
         Jabatan::create([
             'nama_jabatan' => 'Koordinator Lapangan',
             'id_client'    => '1'
         ]);
+
         Jabatan::create([
-            'nama_jabatan' => 'Koordinator Lapangan',
-            'id_client'    => '2'
-        ]);
-        Jabatan::create([
-            'nama_jabatan' => 'Human Resource Development',
+            'nama_jabatan' => 'Manager',
             'id_client'    => '1'
         ]);
 
         Jabatan::create([
-            'nama_jabatan' => 'Manager HRD',
-            'id_client'    => '1'
-        ]);
-
-        Jabatan::create([
-            'nama_jabatan' => 'Manager MPO',
-            'id_client'    => '1'
-        ]);
-
-        Jabatan::create([
-            'nama_jabatan' => 'Manager Finance',
-            'id_client'    => '1'
-        ]);
-
-        Jabatan::create([
-            'nama_jabatan' => 'Direktur MPO',
+            'nama_jabatan' => 'Direktur',
             'id_client'    => '1'
         ]);
         Jabatan::create([
-            'nama_jabatan' => 'Direktur Utama',
+            'nama_jabatan' => 'Karyawan',
             'id_client'    => '1'
         ]);
     }

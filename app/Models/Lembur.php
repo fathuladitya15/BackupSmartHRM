@@ -34,6 +34,8 @@ class Lembur extends Model
        'tugas',
        'status',
        'ttd_admin_korlap',
+       'ttd_direktur',
+       'ttd_manajer',
        'ttd_karyawan',
        'id_client',
        'id_shift',

@@ -267,6 +267,7 @@ class ManageKaryawanController extends Controller
             'no_jkn'            => $request->jkn,
         ];
 
+        // dd($dataUsers,$dataKaryawan);
         if($crateUsers) {
 
             Karyawan::create($dataKaryawan);
@@ -382,7 +383,7 @@ class ManageKaryawanController extends Controller
             $data_profile = Filemanager::where('id_karyawan',$id_karyawan)->where('slug','foto_profile')->first();
             $path = asset($data_profile->path.$data_profile->filename) ;
         }else {
-            $jk = $row->jenis_kelamin;
+            $jk = $data_karyawan->jenis_kelamin;
             if($jk == 'L') {
                 $path = asset('assets/img/avatars/1.png');
             }else {
@@ -406,13 +407,14 @@ class ManageKaryawanController extends Controller
     }
     function client($hash) {
         $id_karyawan    = EncryprVariable($hash);
-        $nama_client    = Clients::find(Auth::user()->id_client)->nama_client;
+        $data_users     = User::where('id_karyawan',$id_karyawan)->first();
+        // dd($data_users);
+        $nama_client    = Clients::find($data_users->id_client)->nama_client;
         $client         = Clients::where('nama_client','Like','%'.$nama_client.'%')->get();
         $data_karyawan  = Karyawan::where('id_karyawan',$id_karyawan)->first();
-        $data_users     = User::where('id_karyawan',$id_karyawan)->first();
         $view           = 'layouts.akun.data_perusahaan';
-        $jabatan    = Jabatan::where('id_client',Auth::user()->id_client)->get();
-        $divisi     = Divisi::where('id_client',Auth::user()->id_client)->get();
+        $jabatan    = Jabatan::where('id_client',$data_users->id_client)->get();
+        $divisi     = Divisi::where('id_client',$data_users->id_client)->get();
         return view('layouts.akun.index',compact('data_users','view','client','jabatan','divisi','data_karyawan'));
 
     }

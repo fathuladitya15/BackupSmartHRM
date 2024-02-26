@@ -60,12 +60,16 @@ class RoleSeeder extends Seeder
 
         Role::create([
             'name_role' => "Admin",
-            'slug_role' => "admin-korlap",
+            'slug_role' => "admin",
         ]);
 
         Role::create([
             'name_role' => "General Affair",
             'slug_role' => "ga",
+        ]);
+        Role::create([
+            'name_role' => "Manager",
+            'slug_role' => "manajer",
         ]);
     }
 }
