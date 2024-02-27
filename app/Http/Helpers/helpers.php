@@ -1,6 +1,8 @@
 <?php
 
+// use Auth;
 use Carbon\Carbon;
+use App\Models\Aktifitas;
 use Illuminate\Support\Facades\Crypt;
 
 
@@ -178,6 +180,15 @@ if (!function_exists('menuActiveDetailProfile')) {
         } elseif (request()->routeIs($routeName)) {
             return $class;
         }
+    }
+}
+
+if(!function_exists('Aktivitas')) {
+    function Aktivitas($data) {
+        Aktifitas::create([
+            'id_user' => Auth::user()->id,
+            'aktivitas' => $data
+        ]);
     }
 }
 

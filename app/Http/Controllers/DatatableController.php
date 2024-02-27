@@ -219,7 +219,7 @@ class DatatableController extends Controller
                 }
 
             }else {
-                if($row->status == '1') {
+                if($row->status >= '1') {
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
                     return $file.'&nbsp;'.$hapus;
                 }else {
@@ -253,6 +253,8 @@ class DatatableController extends Controller
                 if($row->status == 0) {
                     $st = "<span class='badge bg-warning'> Menuggu Persetujuan </span>";
                 }else if($row->status == 1) {
+                    $st = "<span class='badge bg-success'> Telah disetujui </span>";
+                }else {
                     $st = "<span class='badge bg-success'> Telah disetujui </span>";
                 }
 
@@ -299,12 +301,17 @@ class DatatableController extends Controller
         if(Auth::user()->roles == 'manajer'){
             $data = $dataMaster->where('status','>=','0')->where('divisi',$divisi)->get();
         }else if(Auth::user()->roles == 'hrd') {
-            $data = $dataMaster->where('status','>=','1')->get();
+            $data = $dataMaster->orWhere('divisi',['MPO'])->where('status','>=','1')->get();
         }
         else if(Auth::user()->roles == 'direktur') {
-            $data = $dataMaster->where('status','>=','2')->get();
+            if($divisi == 'MPO'){
+                $data =  Lembur::where('divisi','MPO')->where('status','>=','0')->get();
+                // $data = $dataMaster->where('status','>=','0')->where('divisi',$divisi)->get();
+            }else {
+                $data = Lembur::where('status','>=','2')->get();
+            }
         }else {
-            $data = $dataMaster->get();
+            $data = $dataMaster->where('id_karyawan','!=',Auth::user()->id_karyawan)->get();
         }
 
         if($request->filled('from_date') || $request->filled('to_date')){
@@ -333,11 +340,21 @@ class DatatableController extends Controller
                             return $edit;
                         };
                     }else if(Auth::user()->roles == 'direktur') {
-                        if($row->status != 2) {
-                            return "";
+                        $dataKaryawan   = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first();
+                        $divisi         = Divisi::find($dataKaryawan->divisi)->nama_divisi;
+                        if($divisi == 'MPO'){
+                            if($row->status != 0) {
+                                return "";
+                            }else {
+                                return $edit;
+                            }
                         }else {
-                            return $edit;
-                        };
+                            if($row->status != 2) {
+                                return "";
+                            }else {
+                                return $edit;
+                            };
+                        }
                     }else {
                         return $edit.'&nbsp;'.$file;
                     }

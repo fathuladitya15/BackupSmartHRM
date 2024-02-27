@@ -174,7 +174,7 @@ class ManageKaryawanController extends Controller
             'kpj'                => 'mimes:jpg,jpeg,png|max:1000',
             'jkn'                => 'mimes:jpg,jpeg,png|max:1000',
             'cv'                 => 'mimes:jpg,jpeg,png|max:1000',
-            'lainnya'            => 'mimes:jpg,jpeg,png|max:1000',
+            'lainnya'            => 'mimes:jpg,jpeg,png,pdf|max:1000',
             'n_ktp'              => 'digits:16|unique:table_karyawan,nik',
             'nomer_rek_bank'     => 'unique:table_karyawan,norek_bank'
         ];
@@ -368,6 +368,8 @@ class ManageKaryawanController extends Controller
                 $this->upload_file($data_upload);
             }
 
+            Aktivitas("Melakukan Pembuatan Karyawan baru dengan nama : ".$request->name."-".$request->karyawan_id.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
+
             return redirect()->route('karyawan')->with('success','Berhasil menambahkan '.$request->name.'');
         }
     }
@@ -470,6 +472,7 @@ class ManageKaryawanController extends Controller
                 $updateFile->update();
             }
             $nama_karyawan = $find->name;
+            Aktivitas("Melakukan pembaruan akun data Karyawan dengan nama : ".$find->name."-".$find->id_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
         }else {
             if($request->type == 'data-diri') {
 
@@ -507,6 +510,8 @@ class ManageKaryawanController extends Controller
         $update_user->name  = $request->name;
         $update_user->update();
 
+        Aktivitas("Melakukan pembaruan data pribadi karyawan dengan nama : ".$find->nama_karyawan."-".$find->id_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
+
         return redirect()->route('karyawan')->with('success','Berhasil memperbarui karyawan '.$find->nama_karyawan.'');
     }
 
@@ -530,6 +535,9 @@ class ManageKaryawanController extends Controller
         $update_user                = User::find($user->id);
         $update_user->id_client     = $request->branch;
         $update_user->update();
+
+        Aktivitas("Melakukan pembaruan data perusahaan Karyawan dengan nama : ".$find->nama_karyawan."-".$find->id_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
+
 
         return redirect()->route('karyawan')->with('success','Berhasil memperbarui karyawan '.$find->nama_karyawan.'');
 
@@ -705,6 +713,7 @@ class ManageKaryawanController extends Controller
                 $this->upload_file($data_upload);
             }
         }
+        Aktivitas("Melakukan pembaruan data dokumen karyawan dengan nama : ".$nama_karyawan."-".$nama_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y, H:I:s")."  ");
 
         return redirect()->route('karyawan')->with('success','Berhasil memperbarui dokumen karyawan '.$nama_karyawan.'');
 

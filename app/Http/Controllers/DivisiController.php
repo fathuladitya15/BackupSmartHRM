@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use Auth;
 use DataTables;
 use App\Models\Divisi;
+use App\Models\Clients;
 use Illuminate\Http\Request;
 
 class DivisiController extends Controller
@@ -41,17 +42,23 @@ class DivisiController extends Controller
     }
 
     function store(Request $request) {
+        $nama_pt = Clients::find(Auth::user()->id_client)->nama_client;
         if($request->id == null) {
             $create = Divisi::create([
                 'nama_divisi' => $request->nama_divisi,
                 'id_client' => Auth::user()->id_client == null ? 1 : Auth::user()->id_client,
             ]) ;
             $pesan = ['status' => TRUE,'title' => 'Sukses !','pesan' => 'Berhasil menambahkan divisi baru.'];
+            Aktivitas("Melakukan penambanan data divisi ".$request->nama_divisi." di".$nama_pt." pada tanggal ".Carbon::now()->translatedFormat("d F Y, H:I:s")."  ");
+
         }else {
             $update = Divisi::find($request->id);
             $update->nama_divisi = $request->nama_divisi;
+            Aktivitas("Melakukan pembaruan data divisi dari ".$update->nama_divisi." menjadi ".$request->nama_divisi." di ".$nama_pt." pada tanggal ".Carbon::now()->translatedFormat("d F Y, H:I:s")."  ");
             $update->update();
             $pesan = ['status' => TRUE,'title' => 'Sukses !','pesan' => 'Berhasil memperbarui divisi.'];
+
+
         }
 
         return response()->json($pesan);
@@ -64,7 +71,9 @@ class DivisiController extends Controller
     }
 
     function delete_data(Request $request) {
-        $data = Divisi::findOrFail($request->id);
+        $nama_pt    = Clients::find(Auth::user()->id_client)->nama_client;
+        $data       = Divisi::findOrFail($request->id);
+        Aktivitas("Menghapus data divisi dari ".$data->nama_divisi." menjadi ".$data->nama_divisi." di ".$nama_pt." pada tanggal ".Carbon::now()->translatedFormat("d F Y, H:I:s")."  ");
         $data->delete();
         return response()->json(['status' => TRUE,'title' => 'Sukses !','pesan' => 'Berhasil menghapus divisi.']);
     }

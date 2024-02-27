@@ -90,19 +90,6 @@
                 <td style="text-align: center">:</td>
                 <td>{{ $data->lokasi_kerja }}</td>
             </tr>
-            @if (in_array(Auth::user()->id_client,[2,8]))
-                <tr>
-                    <td>Batch No.</td>
-                    <td style="text-align: center">:</td>
-                    <td>{{ $data->batch }}</td>
-                </tr>
-                <tr>
-                    <td>Group</td>
-                    <td style="text-align: center">:</td>
-                    <td>{{ $data->group }}</td>
-                </tr>
-
-            @endif
             <tr>
                 <td>Alasan Lembur</td>
                 <td style="text-align: center">:</td>

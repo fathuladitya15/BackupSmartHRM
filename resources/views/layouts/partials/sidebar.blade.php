@@ -190,18 +190,67 @@
                     @endif
 
                     {{-- LEMBUR --}}
-                    <li class="menu-item {{ menuOpen('lembur') }}">
+
+                    <li class="menu-item {{ menuOpen(['lembur','lembur-self']) }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-time"></i>
                         <div data-i18n="Authentications">Lembur</div>
                         </a>
+                        @if (in_array(Auth::user()->roles,['admin']))
+                            <ul class="menu-sub">
+                                <li class="menu-item {{ menuActive('lembur-self') }}">
+                                    <a href="{{ route('lembur-self') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Data Lembur Anda</div>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <ul class="menu-sub">
+                                <li class="menu-item {{ menuActive('lembur') }}">
+                                    <a href="{{ route('lembur') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Data Lembur Karyawan</div>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        @elseif (in_array(Auth::user()->roles,['kr-pusat']))
+                            <ul class="menu-sub">
+                                <li class="menu-item {{ menuActive('lembur-self') }}">
+                                    <a href="{{ route('lembur-self') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Data Lembur Anda</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        @else
                         <ul class="menu-sub">
                             <li class="menu-item {{ menuActive('lembur') }}">
                                 <a href="{{ route('lembur') }}" class="menu-link" >
-                                <div data-i18n="Basic">Data Lembur</div>
+                                <div data-i18n="Basic">Data Lembur Karyawan</div>
                                 </a>
                             </li>
 
+                        </ul>
+                        @endif
+
+                    </li>
+
+                    {{-- SURAT PERINGATAN --}}
+                    <li class="menu-item {{  menuOpen(['peringatan']) }} ">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-file"></i>
+                        <div data-i18n="Authentications">Surat</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item {{  menuActive('peringatan') }}">
+                                <a href="{{ route('peringatan') }}" class="menu-link" >
+                                <div data-i18n="Basic">Surat Peringatan</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{  menuActive('spv-packlaring-index') }}">
+                                <a href="#" class="menu-link" >
+                                <div data-i18n="Basic">Surat Referensi Kerja</div>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 

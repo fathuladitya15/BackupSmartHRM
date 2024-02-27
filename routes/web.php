@@ -12,6 +12,7 @@ use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\DatatableController;
 use App\Http\Controllers\SuperadminController;
+use App\Http\Controllers\PeringatanController;
 use App\Http\Controllers\ManageKaryawanController;
 
 /*
@@ -76,6 +77,7 @@ Route::middleware('revalidate')->group(function() {
             Route::delete('/shift/delete',[ShiftController::class,'delete_data'])->name('shift-delete');
 
             Route::get('/lembur',[LemburController::class,'index'])->name('lembur');
+            Route::get('/lembur-self',[LemburController::class,'index_self'])->name('lembur-self');
             Route::post('/lembur/save',[LemburController::class,'validasi'])->name('lembur-save');
             Route::get('/lembur/{hash}',[DatatableController::class,'data_lembur_karyawan'])->name('lembur-data');
             Route::get('/lembur/{hash}/admin-korlap',[DatatableController::class,'data_lembur_karyawan_admin'])->name('lembur-admin-korlap');
@@ -87,6 +89,10 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/lembur/upload-files',[LemburController::class,'upload_files'])->name('lembur-upload');
             Route::post('/lembur/get-files',[LemburController::class,'get_files'])->name('lembur-get-files');
             Route::post('/lember/send-files',[LemburController::class,'acc_data'])->name('lembur-kirim-files');
+
+
+            Route::get('/surat-peringatan',[PeringatanController::class,'index'])->name('peringatan');
+            Route::post('/surat-peringatan/details-karyawan',[PeringatanController::class,'get_detail_karyawan'])->name("peringatan-detail-karyawan");
 
 
             Route::middleware(['role:superadmin'])->group(function(){
