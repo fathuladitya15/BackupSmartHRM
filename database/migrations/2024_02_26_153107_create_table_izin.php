@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('table_izin', function (Blueprint $table) {
             $table->id();
+            $table->string('no_surat')->nullable();
             $table->string('karyawan_id');
             $table->string('alasan')->nullable();
             $table->string('detail')->nullable();

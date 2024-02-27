@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             ShiftSeeder::class,
             KaryawanSeeder::class,
+            IzinSeeder::class,
         ]);
     }
 }

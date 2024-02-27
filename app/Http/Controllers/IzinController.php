@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use Auth;
+use Validator;
+use App\Models\Izin;
 use App\Models\Divisi;
 use App\Models\Jabatan;
 use App\Models\Karyawan;
+use App\Models\Filemanager;
 use Illuminate\Http\Request;
 
 class IzinController extends Controller
@@ -36,4 +39,35 @@ class IzinController extends Controller
 
 
     }
-}
+
+
+    function saving(Request $request) {
+        $id_izin    = $request->id_izin;
+        $ttdCreate  = Filemanager::where("id_karyawan",Auth::user()->id_karyawan)->where('slug','signature')->first();
+
+        if($id_izin == null) {
+            if(Auth::user()->roles == 'karyawan' || Auth::user()->id_client != 3) {
+
+                $createData = [
+                    'karyawan_id'           => $request->id_karyawan,
+                    'detail'                => $request->detail,
+                    'alasan'                => $request->alasan,
+                    'tanggal_pembuatan'     => $request->tanggal,
+                    'jam_keluar'            => $request->waktu,
+                    'ttd_karyawan'          => $ttdCreate->path,
+                    'kembali'               => $request->kembali,
+                    'status'                => 0,
+                ];
+
+                $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Berhasil membuat izin keluar'];
+
+
+            }
+
+        }
+
+        $create = Izin::create($createData);
+
+        return response()->json($pesan);
+    }
+ }

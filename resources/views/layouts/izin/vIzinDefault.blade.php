@@ -109,6 +109,7 @@
             </div>
             <form id="Add" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="id_izin" id="id_izin" value="">
                 <div class="modal-body">
                     <div class="row">
                         <table class="table">
@@ -211,7 +212,7 @@
                         <div class="form-group col-md-12">
                             <label class=" col-form-label" for="basic-default-name">Jelaskan</label>
                             <span class="text-danger pl-1">*</span>
-                            <textarea class="form-control" required="required" name="tugas" id="tugas" ></textarea>
+                            <textarea class="form-control" required="required" name="detail" id="detail" ></textarea>
 
                         </div>
                     </div>
@@ -265,9 +266,10 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="{{ asset("assets/js/jquery.signature.js") }}"></script>
 <script>
-    var url_data    = "{{ route('lembur-data',['hash' => HashVariable(Auth::user()->id_client)]) }}";
-    var url_save    = "{{ route('lembur-save') }}";
+    var url_data    = "{{ route('izin-data') }}";
+    var url_save    = "{{ route('izin-save') }}";
     var url_detail  = "{{ route('lembur-detail') }}";
     var assets      = "{{ asset('') }}";
 </script>
 <script src="{{ asset('assets/js/izin_default.js') }}"></script>
+@endpush

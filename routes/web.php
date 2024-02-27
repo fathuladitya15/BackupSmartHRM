@@ -96,6 +96,8 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/surat-peringatan/details-karyawan',[PeringatanController::class,'get_detail_karyawan'])->name("peringatan-detail-karyawan");
 
             Route::get('/izin',[IzinController::class,'index'])->name('izin');
+            Route::post('/izin',[IzinController::class,'saving'])->name('izin-save');
+            Route::get('/izin-get',[DatatableController::class,'data_izin_karyawan'])->name('izin-data');
 
 
             Route::middleware(['role:superadmin'])->group(function(){

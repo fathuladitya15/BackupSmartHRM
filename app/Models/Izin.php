@@ -12,7 +12,9 @@ class Izin extends Model
     protected $table    = 'table_izin';
 
     protected $fillable = [
+        'no_surat',
         'karyawan_id',
+        'alasan',
         'detail',
         'tanggal_pembuatan',
         'jam_masuk',

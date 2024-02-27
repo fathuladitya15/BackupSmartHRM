@@ -9,6 +9,7 @@ use DataTables;
 use Carbon\Carbon;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Izin;
 use App\Models\Shift;
 use App\Models\Divisi;
 use App\Models\Lembur;
@@ -536,7 +537,39 @@ class DatatableController extends Controller
 
     // DATA IZIN KARYAWAN
     function data_izin_karyawan(Request $request) {
+        $data = Izin::where('karyawan_id',Auth::user()->id_karyawan)->get();
 
+        $dt = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn("no_surat", function($row) {
+                if($row->no_surat == null) {
+                    return "";
+                }else {
+                    return $row->no_surat;
+                }
+            })
+            ->addcolumn('aksi' ,function($row) {
+                $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Edit</a>';
+                $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+                if($row->status == 0) {
+                    $btn = $edit;
+                }else {
+                    $btn = "";
+                }
+                return $btn;
+            })
+            ->addColumn('status', function($row) {
+                if($row->status == 0) {
+                    $st = "<span class='badge bg-warning'>Menuggu ditandatangani</span>";
+                }else {
+                    $st = "";
+                }
+                return $st;
+            })
+            ->rawColumns(['no_surat','aksi','status'])
+            ->make(true);
+
+        return $dt;
     }
 
 
