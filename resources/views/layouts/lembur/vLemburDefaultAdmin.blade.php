@@ -122,7 +122,7 @@
                             <th>Tugas dikerjakan</th>
                             <th>mulai jam</th>
                             <th>sampai jam</th>
-                            <th>Jumlag jam</th>
+                            <th>Jumlah jam</th>
                             <th>status</th>
                             <th>Aksi</th>
                         </tr>

@@ -23,6 +23,7 @@ class DatatableController extends Controller
         $this->middleware('auth');
     }
 
+    // DATA KARYAWAN UNTUK SUPERADMIN
     function data_karyawan_superadmin(Request $request) {
         $data = DB::table('table_karyawan as tk')
             ->join('users as us','us.id_karyawan','=','tk.id_karyawan')
@@ -60,7 +61,12 @@ class DatatableController extends Controller
                 return "";
             })
             ->addColumn('status',function($row) {
-                return "";
+                if($row->status == 0) {
+                    $st =  "<span class='badge bg-success'>Aktif</>";
+                }else {
+                    $st =  "<span class='badge bg-danger'>Tidak aktif</>";
+                }
+                return $st;
             })
             ->rawColumns(['aksi','face_id','photo','disetujui_oleh','disetujui_pada','status','join_date','end_date'])
             ->make(true);
@@ -69,6 +75,7 @@ class DatatableController extends Controller
 
     }
 
+    // DATA KARYAWAN UNTUK HRD
     function data_karyawan_hrd(Request $request) {
         $data = DB::table('table_karyawan as tk')->select('tk.*','ad.nama_divisi','aj.nama_jabatan','us.name','us.roles')
             ->join('users as us','us.id_karyawan','=','tk.id_karyawan')
@@ -108,6 +115,7 @@ class DatatableController extends Controller
 
     }
 
+    // DATA KARYAWAN UNTUK ADMIN/KORLAP
     function data_karyawan_admin(Request $request) {
         $data = DB::table('table_karyawan as tk')
             ->join('users as us','us.id_karyawan','=','tk.id_karyawan')
@@ -190,6 +198,7 @@ class DatatableController extends Controller
 
     }
 
+    // DATA LEMBUR UNTUK KARYAWAN
     function data_lembur_karyawan(Request $request) {
 
         $data     = Lembur::where('id_karyawan',Auth::user()->id_karyawan)->where('id_client',Auth::user()->id_client)->get();
@@ -291,6 +300,7 @@ class DatatableController extends Controller
         return $dt;
     }
 
+    // DATA LEMBUR UNTUK ADMIN/KORLAP
     function data_lembur_karyawan_admin(Request $request) {
         $dataMaster     = Lembur::where('id_client',Auth::user()->id_client);
 
@@ -443,6 +453,7 @@ class DatatableController extends Controller
             return $dt;
     }
 
+    // DATA LEMBUR UNTUK SUPERVISOR
     function data_lembur_karyawan_spv(Request $request) {
         $dataMaster = Lembur::where('id_client',Auth::user()->id_client);
 
@@ -491,6 +502,7 @@ class DatatableController extends Controller
             return $dt;
     }
 
+    // DATA LEMBUR UNTUK MANAGER
     function data_lembur_karyawan_manajer(Request $request) {
         $data = Lembur::where('id_client',Auth::user()->id_client)->where('status',1)->get();
 

@@ -546,6 +546,7 @@ class ManageKaryawanController extends Controller
 
     function update_dokumen($request) {
         $id_karyawan    = Karyawan::find($request->id_table_karyawan)->id_karyawan;
+        // dd($id_karyawan);
         $nama_karyawan  = Karyawan::find($request->id_table_karyawan)->nama_karyawan;
         $id             = Karyawan::find($request->id_table_karyawan)->id;
 
@@ -588,7 +589,7 @@ class ManageKaryawanController extends Controller
                     'filename'  => $filename,
                     'path'      => $path,
                     'extension' => $file->getClientOriginalExtension(),
-                    'id_karyawan' => $request->karyawan_id,
+                    'id_karyawan' => $id_karyawan,
                     'slug'      => 'ktp',
                     'keterangan'=> 'KTP '.$request->name
                 ];
