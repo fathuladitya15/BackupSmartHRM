@@ -534,5 +534,10 @@ class DatatableController extends Controller
     }
 
 
+    // DATA IZIN KARYAWAN
+    function data_izin_karyawan(Request $request) {
+
+    }
+
 
 }

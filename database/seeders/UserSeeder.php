@@ -23,5 +23,15 @@ class UserSeeder extends Seeder
             'roles' => 'superadmin',
         ]);
 
+        User::create([
+            'username' => 'mamat',
+            'name' => 'Mamat Alkatiri',
+            'email' => 'mmt12@gmail.com',
+            'password' => Hash::make('password'),
+            'roles' => 'karyawan',
+            'id_client' => 2,
+            'id_karyawan' => '22001'
+        ]);
+
     }
 }

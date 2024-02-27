@@ -254,6 +254,21 @@
                         </ul>
                     </li>
 
+                    <li class="menu-item {{  menuOpen(['izin']) }} ">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+                        <div data-i18n="Authentications">Izin</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item {{  menuActive('izin') }}">
+                                <a href="{{ route('izin') }}" class="menu-link" >
+                                <div data-i18n="Basic">Pengajuan Izin</div>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+
                 @endif
 
 

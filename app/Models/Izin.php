@@ -13,16 +13,18 @@ class Izin extends Model
 
     protected $fillable = [
         'karyawan_id',
-        'type_waktu',
         'detail',
         'tanggal_pembuatan',
         'jam_masuk',
         'jam_keluar',
         'ttd_karyawan',
         'ttd_mengetahui',
+        'ttd_hrd',
+        'ttd_direktur',
         'user_id_mengetahui',
         'disetujui_pada',
         'disetujui_oleh',
+        'kembali',
         'status',
         'id_filemanager',
     ];

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Models\Bank;
 use Illuminate\Http\Request;
+use App\Http\Controllers\IzinController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\LemburController;
@@ -93,6 +94,8 @@ Route::middleware('revalidate')->group(function() {
 
             Route::get('/surat-peringatan',[PeringatanController::class,'index'])->name('peringatan');
             Route::post('/surat-peringatan/details-karyawan',[PeringatanController::class,'get_detail_karyawan'])->name("peringatan-detail-karyawan");
+
+            Route::get('/izin',[IzinController::class,'index'])->name('izin');
 
 
             Route::middleware(['role:superadmin'])->group(function(){
