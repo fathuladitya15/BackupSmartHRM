@@ -11,14 +11,29 @@ var table  = $('#myTable').dataTable({
         data: 'no_surat',
         name: 'no_surat',
     }, {
-        data: 'alasan',
-        name: 'alasan',
+        data: 'karyawan_id',
+        name: 'karyawan_id',
         orderable: false,
         searchable: false
     },
     {
-        data: 'detail',
-        name: 'detail',
+        data: 'nama_karyawan',
+        name: 'nama_karyawan',
+        orderable: false,
+        searchable: false
+    }, {
+        data: 'divisi',
+        name: 'divisi',
+        orderable: false,
+        searchable: false
+    }, {
+        data: 'jabatan',
+        name: 'jabatan',
+        orderable: false,
+        searchable: false
+    },  {
+        data: 'alasan',
+        name: 'alasan',
         orderable: false,
         searchable: false
     }, {
@@ -26,19 +41,10 @@ var table  = $('#myTable').dataTable({
         name: 'jam_keluar',
         orderable: false,
         searchable: false
-    }, {
+    },{
+
         data: 'status',
         name: 'status',
-        orderable: false,
-        searchable: false
-    },  {
-        data: 'disetujui_oleh',
-        name: 'disetujui_oleh',
-        orderable: false,
-        searchable: false
-    }, {
-        data: 'disetujui_pada',
-        name: 'disetujui_pada',
         orderable: false,
         searchable: false
     },
@@ -123,7 +129,7 @@ $("#Add").submit(function(e) {
 
 function detail(id) {
     const edit          = document.getElementById("edit_"+id+"");
-    const stoploading   = '<i class="bx bx-edit-alt"></i>Edit';
+    const stoploading   = '<i class="bx bx-edit-alt"></i>Detail';
     const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
     $.ajax({
         url : url_detail,
@@ -136,7 +142,13 @@ function detail(id) {
             var data = s.data;
             if(s.status == true) {
                 $("#exampleModalCenter").modal("show");
+
                 $("#id_izin").val(data.id);
+                $("#nama_karyawan").val(data.nama_karyawan);
+                $("#id_karyawan").val(data.karyawan_id);
+                $("#divisi").val(data.divisi);
+                $("#jabatan").val(data.jabatan);
+
                 if(s.alasan == 'Pribadi') {
                     $("#g_pribadi").prop("checked", true);
                 }else {
@@ -155,11 +167,16 @@ function detail(id) {
                 $("textarea#detail").val(data.detail)
                 $("#tanggal").val(data.tanggal_pembuatan);
 
-                $("ttd").val(1);
-                document.getElementById("image_ttd").src = assets + data.ttd_karyawan;
-                document.getElementById("button_ttd").style.display = "none";
+
+                if(data.ttd_mengetahui == null) {
+                    document.getElementById("button_ttd").style.display = "block";
+                }else {
+                    $("ttd").val(1);
+                    document.getElementById("button_ttd").style.display = "none";
+                    document.getElementById("image_ttd").src = assets + data.ttd_mengetahui;
+                }
                 document.getElementById("exampleModalLongTitle").innerHTML = "Detail Data";
-                if(data.status == 0) {
+                if(data.status != 0) {
                     document.getElementById("aksi").style.display = "none";
                 }
             }else {

@@ -98,6 +98,9 @@ Route::middleware('revalidate')->group(function() {
             Route::get('/izin',[IzinController::class,'index'])->name('izin');
             Route::post('/izin',[IzinController::class,'saving'])->name('izin-save');
             Route::get('/izin-get',[DatatableController::class,'data_izin_karyawan'])->name('izin-data');
+            Route::get('/izin-get-adm',[DatatableController::class,'data_izin_admin_korlap'])->name('izin-data-admin-korlap');
+            Route::post('/izin-detail',[IzinController::class,'detail'])->name('izin-detail');
+            Route::get('/izin-download/{hash}',[IzinController::class,'download_file'])->name('izin-download');
 
 
             Route::middleware(['role:superadmin'])->group(function(){

@@ -32,6 +32,15 @@ class UserSeeder extends Seeder
             'id_client' => 2,
             'id_karyawan' => '22001'
         ]);
+        User::create([
+            'username' => 'rasya',
+            'name' => 'Rasya Bayu Pamungkas',
+            'email' => 'rrrr@gmail.com',
+            'password' => Hash::make('password'),
+            'roles' => 'admin',
+            'id_client' => 2,
+            'id_karyawan' => '1999123'
+        ]);
 
     }
 }

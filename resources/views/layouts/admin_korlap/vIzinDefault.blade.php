@@ -1,5 +1,5 @@
 @extends('vBase')
-@section('title') {{ 'Izin - '.Auth::user()->roles }}@endsection
+@section('title') {{ 'Data Izin Karyawan' }}@endsection
 @push('css')
 <link rel="stylesheet" href="{{ asset('assets/css/jquery.signature.css') }}">
 
@@ -42,7 +42,7 @@
 
 @endpush
 @section('content')
-<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Lembur /</span>Data Lembur</h4>
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Izin  /</span>Data Pengajuan Izin</h4>
 <div class="row">
     <div class="col-xxl">
         @if(session()->has('success'))
@@ -78,14 +78,15 @@
                             <tr class="text-nowrap">
                                 <th>#</th>
                                 <th>No Surat</th>
+                                <th>ID Karyawan</th>
+                                <th>Nama Karyawan</th>
+                                <th>Divisi</th>
+                                <th>Jabatan</th>
                                 <th>Alasan</th>
-                                <th>Keterangan</th>
                                 <th>Jam</th>
                                 <th>Status</th>
-                                <th>Disetujui Oleh</th>
-                                <th>Disetujui Pada</th>
                                 <th>Aksi</th>
-                              </tr>
+                            </tr>
                         </thead>
                         <tbody>
 
@@ -97,7 +98,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
@@ -132,7 +132,7 @@
                         <table>
                             <tr>
                                 <td width="200" style="text-align: right">No. Surat :</td>
-                                <td width="170" style="color: black; text-align:center"> <input type="text" class="form-control" disabled></td>
+                                <td width="170" style="color: black; text-align:center"> <input type="text" class="form-control" name="no_surat" required></td>
                                 <td width="50"></td>
                             </tr>
                         </table>
@@ -142,13 +142,13 @@
                         <div class="form-group col-md-6">
                             <label class=" col-form-label" for="basic-default-name">ID Karyawan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="id_karyawan" id="id_karyawan"  value="{{ Auth::user()->id_karyawan }}" readonly>
+                            <input class="form-control" required="required"  name="id_karyawan" id="id_karyawan"  value="" readonly>
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="col-form-label" for="basic-default-name">Nama Karyawan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="nama_karyawan" id="nama_karyawan" type="text" value="{{ Auth::user()->name }}" readonly>
+                            <input class="form-control" required="required"  name="nama_karyawan" id="nama_karyawan" type="text" value="" readonly>
 
                         </div>
                     </div>
@@ -156,13 +156,13 @@
                         <div class="form-group col-md-6">
                             <label class=" col-form-label" for="basic-default-name">Jabatan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required" name="jabatan" id="jabatan" type="text" value="{{ $jabatan->nama_jabatan }}" readonly>
+                            <input class="form-control" required="required" name="jabatan" id="jabatan" type="text" value="" readonly>
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="col-form-label" for="basic-default-name">Divisi</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="divisi" id="divisi" type="text" value="{{ $divisi->nama_divisi }}" readonly>
+                            <input class="form-control" required="required"  name="divisi" id="divisi" type="text" value="" readonly>
                         </div>
                     </div>
                     <br><br>
@@ -175,7 +175,7 @@
                         <div class="form-group col-md-6">
                             <div class="d-flex radio-check">
                                 <div class="custom-control custom-radio custom-control-inline">
-                                    <input type="radio" id="g_dinas" value="Dinas Diluar" name="alasan" class="form-check-input" required="required">
+                                    <input type="radio" id="g_dinas" value="Dinas Diluar" name="alasan" class="form-check-input" required="required" >
                                     <label class="form-check-label " for="g_dinas">Dinas Diluar</label>
                                 </div>
                                 <div class="custom-control custom-radio ms-1 custom-control-inline" style="padding-left: 35px;">
@@ -193,7 +193,7 @@
 
                         </div>
                         <div class="form-group col-md-4">
-                            <input class="form-control" required="required"  name="waktu" id="waktu" type="time" >
+                            <input class="form-control" required="required"  name="waktu" id="waktu" type="time" readonly >
                         </div>
                         <div class="form-group col-md-5">
                             <div class="d-flex radio-check">
@@ -212,7 +212,7 @@
                         <div class="form-group col-md-12">
                             <label class=" col-form-label" for="basic-default-name">Jelaskan</label>
                             <span class="text-danger pl-1">*</span>
-                            <textarea class="form-control" required="required" name="detail" id="detail" ></textarea>
+                            <textarea class="form-control" required="required" name="detail" id="detail" readonly ></textarea>
 
                         </div>
                     </div>
@@ -266,10 +266,11 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="{{ asset("assets/js/jquery.signature.js") }}"></script>
 <script>
-    var url_data    = "{{ route('izin-data') }}";
+    var url_data    = "{{ route('izin-data-admin-korlap') }}";
     var url_save    = "{{ route('izin-save') }}";
     var url_detail  = "{{ route('izin-detail') }}";
     var assets      = "{{ asset('') }}";
 </script>
-<script src="{{ asset('assets/js/izin_default.js') }}"></script>
+<script src="{{ asset('assets/js/admin_korlap/izin_default.js') }}"></script>
 @endpush
+

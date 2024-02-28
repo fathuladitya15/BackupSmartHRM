@@ -14,6 +14,9 @@ class Izin extends Model
     protected $fillable = [
         'no_surat',
         'karyawan_id',
+        'nama_karyawan',
+        'divisi',
+        'jabatan',
         'alasan',
         'detail',
         'tanggal_pembuatan',
@@ -29,5 +32,6 @@ class Izin extends Model
         'kembali',
         'status',
         'id_filemanager',
+        'id_client'
     ];
 }

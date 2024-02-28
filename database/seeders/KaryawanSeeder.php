@@ -38,5 +38,29 @@ class KaryawanSeeder extends Seeder
             'norek_bank'    =>112233,
             'status'        => 0,
         ]);
+        Karyawan::create([
+            'nama_karyawan' => 'Rasya Bayu Pamungkas',
+            'id_karyawan'   => 1999123,
+            'no_hp'         => "088922543991",
+            'tanggal_lahir' => "1993-10-10",
+            'tempat_lahir'  => "Subang",
+            'jenis_kelamin' => "L",
+            'nik'           => 3201301502010099,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 2,
+            'divisi'        => 2,
+            'jabatan'       => 4,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK SYARIAH INDONESIA (Eks BNI SYARIAH)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 427,
+            'norek_bank'    => 77987321,
+            'status'        => 0,
+        ]);
     }
 }

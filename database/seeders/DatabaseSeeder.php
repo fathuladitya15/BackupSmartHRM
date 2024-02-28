@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             ShiftSeeder::class,
             KaryawanSeeder::class,
             IzinSeeder::class,
+            FilemanagerSeeder::class,
         ]);
     }
 }

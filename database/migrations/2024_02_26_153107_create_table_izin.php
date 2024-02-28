@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('no_surat')->nullable();
             $table->string('karyawan_id');
+            $table->string('nama_karyawan');
+            $table->string('divisi');
+            $table->string('jabatan');
             $table->string('alasan')->nullable();
             $table->string('detail')->nullable();
             $table->string('tanggal_pembuatan')->nullable();
@@ -30,6 +33,7 @@ return new class extends Migration
             $table->string('kembali')->nullable();
             $table->string('status')->nullable();
             $table->string('id_filemanager')->nullable();
+            $table->string('id_client')->nullable();
             $table->timestamps();
         });
     }

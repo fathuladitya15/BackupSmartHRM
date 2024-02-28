@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use PDF;
 use Auth;
 use Validator;
 use App\Models\Izin;
@@ -26,7 +27,10 @@ class IzinController extends Controller
         $jabatan        = Jabatan::find($detail->jabatan);
 
         if($detail->lokasi_kerja != 3) {
-            if($role == 'karyawan') {
+            if (in_array($role,['admin','korlap'])){
+                return view('layouts.admin_korlap.vIzinDefault');
+            }
+            elseif($role == 'karyawan') {
                 return view('layouts.izin.vIzinDefault',compact('detail','jabatan','divisi'));
             }else {
                 dd($role);
@@ -50,6 +54,9 @@ class IzinController extends Controller
 
                 $createData = [
                     'karyawan_id'           => $request->id_karyawan,
+                    'nama_karyawan'         => $request->nama_karyawan,
+                    'divisi'                => $request->divisi,
+                    'jabatan'               => $request->jabatan,
                     'detail'                => $request->detail,
                     'alasan'                => $request->alasan,
                     'tanggal_pembuatan'     => $request->tanggal,
@@ -57,17 +64,60 @@ class IzinController extends Controller
                     'ttd_karyawan'          => $ttdCreate->path,
                     'kembali'               => $request->kembali,
                     'status'                => 0,
+                    'id_client'             => Auth::user()->id_client,
                 ];
 
                 $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Berhasil membuat izin keluar'];
-
-
             }
+            $create = Izin::create($createData);
+
+        }else {
+            if(in_array(Auth::user()->roles,['admin','korlap'])){
+                if(Auth::user()->id_client != 3){
+                    $data = Izin::find($id_izin);
+                    $data->ttd_mengetahui = $ttdCreate->path;
+                    $data->no_surat = $request->no_surat;
+                    $data->status = 1;
+                    $data->user_id_mengetahui = Auth::user()->name;
+                    $data->update();
+                    $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah disetujui'];
+
+                }
+            }
+        }
+
+
+
+        return response()->json($pesan);
+    }
+
+    function detail(Request $request) {
+
+        $data = Izin::find($request->id);
+
+        if($data) {
+            $pesan = ['status' => TRUE,'data' => $data];
+        }else {
+            $pesan = ['status' => FALSE];
+        }
+        return response()->json($pesan);
+
+    }
+
+    function download_file($hash){
+        $id = EncryprVariable($hash);
+        $data = Izin::find($id);
+
+
+        if(Auth::user()->id_client != 3) {
+            $id_kr          = Filemanager::where('path',$data->ttd_karyawan)->where("slug",'signature')->first()->id_karyawan;
+            $id_admin       = Filemanager::where('path',$data->ttd_mengetahui)->where("slug",'signature')->first()->id_karyawan;
+            $filename = 'Detail Izin Keluar '.$data->nama_karyawan;
+            $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinDefault",['data' => $data]);
 
         }
 
-        $create = Izin::create($createData);
-
-        return response()->json($pesan);
+        return $pdf->stream($filename.'.pdf');
+        // dd($data);
     }
  }
