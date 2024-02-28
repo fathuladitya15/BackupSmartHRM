@@ -22,5 +22,14 @@ class FilemanagerSeeder extends Seeder
             'slug'      =>'signature',
             'keterangan' => 'Tanda Tangan Mamat Alkatiri',
         ]);
+
+        Filemanager::create([
+            'filename' => '1999123TTD.svg',
+            'path'     => 'assets/img/signature/1999123TTD.svg',
+            'extension'  => 'svg',
+            'id_karyawan' => '1999123',
+            'slug'      =>'signature',
+            'keterangan' => 'Tanda Tangan Rasya Bayu Pamungkas',
+        ]);
     }
 }

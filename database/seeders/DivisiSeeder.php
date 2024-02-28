@@ -13,10 +13,7 @@ class DivisiSeeder extends Seeder
      */
     public function run(): void
     {
-        Divisi::create([
-            'nama_divisi' => 'Produksi',
-            'id_client'   => '2'
-        ]);
+        // DIVISI PFI
         Divisi::create([
             'nama_divisi' => 'MPO',
             'id_client'   => '1'
@@ -40,6 +37,26 @@ class DivisiSeeder extends Seeder
         Divisi::create([
             'nama_divisi' => 'Direktur',
             'id_client'   => '1'
+        ]);
+
+        // DIVISI MEGASARI
+        Divisi::create([
+            'nama_divisi' => 'Produksi',
+            'id_client'   => '2'
+        ]);
+
+        // DIVISI AIO SENTUL
+        Divisi::create([
+            'nama_divisi' => 'GA',
+            'id_client'   => '3'
+        ]);
+        Divisi::create([
+            'nama_divisi' => 'PODUKSI',
+            'id_client'   => '3'
+        ]);
+        Divisi::create([
+            'nama_divisi' => 'LOGISTIK',
+            'id_client'   => '3'
         ]);
     }
 

@@ -36,8 +36,13 @@ class IzinController extends Controller
                 dd($role);
             }
         }else {
+            if(in_array($role,['admin','korlap'])){
+                dd($role);
+            }else if($role == 'karyawan') {
+                return view('layouts.izin.vIzinAIOSukabumi',compact('detail','jabatan','divisi'));
 
-            dd($role);
+                // dd("Karyawan");
+            }
         }
 
 
@@ -50,7 +55,7 @@ class IzinController extends Controller
         $ttdCreate  = Filemanager::where("id_karyawan",Auth::user()->id_karyawan)->where('slug','signature')->first();
 
         if($id_izin == null) {
-            if(Auth::user()->roles == 'karyawan' || Auth::user()->id_client != 3) {
+            if(Auth::user()->id_client != 3) {
 
                 $createData = [
                     'karyawan_id'           => $request->id_karyawan,
@@ -67,8 +72,26 @@ class IzinController extends Controller
                     'id_client'             => Auth::user()->id_client,
                 ];
 
-                $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Berhasil membuat izin keluar'];
+            }else  {
+                $createData = [
+                    'karyawan_id'           => $request->id_karyawan,
+                    'nama_karyawan'         => $request->nama_karyawan,
+                    'divisi'                => $request->divisi,
+                    'jabatan'               => $request->jabatan,
+                    'alasan'                => $request->alasan,
+                    'jam_keluar'            => $request->jam_keluar,
+                    'jam_masuk'             => $request->jam_masuk,
+                    'tanggal_pembuatan'     => $request->tanggal,
+                    'ttd_karyawan'          => $ttdCreate->path,
+                    'status'                => 0,
+                    'id_client'             => Auth::user()->id_client,
+
+
+
+                ];
             }
+            $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Berhasil membuat izin keluar'];
+
             $create = Izin::create($createData);
 
         }else {

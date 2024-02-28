@@ -541,6 +541,12 @@ class DatatableController extends Controller
 
         $dt = DataTables::of($data)
             ->addIndexColumn()
+            ->addColumn("hari", function($row) {
+                return Carbon::parse($row->tanggal_pembuatan)->translatedFormat('l');
+            })
+            ->addColumn("tanggal_pembuatan", function($row) {
+                return Carbon::parse($row->tanggal_pembuatan)->translatedFormat('d F Y');
+            })
             ->addColumn("no_surat", function($row) {
                 if($row->no_surat == null) {
                     return "";
@@ -558,7 +564,7 @@ class DatatableController extends Controller
                         $btn = '<a href="'.route("izin-download",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm"  ><i class="bx bx-download"></i>Download</a>';
                     }
                 }else {
-                    $btn = '';
+                    $btn = $edit;
                 }
 
                 return $btn;
@@ -574,11 +580,19 @@ class DatatableController extends Controller
                     }
 
                 }else {
-                    $st = "";
+                    if($row->status == 0) {
+                        $st = "<span class='badge bg-warning'>MENUNGGU TANDA TANGAN ( KORLAP )</span>";
+                    }else if($row->status == 1) {
+                        $st = "<span class='badge bg-success'>MENUNGGU DISETUJUI ( SUPERVISOR )</span>";
+                    }else if($row->status == 2) {
+                        $st = "<span class='badge bg-success'>MENUNGGU DISETUJUI ( SUPERVISOR )</span>";
+                    }else if($row->status == 3){
+                        $st = "";
+                    }
                 }
                 return $st;
             })
-            ->rawColumns(['no_surat','aksi','status'])
+            ->rawColumns(['no_surat','aksi','status','hari'])
             ->make(true);
 
         return $dt;

@@ -23,6 +23,8 @@ class UserSeeder extends Seeder
             'roles' => 'superadmin',
         ]);
 
+        // USER MEGASARI
+
         User::create([
             'username' => 'mamat',
             'name' => 'Mamat Alkatiri',
@@ -42,5 +44,26 @@ class UserSeeder extends Seeder
             'id_karyawan' => '1999123'
         ]);
 
+
+        // USER AIO SUKABUMI
+        User::create([
+            'username' => 'rehan',
+            'name' => 'REHAN ERLANGGA',
+            'email' => 'raihan@gmail.com',
+            'password' => Hash::make('password'),
+            'roles' => 'admin',
+            'id_client' => 3,
+            'id_karyawan' => 'PFI00123'
+        ]);
+
+        User::create([
+            'username' => 'achmad',
+            'name' => 'Achmad Siswanto',
+            'email' => 'achmd@gmail.com',
+            'password' => Hash::make('password'),
+            'roles' => 'karyawan',
+            'id_client' => 3,
+            'id_karyawan' => 'B0483'
+        ]);
     }
 }

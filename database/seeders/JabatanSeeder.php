@@ -12,13 +12,7 @@ class JabatanSeeder extends Seeder
     public function run(): void
     {
 
-        Jabatan::create([
-            'nama_jabatan' => 'Packing',
-            'id_client'    => '2'
-        ]);
-
-
-
+        // JABATAN PFI
         Jabatan::create([
             'nama_jabatan' => 'Supervisor',
             'id_client'    => '3'
@@ -47,5 +41,30 @@ class JabatanSeeder extends Seeder
             'nama_jabatan' => 'Karyawan',
             'id_client'    => '1'
         ]);
+
+        // JABATAN MEGASARI
+        Jabatan::create([
+            'nama_jabatan' => 'Packing',
+            'id_client'    => '2'
+        ]);
+
+        // JABATAN AIO SUKABUMI
+        Jabatan::create([
+            'nama_jabatan' => 'Driver Operasional',
+            'id_client'    => '3'
+        ]);
+        Jabatan::create([
+            'nama_jabatan' => 'Driver Forklift',
+            'id_client'    => '3'
+        ]);
+        Jabatan::create([
+            'nama_jabatan' => 'Support Shrink',
+            'id_client'    => '3'
+        ]);
+        Jabatan::create([
+            'nama_jabatan' => 'Office Boy',
+            'id_client'    => '3'
+        ]);
+
     }
 }
