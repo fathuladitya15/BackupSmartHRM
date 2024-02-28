@@ -37,11 +37,9 @@ class IzinController extends Controller
             }
         }else {
             if(in_array($role,['admin','korlap'])){
-                dd($role);
+                return view('layouts.admin_korlap.vIzinAIOSukabumi');
             }else if($role == 'karyawan') {
                 return view('layouts.izin.vIzinAIOSukabumi',compact('detail','jabatan','divisi'));
-
-                // dd("Karyawan");
             }
         }
 
@@ -105,6 +103,16 @@ class IzinController extends Controller
                     $data->update();
                     $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah disetujui'];
 
+                }else {
+                    if(in_array(Auth::user()->roles,['admin','karyawan'])){
+                        $data = Izin::find($id_izin);
+                        $data->status = 1;
+                        $data->user_id_mengetahui = Auth::user()->name;
+                        $data->ttd_mengetahui = $ttdCreate->path;
+                        $data->update();
+                        $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah ditandatangani'];
+
+                    }
                 }
             }
         }
@@ -138,9 +146,57 @@ class IzinController extends Controller
             $filename = 'Detail Izin Keluar '.$data->nama_karyawan;
             $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinDefault",['data' => $data]);
 
+        }else {
+            $filename = 'Detail Pengajuan Izin  '.$data->nama_karyawan;
+            $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinAIO",['data' => $data,'filename' => $filename]);
         }
 
         return $pdf->stream($filename.'.pdf');
         // dd($data);
+    }
+
+    function upload(Request $request) {
+
+        $find = Izin::find($request->id_upload);
+
+
+        $file       = $request->file_izin;
+        $filename   = "AIO_".$find->id.date("YmdHi").'.'.$file->getClientOriginalExtension();
+        $path       = '/filemanager/file_izin/';
+        $move_folder= $path.$filename;
+
+        $data_upload = [
+            'file'      => $file,
+            'filename'  => $filename,
+            'path'      => $path.$filename,
+            'extension' => $file->getClientOriginalExtension(),
+            'id_karyawan' => $find->karyawan_id,
+            'slug'      => 'izin',
+            'keterangan'=> 'FILE IZIN '.$find->nama_karyawan
+        ];
+        $file->move(public_path($path),$filename);
+
+        $upload_files  =  Filemanager::create($data_upload);
+        if($upload_files) {
+            $find->status = 2;
+            $find->id_filemanager = $upload_files->id;
+            $find->update();
+
+            $pesan  = ['status' => TRUE, 'title' => 'Berhasil ! ','pesan' => 'File berhasil disimpan !'];
+        }else {
+            $pesan  = ['status' => FALSE, 'title' => 'Error ! ','pesan' => 'Hubungi Tim IT !'];
+
+        }
+        return response()->json($pesan);
+
+    }
+
+    function get_files(Request $request) {
+        $id_files = Izin::find($request->id)->id_filemanager;
+
+        $files = Filemanager::find($id_files);
+
+        return response()->json( ['status' => TRUE,'nama_file' => $files->nama_file, 'type_file' => $files->extension , 'links' => $files->path]);
+
     }
  }
