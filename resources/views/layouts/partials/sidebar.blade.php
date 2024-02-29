@@ -197,13 +197,13 @@
                         <div data-i18n="Authentications">Lembur</div>
                         </a>
                         @if (in_array(Auth::user()->roles,['admin']))
-                            <ul class="menu-sub">
+                            {{-- <ul class="menu-sub">
                                 <li class="menu-item {{ menuActive('lembur-self') }}">
                                     <a href="{{ route('lembur-self') }}" class="menu-link" >
                                     <div data-i18n="Basic">Data Lembur Anda</div>
                                     </a>
                                 </li>
-                            </ul>
+                            </ul> --}}
 
                             <ul class="menu-sub">
                                 <li class="menu-item {{ menuActive('lembur') }}">
@@ -225,7 +225,7 @@
                         <ul class="menu-sub">
                             <li class="menu-item {{ menuActive('lembur') }}">
                                 <a href="{{ route('lembur') }}" class="menu-link" >
-                                <div data-i18n="Basic">Data Lembur Karyawan</div>
+                                <div data-i18n="Basic">Data Lembur </div>
                                 </a>
                             </li>
 
@@ -260,6 +260,13 @@
                         <div data-i18n="Authentications">Izin</div>
                         </a>
                         <ul class="menu-sub">
+                            @if(in_array(Auth::user()->roles,['admin']))
+                                {{-- <li class="menu-item {{  menuActive('izin') }}">
+                                    <a href="{{ route('izin-self') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Pengajuan Izin Anda</div>
+                                    </a>
+                                </li> --}}
+                            @endif
                             <li class="menu-item {{  menuActive('izin') }}">
                                 <a href="{{ route('izin') }}" class="menu-link" >
                                 <div data-i18n="Basic">Pengajuan Izin</div>

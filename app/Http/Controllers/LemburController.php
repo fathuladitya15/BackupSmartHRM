@@ -173,7 +173,7 @@ class LemburController extends Controller
                     $data->update();
                     $pesan = ['status' => TRUE,'title' => 'Berhasil ditandatangani' ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah disetujui'];
 
-                }else if(in_array(Auth::user()->roles,['karyawan','kr-pusat'])){
+                }else if(in_array(Auth::user()->roles,['karyawan','kr-pusat','kr-project'])){
                     $ttd = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','signature')->first();
                     if(in_array(Auth::user()->id_client,['2','1'])) {
                         $data = [

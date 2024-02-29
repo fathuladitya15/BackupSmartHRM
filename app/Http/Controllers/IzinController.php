@@ -47,6 +47,14 @@ class IzinController extends Controller
 
     }
 
+    function self() {
+        $detail         = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first();
+        $divisi         = Divisi::find($detail->divisi);
+        $jabatan        = Jabatan::find($detail->jabatan);
+
+        return view('layouts.izin.vIzinPFI',compact('jabatan','divisi','detail'));
+        dd(Auth::user()->roles);
+    }
 
     function saving(Request $request) {
         $id_izin    = $request->id_izin;

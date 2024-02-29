@@ -1,5 +1,5 @@
 const button_login = document.getElementById("login_button");
-const loading   = 'Mohon Tunggu &nbsp;<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div>  ';
+const loading   = 'Mohon Tunggu &nbsp;<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> ';
 
 $('#formAuthentication').submit(function(e) {
     e.preventDefault();
@@ -68,6 +68,7 @@ $('#formAuthentication').submit(function(e) {
                     });
                 }
             },error: function(e) {
+                // console.log(e)
                 // console.log(e.responseJSON.message);
                 Swal.fire({
                         title: "Opps !",

@@ -200,8 +200,7 @@ class DatatableController extends Controller
     }
 
     // DATA LEMBUR UNTUK KARYAWAN
-    function data_lembur_karyawan(Request $request) {
-
+    function data_lembur_karyawan(Request $request,$hash) {
         $data     = Lembur::where('id_karyawan',Auth::user()->id_karyawan)->where('id_client',Auth::user()->id_client)->get();
 
         $dt = DataTables::of($data)
@@ -217,7 +216,7 @@ class DatatableController extends Controller
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
                     return $file.'&nbsp;'.$hapus;
                 }
-            }else if(in_array(Auth::user()->id_client,[3,4])) {
+            }else if(in_array(Auth::user()->id_client,[3,4]) && Auth::user()->roles != 'kr-project') {
                 if($row->status == 0) {
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
                     return $file.'&nbsp;'.$hapus;
@@ -254,10 +253,24 @@ class DatatableController extends Controller
                     }
                 }
             }else if(in_array(Auth::user()->id_client,[3,4])) {
-                if($row->status != 4 ) {
-                    $st = "<span class='badge bg-warning'> Menuggu Persetujuan </span>";
-                }else if($row->status == 4) {
-                    $st = "<span class='badge bg-success'> Telah disetujui </span>";
+                if(Auth::user()->roles == 'kr-project') {
+                    if($row->status == 0 ) {
+                        $st = "<span class='badge bg-warning'> Menuggu Persetujuan  Manager Divisi</span>";
+                    }else if($row->status == 1) {
+                        $st = "<span class='badge bg-warning'> Menuggu Persetujuan  HRD</span>";
+                    }else if($row->status == 2 ){
+                        $st = "<span class='badge bg-warning'> Menuggu Tanda Tangan Direktur</span>";
+                    }
+                    else if($row->status == 3) {
+                        $st = "<span class='badge bg-success'> Telah disetujui </span>";
+                    }
+                }else {
+
+                    if($row->status != 4 ) {
+                        $st = "<span class='badge bg-warning'> Menuggu Persetujuan </span>";
+                    }else if($row->status == 4) {
+                        $st = "<span class='badge bg-success'> Telah disetujui </span>";
+                    }
                 }
             }else {
                 if($row->status == 0) {
@@ -285,7 +298,7 @@ class DatatableController extends Controller
             return Carbon::parse($row->tanggal_lembur)->translatedFormat('d F Y');
         })
         ->addColumn('id_shift',function($row) {
-            if(Auth::user()->id_client == 3) {
+            if(Auth::user()->id_client == 3 && Auth::user()->roles != 'kr-project') {
                 $shift  = Shift::find($row->id_shift);
 
                 $nama_shift = $shift->type.' '.$shift->ke;

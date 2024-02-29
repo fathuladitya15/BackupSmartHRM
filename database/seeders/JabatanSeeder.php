@@ -24,7 +24,7 @@ class JabatanSeeder extends Seeder
         ]);
 
         Jabatan::create([
-            'nama_jabatan' => 'Koordinator Lapangan',
+            'nama_jabatan' => 'Admin',
             'id_client'    => '1'
         ]);
 
@@ -65,6 +65,14 @@ class JabatanSeeder extends Seeder
             'nama_jabatan' => 'Office Boy',
             'id_client'    => '3'
         ]);
+
+
+
+        Jabatan::create([
+            'nama_jabatan' => 'Koordinator Lapangan',
+            'id_client'    => '1'
+        ]);
+
 
     }
 }

@@ -60,7 +60,7 @@
                             @endphp
                         @endif
                         <small class="text-muted">{{ Auth::user()->id_client != null ? $client  : ''}}</small><br>
-                        <small class="text-muted">{{ Auth::user()->roles == 'superadmin' ? 'Superadmin' : $rolename }}</small><br>
+                        <small class="text-muted">{{ Auth::user()->roles == 'superadmin' ? 'Superadmin' : $jabatan }}</small><br>
                         <small class="text-muted">{{ Auth::user()->roles != 'superadmin' ? $divisi  : ''}}</small>
                     </div>
                     </div>

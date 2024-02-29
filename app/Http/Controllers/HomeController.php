@@ -28,7 +28,12 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // dd(getIpInfo());
+
+        $roles = Auth::user()->roles;
+
+        // if($roles == 'admin') {
+        //     return view('layouts.vSelect');
+        // }
         // dd(Carbon::now()->translatedFormat('d F Y'));
         // dd(Auth::user()->roles);
         $table_kr   = Karyawan::where('id_karyawan','like','%'.Auth::user()->id_karyawan.'')->first();
