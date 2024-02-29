@@ -7,33 +7,53 @@ var table  = $('#myTable').dataTable({
         data: 'DT_RowIndex',
         orderable: false,
         searchable: false
+    },  {
+        data: 'karyawan_id',
+        name: 'karyawan_id',
+        orderable: false,
+        searchable: false
+    },
+    {
+        data: 'nama_karyawan',
+        name: 'nama_karyawan',
+        orderable: false,
+        searchable: false
     }, {
+        data: 'divisi',
+        name: 'divisi',
+        orderable: false,
+        searchable: false
+    }, {
+        data: 'jabatan',
+        name: 'jabatan',
+        orderable: false,
+        searchable: false
+    },  {
         data: 'tanggal_pembuatan',
         name: 'tanggal_pembuatan',
+        orderable: false,
+        searchable: false
     }, {
         data: 'jam_keluar',
         name: 'jam_keluar',
         orderable: false,
         searchable: false
-    },
-    {
+    },{
+
         data: 'jam_masuk',
         name: 'jam_masuk',
         orderable: false,
         searchable: false
-    }, {
+    },{
+
         data: 'alasan',
         name: 'alasan',
         orderable: false,
         searchable: false
-    }, {
+    },{
+
         data: 'status',
         name: 'status',
-        orderable: false,
-        searchable: false
-    },  {
-        data: 'disetujui_oleh',
-        name: 'disetujui_oleh',
         orderable: false,
         searchable: false
     },
@@ -44,6 +64,7 @@ var table  = $('#myTable').dataTable({
         searchable: false
     },]
 });
+$(':radio:not(:checked)').attr('disabled', true);
 
 $('#exampleModalCenter').on('hidden.bs.modal', function(e) {
     document.getElementById("image_ttd").src = "";
@@ -118,7 +139,7 @@ $("#Add").submit(function(e) {
 
 function detail(id) {
     const edit          = document.getElementById("edit_"+id+"");
-    const stoploading   = '<i class="bx bx-edit-alt"></i>Edit';
+    const stoploading   = '<i class="bx bx-edit-alt"></i>Detail';
     const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
     $.ajax({
         url : url_detail,
@@ -131,32 +152,31 @@ function detail(id) {
             var data = s.data;
             if(s.status == true) {
                 $("#exampleModalCenter").modal("show");
+
                 $("#id_izin").val(data.id);
-                if(s.alasan == 'Pribadi') {
-                    $("#g_pribadi").prop("checked", true);
-                }else {
-                    $("#g_dinas").prop("checked", true);
+                $("#nama_karyawan").val(data.nama_karyawan);
+                $("#id_karyawan").val(data.karyawan_id);
+                $("#divisi").val(data.divisi);
+                $("#jabatan").val(data.jabatan);
 
-                }
-
-                $("#waktu").val(data.jam_keluar);
-
-                if(data.kembali == 0) {
-                    $("#g_kembali").prop("checked",true)
-                }else {
-                    $("#g_tidak_kembali").prop("checked",true)
-
-                }
-                $("textarea#detail").val(data.detail)
+                $('#jam_keluar').val(data.jam_keluar);
+                $('#jam_masuk').val(data.jam_masuk);
+                $("textarea#alasan").val(data.alasan)
                 $("#tanggal").val(data.tanggal_pembuatan);
 
-                $("ttd").val(1);
-                document.getElementById("image_ttd").src = assets + data.ttd_karyawan;
-                document.getElementById("button_ttd").style.display = "none";
-                document.getElementById("exampleModalLongTitle").innerHTML = "Detail Data";
-                if(data.status == 0) {
-                    document.getElementById("aksi").style.display = "none";
+
+                if(data.ttd_direktur == null) {
+                    document.getElementById("button_ttd").style.display = "block";
+                    document.getElementById("aksi").style.display = "block";
+                }else {
+                    $("ttd").val(1);
+                    document.getElementById("button_ttd").style.display = "none";
+                    document.getElementById("image_ttd").src = assets + data.ttd_mengetahui;
                 }
+                document.getElementById("exampleModalLongTitle").innerHTML = "Detail Data";
+                // if(data.status != 0) {
+
+                // }
             }else {
                 Swal.fire({
                     title: "Terjadi kesalahan",
@@ -177,13 +197,4 @@ function detail(id) {
             edit.disabled = false;
         }
     })
-}
-s
-function handleClick(myRadio) {
-    var val = myRadio.value;
-    if(val == 1){
-        $("#jam_masuk").attr("disabled","disabled");
-    }else {
-        $("#jam_masuk").removeAttr("disabled");
-    }
 }

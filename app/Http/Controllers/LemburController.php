@@ -27,11 +27,6 @@ class LemburController extends Controller
         $cek_divisi = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first()->divisi;
         $name_divisi = Divisi::find($cek_divisi)->nama_divisi;
 
-        // if(Auth::user()->roles == 'direktur' || $name_divisi  == 'MPO'){
-        //     dd($name_divisi);
-
-        // }
-        // else
         if(in_array(Auth::user()->roles,['hrd','manajer','direktur'])) {
             $daftar_kr = User::where('roles','kr-pusat')->orWhere('roles','kr-project')->where('id_client',Auth::user()->id_client)->get();
             $total_jam = DB::table('table_lembur')

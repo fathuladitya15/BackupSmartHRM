@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use PDF;
 use Auth;
 use Validator;
+use Carbon\Carbon;
 use App\Models\Izin;
 use App\Models\Divisi;
 use App\Models\Jabatan;
@@ -32,14 +33,16 @@ class IzinController extends Controller
             }
             elseif($role == 'karyawan') {
                 return view('layouts.izin.vIzinDefault',compact('detail','jabatan','divisi'));
-            }else {
-                dd($role);
+            }else if(in_array($role,['direktur','hrd','manajer'])) {
+                return view('layouts.admin_korlap.vIzinPFI');
             }
         }else {
             if(in_array($role,['admin','korlap'])){
                 return view('layouts.admin_korlap.vIzinAIOSukabumi');
             }else if($role == 'karyawan') {
                 return view('layouts.izin.vIzinAIOSukabumi',compact('detail','jabatan','divisi'));
+            }else if(in_array($role,['kr-project','kr-pusat'])){
+                return view('layouts.izin.vIzinPFI',compact('jabatan','divisi','detail'));
             }
         }
 
@@ -59,6 +62,8 @@ class IzinController extends Controller
     function saving(Request $request) {
         $id_izin    = $request->id_izin;
         $ttdCreate  = Filemanager::where("id_karyawan",Auth::user()->id_karyawan)->where('slug','signature')->first();
+        $divisi = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->divisi;
+        $nama_divisi = Divisi::find($divisi)->nama_divisi;
 
         if($id_izin == null) {
             if(Auth::user()->id_client != 3) {
@@ -79,22 +84,36 @@ class IzinController extends Controller
                 ];
 
             }else  {
-                $createData = [
-                    'karyawan_id'           => $request->id_karyawan,
-                    'nama_karyawan'         => $request->nama_karyawan,
-                    'divisi'                => $request->divisi,
-                    'jabatan'               => $request->jabatan,
-                    'alasan'                => $request->alasan,
-                    'jam_keluar'            => $request->jam_keluar,
-                    'jam_masuk'             => $request->jam_masuk,
-                    'tanggal_pembuatan'     => $request->tanggal,
-                    'ttd_karyawan'          => $ttdCreate->path,
-                    'status'                => 0,
-                    'id_client'             => Auth::user()->id_client,
+                if(Auth::user()->roles == 'kr-project') {
+                    $createData = [
+                        'karyawan_id'           => $request->id_karyawan,
+                        'nama_karyawan'         => $request->nama_karyawan,
+                        'divisi'                => $request->divisi,
+                        'jabatan'               => $request->jabatan,
+                        'alasan'                => $request->alasan,
+                        'jam_keluar'            => $request->jam_keluar,
+                        'jam_masuk'             => $request->jam_masuk,
+                        'tanggal_pembuatan'     => $request->tanggal,
+                        'ttd_karyawan'          => $ttdCreate->path,
+                        'status'                => 0,
+                        'id_client'             => 1,
+                    ];
+                }else {
 
-
-
-                ];
+                    $createData = [
+                        'karyawan_id'           => $request->id_karyawan,
+                        'nama_karyawan'         => $request->nama_karyawan,
+                        'divisi'                => $request->divisi,
+                        'jabatan'               => $request->jabatan,
+                        'alasan'                => $request->alasan,
+                        'jam_keluar'            => $request->jam_keluar,
+                        'jam_masuk'             => $request->jam_masuk,
+                        'tanggal_pembuatan'     => $request->tanggal,
+                        'ttd_karyawan'          => $ttdCreate->path,
+                        'status'                => 0,
+                        'id_client'             => Auth::user()->id_client,
+                    ];
+                }
             }
             $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Berhasil membuat izin keluar'];
 
@@ -122,6 +141,30 @@ class IzinController extends Controller
 
                     }
                 }
+            }else if(Auth::user()->roles == 'direktur'){
+                if($nama_divisi == 'MPO'){
+                    $data = Izin::find($id_izin);
+                    $data->ttd_mengetahui = $ttdCreate->path;
+                    $data->status =  1 ;
+                    $data->update();
+
+                }else {
+
+                    $data = Izin::find($id_izin);
+                    $data->ttd_direktur = $ttdCreate->path;
+                    $data->disetujui_pada = Carbon::now()->translatedFormat('d F Y');
+                    $data->disetujui_oleh = "Direktur HRD";
+                    $data->status =  3 ;
+                    $data->update();
+                }
+                $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah disetujui'];
+            }else if(Auth::user()->roles == 'hrd'){
+                $data = Izin::find($id_izin);
+
+                $data->ttd_hrd = $ttdCreate->path;
+                $data->status =  2;
+                $data->update();
+                $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah disetujui'];
             }
         }
 
@@ -149,14 +192,29 @@ class IzinController extends Controller
 
 
         if(Auth::user()->id_client != 3) {
-            $id_kr          = Filemanager::where('path',$data->ttd_karyawan)->where("slug",'signature')->first()->id_karyawan;
-            $id_admin       = Filemanager::where('path',$data->ttd_mengetahui)->where("slug",'signature')->first()->id_karyawan;
-            $filename = 'Detail Izin Keluar '.$data->nama_karyawan;
-            $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinDefault",['data' => $data]);
+            if(in_array(Auth::user()->roles,['direktur','hrd','manajer'])){
+                $filename       = 'Detail Izin Keluar '.$data->nama_karyawan;
+                $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinPFI",['data' => $data]);
+            }else {
+                $id_kr          = Filemanager::where('path',$data->ttd_karyawan)->where("slug",'signature')->first()->id_karyawan;
+                $id_admin       = Filemanager::where('path',$data->ttd_mengetahui)->where("slug",'signature')->first()->id_karyawan;
+                $filename       = 'Detail Izin Keluar '.$data->nama_karyawan;
+                $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinDefault",['data' => $data]);
 
+            }
+
+        }else if(Auth::user()->id_client == 1){
+            $filename       = 'Detail Izin Keluar '.$data->nama_karyawan;
+            $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinPFI",['data' => $data]);
         }else {
-            $filename = 'Detail Pengajuan Izin  '.$data->nama_karyawan;
-            $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinAIO",['data' => $data,'filename' => $filename]);
+            if(Auth::user()->roles == 'kr-project'){
+                $filename       = 'Detail Izin Keluar '.$data->nama_karyawan;
+                $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinPFI",['data' => $data]);
+            }else {
+                $filename       = 'Detail Pengajuan Izin  '.$data->nama_karyawan;
+                $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinAIO",['data' => $data,'filename' => $filename]);
+
+            }
         }
 
         return $pdf->stream($filename.'.pdf');

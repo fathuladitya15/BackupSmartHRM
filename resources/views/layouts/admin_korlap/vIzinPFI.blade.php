@@ -1,5 +1,5 @@
 @extends('vBase')
-@section('title') {{ 'Data Pengajuan Izin Anda' }}@endsection
+@section('title') {{ 'Data Izin Karyawan' }}@endsection
 @push('css')
 <link rel="stylesheet" href="{{ asset('assets/css/jquery.signature.css') }}">
 
@@ -42,7 +42,7 @@
 
 @endpush
 @section('content')
-<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Lembur /</span>Data Lembur</h4>
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Izin  /</span>Data Pengajuan Izin</h4>
 <div class="row">
     <div class="col-xxl">
         @if(session()->has('success'))
@@ -76,15 +76,18 @@
                     <table class="table" id="myTable">
                         <thead>
                             <tr class="text-nowrap">
-                                <th>#</th>
-                                <th>tanggal</th>
+                                <th>N</th>
+                                <th>ID Karyawan</th>
+                                <th>Nama Karyawan</th>
+                                <th>Divisi</th>
+                                <th>Jabatan</th>
+                                <th>Tanggal</th>
                                 <th>jam keluar</th>
                                 <th>jam kembali</th>
-                                <th>Keterangan keperluan</th>
+                                <th>keterangan keperluan</th>
                                 <th>Status</th>
-                                <th>Disetujui Oleh</th>
                                 <th>Aksi</th>
-                              </tr>
+                            </tr>
                         </thead>
                         <tbody>
 
@@ -96,7 +99,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
@@ -132,13 +134,13 @@
                         <div class="form-group col-md-6">
                             <label class=" col-form-label" for="basic-default-name">ID Karyawan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="id_karyawan" id="id_karyawan"  value="{{ Auth::user()->id_karyawan }}" readonly>
+                            <input class="form-control" required="required"  name="id_karyawan" id="id_karyawan"  value="" readonly>
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="col-form-label" for="basic-default-name">Nama Karyawan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="nama_karyawan" id="nama_karyawan" type="text" value="{{ Auth::user()->name }}" readonly>
+                            <input class="form-control" required="required"  name="nama_karyawan" id="nama_karyawan" type="text" value="" readonly>
 
                         </div>
                     </div>
@@ -146,20 +148,20 @@
                         <div class="form-group col-md-6">
                             <label class=" col-form-label" for="basic-default-name">Jabatan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required" name="jabatan" id="jabatan" type="text" value="{{ $jabatan->nama_jabatan }}" readonly>
+                            <input class="form-control" required="required" name="jabatan" id="jabatan" type="text" value="" readonly>
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="col-form-label" for="basic-default-name">Divisi</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="divisi" id="divisi" type="text" value="{{ $divisi->nama_divisi }}" readonly>
+                            <input class="form-control" required="required"  name="divisi" id="divisi" type="text" value="" readonly>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-md-12">
                             <label class=" col-form-label" for="basic-default-name">Keterangan Keperluan</label>
                             <span class="text-danger pl-1">*</span>
-                            <textarea class="form-control" required="required" name="alasan" id="alasan" ></textarea>
+                            <textarea class="form-control" required="required" name="alasan" id="alasan" readonly></textarea>
 
                         </div>
                     </div>
@@ -171,7 +173,7 @@
 
                         </div>
                         <div class="form-group col-md-4">
-                            <input class="form-control" required="required"  name="jam_keluar" id="jam_keluar" type="time" >
+                            <input class="form-control" required="required"  name="jam_keluar" id="jam_keluar" type="time"readonly>
                         </div>
                         <div class="form-group col-md-5">
                             <div class="d-flex radio-check">
@@ -194,14 +196,14 @@
 
                         </div>
                         <div class="form-group col-md-4">
-                            <input class="form-control" required="required"  name="jam_masuk" id="jam_masuk" type="time" >
+                            <input class="form-control" required="required"  name="jam_masuk" id="jam_masuk" type="time" readonly >
                         </div>
                         <div class="form-group col-md-2">
                             <label class=" col-form-label" for="basic-default-name">Tanggal</label>
                             <span class="text-danger pl-1">*</span>
                         </div>
                         <div class="form-group col-md-4">
-                            <input class="form-control" required="required"  name="tanggal" id="tanggal" type="date" >
+                            <input class="form-control" required="required"  name="tanggal" id="tanggal" type="date"readonly >
                         </div>
                     </div>
                     <br>
@@ -231,15 +233,17 @@
     </div>
 </div>
 @endsection
+
 @push('js')
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="{{ asset("assets/js/jquery.signature.js") }}"></script>
 <script>
-    var url_data    = "{{ route('izin-data') }}";
+    var url_data    = "{{ route('izin-data-admin-korlap') }}";
     var url_save    = "{{ route('izin-save') }}";
     var url_detail  = "{{ route('izin-detail') }}";
     var assets      = "{{ asset('') }}";
 </script>
-<script src="{{ asset('assets/js/izin_pfi.js') }}"></script>
+<script src="{{ asset('assets/js/admin_korlap/izin_pfi.js') }}"></script>
 @endpush
+

@@ -254,19 +254,13 @@
                         </ul>
                     </li>
 
+                    {{-- IZIN --}}
                     <li class="menu-item {{  menuOpen(['izin']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-calendar-event"></i>
                         <div data-i18n="Authentications">Izin</div>
                         </a>
                         <ul class="menu-sub">
-                            @if(in_array(Auth::user()->roles,['admin']))
-                                {{-- <li class="menu-item {{  menuActive('izin') }}">
-                                    <a href="{{ route('izin-self') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Pengajuan Izin Anda</div>
-                                    </a>
-                                </li> --}}
-                            @endif
                             <li class="menu-item {{  menuActive('izin') }}">
                                 <a href="{{ route('izin') }}" class="menu-link" >
                                 <div data-i18n="Basic">Pengajuan Izin</div>
@@ -281,6 +275,7 @@
 
 
                 @if (Auth::user()->roles == 'direktur')
+                <hr>
                     {{-- LEMBUR --}}
                     <li class="menu-item {{ menuOpen('lembur') }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -291,6 +286,20 @@
                             <li class="menu-item {{ menuActive('lembur') }}">
                                 <a href="{{ route('lembur') }}" class="menu-link" >
                                 <div data-i18n="Basic">Data Lembur</div>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+                    <li class="menu-item {{  menuOpen(['izin']) }} ">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+                        <div data-i18n="Authentications">Izin</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item {{  menuActive('izin') }}">
+                                <a href="{{ route('izin') }}" class="menu-link" >
+                                <div data-i18n="Basic">Pengajuan Izin</div>
                                 </a>
                             </li>
 

@@ -45,7 +45,7 @@ class FilemanagerSeeder extends Seeder
             'filename' => 'PFI00123TTD.svg',
             'path'     => 'assets/img/signature/PFI00123TTD.svg',
             'extension'  => 'svg',
-            'id_karyawan' => 'PFI00123TTD',
+            'id_karyawan' => 'PFI00123',
             'slug'      =>'signature',
             'keterangan' => 'Tanda Tangan REHAN ERLANGGA',
         ]);
