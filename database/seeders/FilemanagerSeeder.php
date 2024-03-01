@@ -49,6 +49,7 @@ class FilemanagerSeeder extends Seeder
             'slug'      =>'signature',
             'keterangan' => 'Tanda Tangan REHAN ERLANGGA',
         ]);
+
         Filemanager::create([
             'filename' => 'AIO_5202402281458.pdf',
             'path'     => '/filemanager/file_izin/AIO_5202402281458.pdf',
@@ -56,6 +57,33 @@ class FilemanagerSeeder extends Seeder
             'id_karyawan' => 'B0483',
             'slug'      =>'izin',
             'keterangan' => 'FILE IZIN Achmad Siswanto',
+        ]);
+
+        Filemanager::create([
+            'filename' => 'DR1001TTD.svg',
+            'path'     => 'assets/img/signature/DR1001TTD.svg',
+            'extension'  => 'svg',
+            'id_karyawan' => 'DR1001',
+            'slug'      =>'signature',
+            'keterangan' => 'Tanda Tangan Rommy Ghannny',
+        ]);
+
+        Filemanager::create([
+            'filename' => 'PFI1001TTD.svg',
+            'path'     => 'assets/img/signature/PFI1001TTD.svg',
+            'extension'  => 'svg',
+            'id_karyawan' => 'PFI1001',
+            'slug'      =>'signature',
+            'keterangan' => 'Tanda Tangan Dwi',
+        ]);
+
+        Filemanager::create([
+            'filename' => 'PFI18723TTD.svg',
+            'path'     => 'assets/img/signature/PFI18723TTD.svg',
+            'extension'  => 'svg',
+            'id_karyawan' => 'PFI18723',
+            'slug'      =>'signature',
+            'keterangan' => 'Tanda Tangan Direktur HRD',
         ]);
     }
 }

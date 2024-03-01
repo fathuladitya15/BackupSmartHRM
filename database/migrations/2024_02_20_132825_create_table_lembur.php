@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('ttd_direktur')->nullable();
             $table->string('ttd_manager')->nullable();
             $table->string('ttd_karyawan')->nullable();
+            $table->string('disetujui_oleh')->nullable();
             $table->string('id_client')->nullable();
             $table->string('id_shift')->nullable();
             $table->string('id_filemanager')->nullable();

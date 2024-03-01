@@ -301,14 +301,8 @@ class DatatableController extends Controller
             return $st;
         })
         ->addColumn('disetujui_oleh',function($row) {
-            $data = Filemanager::where('path',$row->ttd_admin_korlap)->where("slug",'signature');
-            if($data->count() != 0) {
-                $id_karyawan = $data->first()->id_karyawan;
-                $nama_admin = User::where('id_karyawan',$id_karyawan)->first()->name;
-            }else {
-                $nama_admin = "";
-            }
-            return $nama_admin;
+
+            return $row->disetujui_oleh;
         })
         ->addColumn("tanggal_lembur", function($row) {
             return Carbon::parse($row->tanggal_lembur)->translatedFormat('d F Y');
@@ -337,13 +331,15 @@ class DatatableController extends Controller
         $dataKaryawan   = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first();
         $divisi         = Divisi::find($dataKaryawan->divisi)->nama_divisi;
 
+        $role           = Auth::user()->roles;
 
-        if(Auth::user()->roles == 'manajer'){
+
+        if($role == 'manajer'){
             $data = $dataMaster->where('status','>=','0')->where('divisi',$divisi)->get();
-        }else if(Auth::user()->roles == 'hrd') {
+        }else if($role == 'hrd') {
             $data = $dataMaster->orWhere('divisi',['MPO'])->where('status','>=','1')->get();
         }
-        else if(Auth::user()->roles == 'direktur') {
+        else if($role == 'direktur') {
             if($divisi == 'MPO'){
                 $data =  Lembur::where('divisi','MPO')->where('status','>=','0')->get();
             }else {
@@ -358,15 +354,15 @@ class DatatableController extends Controller
         }
         $dt = DataTables::of($data)
             ->addIndexColumn()
-            ->addColumn('aksi', function($row) {
+            ->addColumn('aksi', function($row) use ($role) {
                 $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
                 $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+                $acc   = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="acc_'.$row->id.'" onclick="acc('.$row->id.')"  ><i class="bx bx-check"></i>Setujui</a>';
+
                 if(Auth::user()->id_client == 1) {
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
 
-                    if($row->status == 3){
-                        return $file;
-                    }else if(Auth::user()->roles == 'manajer' ) {
+                    if(Auth::user()->roles == 'manajer' ) {
                         if($row->status != 0) {
                             return "";
                         }else {
@@ -378,21 +374,25 @@ class DatatableController extends Controller
                         }else {
                             return $edit;
                         };
-                    }else if(Auth::user()->roles == 'direktur') {
+                    }else if($role == 'direktur') {
                         $dataKaryawan   = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first();
                         $divisi         = Divisi::find($dataKaryawan->divisi)->nama_divisi;
                         if($divisi == 'MPO'){
-                            if($row->status != 0) {
-                                return "";
-                            }else {
-                                return $edit;
-                            }
-                        }else {
                             if($row->status != 2) {
                                 return "";
                             }else {
                                 return $edit;
                             };
+                        }else {
+                            if($row->status == 2) {
+                                return $edit;
+                            }else if($row->status == 3) {
+                                return $acc;
+                            }
+                            else if($row->status == 4) {
+                                return $file;
+                            }
+
                         }
                     }else {
                         return $edit.'&nbsp;'.$file;
@@ -427,7 +427,7 @@ class DatatableController extends Controller
             })
             ->addColumn('status', function($row) {
                 if (Auth::user()->id_client == 1){
-                    $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani Manager</span>";
+                    $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
                     $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
                     $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
                     if($row->status == 0 ) {
@@ -436,8 +436,12 @@ class DatatableController extends Controller
                         $st = $waitHRD;
                     }else if($row->status == 2) {
                         $st = $waitDirektur;
+                    }else if($row->status == 3) {
+                        $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
+
                     }else {
                         $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
                     }
                 }else if(in_array(Auth::user()->id_client,[3,4])) {
                     if($row->status == 0) {

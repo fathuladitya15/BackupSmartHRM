@@ -81,6 +81,7 @@ Route::middleware('revalidate')->group(function() {
             Route::get('/lembur',[LemburController::class,'index'])->name('lembur');
             Route::get('/lembur-self',[LemburController::class,'index_self'])->name('lembur-self');
             Route::post('/lembur/save',[LemburController::class,'validasi'])->name('lembur-save');
+            Route::post('/lembur/avv',[LemburController::class,'accepted'])->name('lembur-acc');
             Route::get('/lembur/{hash}',[DatatableController::class,'data_lembur_karyawan'])->name('lembur-data');
             Route::get('/lembur/{hash}/admin-korlap',[DatatableController::class,'data_lembur_karyawan_admin'])->name('lembur-admin-korlap');
             Route::get('/lembur/{hash}/spv-internal',[DatatableController::class,'data_lembur_karyawan_spv'])->name('lembur-spv-internal');

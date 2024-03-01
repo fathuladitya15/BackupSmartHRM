@@ -312,19 +312,22 @@
 
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label class=" col-form-label" for="basic-default-name">Batch</label>
-                            <span class="text-danger pl-1">*</span>
-                            <input type="text" name="batch" id="batch" required="required" class="form-control" readonly>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label class="col-form-label" for="basic-default-name">Group</label>
-                            <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required" name="group" id="group" type="text" readonly>
+                    @if (Auth::user()->id_client != 1)
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class=" col-form-label" for="basic-default-name">Batch</label>
+                                <span class="text-danger pl-1">*</span>
+                                <input type="text" name="batch" id="batch" required="required" class="form-control" readonly>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="col-form-label" for="basic-default-name">Group</label>
+                                <span class="text-danger pl-1">*</span>
+                                <input class="form-control" required="required" name="group" id="group" type="text" readonly>
 
+                            </div>
                         </div>
-                    </div>
+
+                    @endif
                     <hr>
                     <div class="row">
                         <div class="form-group col-md-12">
@@ -381,10 +384,13 @@
 </script>
 @if (Auth::user()->id_client == 1)
     @if (in_array(Auth::user()->roles,['hrd','direktur','manajer']))
+        <script>
+            var url_acc = "{{ route('lembur-acc') }}";
+        </script>
         <script src="{{ asset('assets/js/hrd/data_lembur.js') }}"></script>
     @endif
 @else
-<script src="{{ asset('assets/js/admin_korlap/data_lembur.js') }}"></script>
+    <script src="{{ asset('assets/js/admin_korlap/data_lembur.js') }}"></script>
 @endif
 
 @endpush

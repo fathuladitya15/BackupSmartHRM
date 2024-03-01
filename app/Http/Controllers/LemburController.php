@@ -99,170 +99,239 @@ class LemburController extends Controller
     }
 
     function validasi(Request $request) {
-        $cek_akun = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->kategori;
-            if($request->ttd == '1') {
-                $pesan = ['status' => TRUE,'title' => 'Belum ditandatangani' ,'pesan' => 'Tandatangani terlebih dahulu','data' =>$cek_akun];
+        $Karyawan   = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first();
+        $cek_akun   = $Karyawan->kategori;
+        $ttd        = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','signature')->first();
+        $divisi     = Divisi::find($Karyawan->divisi)->nama_divisi;
+        $role       = Auth::user()->roles;
+        $cek_ttd    = $request->ttd;
 
-                if(Auth::user()->roles == 'direktur' || $cek_akun == 'pusat' ){
-                    $data = Lembur::find($request->id_lembur);
-                    $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
-                    $data->status = 3;
-                    $data->ttd_direktur = $ttd->path;
-                    $data->update();
-                    $pesan = ['status' => TRUE,'title' => 'Berhasil ditandatangani' ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah disetujui'];
+        if($cek_ttd == 1) {
 
-                }
-                elseif(Auth::user()->roles == 'admin' || $cek_akun == 'pusat' ){
-                    $ttd = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','signature')->first();
-                    $data = [
-                        'id_karyawan'           => $request->id_karyawan,
-                        'nama_karyawan'         => $request->nama_karyawan,
-                        'jabatan'               => $request->jabatan,
-                        'divisi'                => $request->divisi,
-                        'lokasi_kerja'          => $request->lokasi_kerja,
-                        'jam_mulai'             => $request->jam_mulai,
-                        'jam_selesai'           => $request->jam_selesai,
-                        'total_jam'             => $request->jumlah_jam,
-                        'alasan_lembur'         => $request->alasan_lembur,
-                        'tugas'                 => $request->tugas,
-                        'batch'                 => $request->batch,
-                        'group'                 => $request->group,
-                        'status'                => 0,
-                        'tanggal_lembur'        => $request->tanggal_lembur,
-                        'id_client'             => Auth::user()->id_client,
-                        'ttd_karyawan'          => $ttd->path,
+            if($role == 'kr-project') {
+
+            }
+            else if($role == 'direktur') {
+                if($divisi != 'MPO'){
+                    $status = $request->all();
+                    $dataUpdate = [
+                        'status'    => 3,
+                        'ttd_direktur' => $ttd->path,
                     ];
-                    Lembur::create($data);
-                    $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Data berhasil ditambahkan'];
-                }
-                else if(in_array(Auth::user()->roles,['admin','korlap','hrd','manajer','direktur'])) {
-                    $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
-
-                    $data = Lembur::find($request->id_lembur);
-
-                    $id_divisi      = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first()->divisi;
-                    $nama_divisi    = Divisi::find($id_divisi)->nama_divisi;
-
-                    if(Auth::user()->id_client == 1) {
-                        if(Auth::user()->roles == 'direktur' || $nama_divisi == 'MPO') {
-                            $data->ttd_manager = $ttd->path;
-                            $data->status = 1;
-                        }
-                        else if(Auth::user()->roles == 'manajer'){
-                            $data->ttd_manager = $ttd->path;
-                            $data->status = 1;
-                        }else if(Auth::user()->roles == 'hrd'){
-                            $data->ttd_admin_korlap = $ttd->path;
-                            $data->status = 2;
-                        }else if(Auth::user()->roles == 'direktur') {
-                            $data->status = 3;
-                            $data->ttd_direktur = $ttd->path;
-                        }else {
-                            $data->status = 1;
-                        }
-                    }else {
-                        $data->status = 1;
-                        $data->ttd_admin_korlap = $ttd->path;
-                    }
-
-                    $data->update();
-                    $pesan = ['status' => TRUE,'title' => 'Berhasil ditandatangani' ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah disetujui'];
-
-                }else if(in_array(Auth::user()->roles,['karyawan','kr-pusat','kr-project'])){
-                    $ttd = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','signature')->first();
-                    if(in_array(Auth::user()->id_client,['2','1'])) {
-                        $data = [
-                            'id_karyawan'           => $request->id_karyawan,
-                            'nama_karyawan'         => $request->nama_karyawan,
-                            'jabatan'               => $request->jabatan,
-                            'divisi'                => $request->divisi,
-                            'lokasi_kerja'          => $request->lokasi_kerja,
-                            'jam_mulai'             => $request->jam_mulai,
-                            'jam_selesai'           => $request->jam_selesai,
-                            'total_jam'             => $request->jumlah_jam,
-                            'alasan_lembur'         => $request->alasan_lembur,
-                            'tugas'                 => $request->tugas,
-                            'batch'                 => $request->batch,
-                            'group'                 => $request->group,
-                            'status'                => 0,
-                            'tanggal_lembur'        => $request->tanggal_lembur,
-                            'id_client'             => Auth::user()->id_client,
-                            'ttd_karyawan'          => $ttd->path,
-                        ];
-                        Lembur::create($data);
-                        $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Data berhasil ditambahkan'];
-                    }else if(in_array(Auth::user()->id_client,['3','4'])){
-                        $data = [
-                            'id_karyawan'           => $request->id_karyawan,
-                            'nama_karyawan'         => $request->nama_karyawan,
-                            'jabatan'               => $request->jabatan,
-                            'divisi'                => $request->divisi,
-                            'lokasi_kerja'          => Auth::user()->id_client,
-                            'jam_mulai'             => $request->jam_mulai_ar,
-                            'jam_selesai'           => $request->jam_selesai_ar,
-
-                            'jam_mulai_rl'          => $request->jam_mulai_rl,
-                            'jam_selesai_rl'        => $request->jam_selesai_rl,
-
-                            'jam_mulai_la'          => $request->jam_mulai_la,
-                            'jam_selesai_la'        => $request->jam_selesai_la,
-
-                            'alasan_lembur'         => $request->alasan_lembur,
-                            'tugas'                 => $request->tugas,
-                            'status'                => 0,
-                            'tanggal_lembur'        => $request->tanggal_lembur,
-                            'id_client'             => Auth::user()->id_client,
-                            'ttd_karyawan'          => $ttd->path,
-                            'id_shift'              =>$request->shift,
-                        ];
-                        Lembur::create($data);
-                        $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Data berhasil ditambahkan'];
-                    }else {
-                        $pesan = ['status' => FALSE,'title' => 'Error ' ,'pesan' => 'Terjadi Kesalahan'];
-                    }
+                    return $this->update($request->id_lembur,$dataUpdate);
                 }else {
-                    dd(Auth::user()->roles);
+                    $status = 'MPO';
                 }
-
-            }else {
-
-                $pesan = ['status' => FALSE,'title' => 'Belum ditandatangani' ,'pesan' => 'Tandatangani terlebih dahulu'];
+            }
+            else if($role == 'hrd'){
+                $dataUpdate = [
+                    'status'    => 2,
+                    'ttd_admin_korlap' => $ttd->path,
+                ];
+                return $this->update($request->id_lembur,$dataUpdate);
             }
 
+            else {
+                $status = "GAGAL";
+            }
 
-        return response()->json($pesan);
+        }else {
+
+            $status = FALSE;
+        }
+
+
+            // if($request->ttd == '1') {
+            //     $pesan = ['status' => TRUE,'title' => 'Belum ditandatangani' ,'pesan' => 'Tandatangani terlebih dahulu','data' =>$cek_akun];
+
+            //     if($role ==  'direktur' || $cek_akun == 'pusat' ){
+            //         $data = Lembur::find($request->id_lembur);
+
+            //         if($divisi == 'MPO') {
+            //             $data->status = 1;
+            //             $data->ttd_manager = $ttd->path;
+            //             $data->update();
+            //             $pesan = ['status' => TRUE,'title' => 'Berhasil ditandatangani' ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah disetujui'];
+            //         }else {
+            //             $data->status = 3;
+            //             $data->ttd_direktur = $ttd->path;
+            //             $data->update();
+            //             $pesan = ['status' => TRUE,'title' => 'Berhasil ditandatangani' ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah disetujui'];
+            //         }
+
+            //         $data->update();
+            //         $pesan = ['status' => TRUE,'title' => 'Berhasil ditandatangani' ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah disetujui'];
+
+            //     }
+            //     elseif($role == 'admin' || $cek_akun == 'pusat' ){
+            //         $ttd = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','signature')->first();
+            //         $data = [
+            //             'id_karyawan'           => $request->id_karyawan,
+            //             'nama_karyawan'         => $request->nama_karyawan,
+            //             'jabatan'               => $request->jabatan,
+            //             'divisi'                => $request->divisi,
+            //             'lokasi_kerja'          => $request->lokasi_kerja,
+            //             'jam_mulai'             => $request->jam_mulai,
+            //             'jam_selesai'           => $request->jam_selesai,
+            //             'total_jam'             => $request->jumlah_jam,
+            //             'alasan_lembur'         => $request->alasan_lembur,
+            //             'tugas'                 => $request->tugas,
+            //             'batch'                 => $request->batch,
+            //             'group'                 => $request->group,
+            //             'status'                => 0,
+            //             'tanggal_lembur'        => $request->tanggal_lembur,
+            //             'id_client'             => Auth::user()->id_client,
+            //             'ttd_karyawan'          => $ttd->path,
+            //         ];
+            //         Lembur::create($data);
+            //         $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Data berhasil ditambahkan'];
+            //     }
+            //     else if(in_array($role,['admin','korlap','manajer','direktur'])) {
+            //         $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
+
+            //         $data = Lembur::find($request->id_lembur);
+
+            //         $id_divisi      = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first()->divisi;
+            //         $nama_divisi    = Divisi::find($id_divisi)->nama_divisi;
+
+            //         if(Auth::user()->id_client == 1) {
+            //             if($role == 'direktur' || $nama_divisi == 'MPO') {
+            //                 $data->ttd_manager = $ttd->path;
+            //                 $data->status = 1;
+            //             }
+            //             else if($role == 'manajer'){
+            //                 $data->ttd_manager = $ttd->path;
+            //                 $data->status = 1;
+            //             }else if($role == 'hrd'){
+            //                 $data->ttd_admin_korlap = $ttd->path;
+            //                 $data->status = 2;
+            //             }else if($role == 'direktur') {
+            //                 $data->status = 3;
+            //                 $data->ttd_direktur = $ttd->path;
+            //             }else {
+            //                 $data->status = 1;
+            //             }
+            //         }else {
+            //             $data->status = 1;
+            //             $data->ttd_admin_korlap = $ttd->path;
+            //         }
+
+            //         $data->update();
+            //         $pesan = ['status' => TRUE,'title' => 'Berhasil ditandatangani' ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah disetujui'];
+
+            //     }
+            //     else if(in_array(Auth::user()->roles,['karyawan','kr-pusat'])){
+            //         $ttd = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','signature')->first();
+            //         if(in_array(Auth::user()->id_client,['2','1'])) {
+            //             $data = [
+            //                 'id_karyawan'           => $request->id_karyawan,
+            //                 'nama_karyawan'         => $request->nama_karyawan,
+            //                 'jabatan'               => $request->jabatan,
+            //                 'divisi'                => $request->divisi,
+            //                 'lokasi_kerja'          => $request->lokasi_kerja,
+            //                 'jam_mulai'             => $request->jam_mulai,
+            //                 'jam_selesai'           => $request->jam_selesai,
+            //                 'total_jam'             => $request->jumlah_jam,
+            //                 'alasan_lembur'         => $request->alasan_lembur,
+            //                 'tugas'                 => $request->tugas,
+            //                 'batch'                 => $request->batch,
+            //                 'group'                 => $request->group,
+            //                 'status'                => 0,
+            //                 'tanggal_lembur'        => $request->tanggal_lembur,
+            //                 'id_client'             => Auth::user()->id_client,
+            //                 'ttd_karyawan'          => $ttd->path,
+            //             ];
+            //             Lembur::create($data);
+            //             $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Data berhasil ditambahkan'];
+            //         }
+            //         else if(in_array(Auth::user()->id_client,['3','4'])){
+            //             $data = [
+            //                 'id_karyawan'           => $request->id_karyawan,
+            //                 'nama_karyawan'         => $request->nama_karyawan,
+            //                 'jabatan'               => $request->jabatan,
+            //                 'divisi'                => $request->divisi,
+            //                 'lokasi_kerja'          => Auth::user()->id_client,
+            //                 'jam_mulai'             => $request->jam_mulai_ar,
+            //                 'jam_selesai'           => $request->jam_selesai_ar,
+
+            //                 'jam_mulai_rl'          => $request->jam_mulai_rl,
+            //                 'jam_selesai_rl'        => $request->jam_selesai_rl,
+
+            //                 'jam_mulai_la'          => $request->jam_mulai_la,
+            //                 'jam_selesai_la'        => $request->jam_selesai_la,
+
+            //                 'alasan_lembur'         => $request->alasan_lembur,
+            //                 'tugas'                 => $request->tugas,
+            //                 'status'                => 0,
+            //                 'tanggal_lembur'        => $request->tanggal_lembur,
+            //                 'id_client'             => Auth::user()->id_client,
+            //                 'ttd_karyawan'          => $ttd->path,
+            //                 'id_shift'              =>$request->shift,
+            //             ];
+            //             Lembur::create($data);
+            //             $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Data berhasil ditambahkan'];
+            //         }
+            //         else {
+            //             $pesan = ['status' => FALSE,'title' => 'Error ' ,'pesan' => 'Terjadi Kesalahan'];
+            //         }
+            //     }
+            //     else if($role == 'kr-project'){
+            //         $data = [
+            //             'id_karyawan'           => $request->id_karyawan,
+            //             'nama_karyawan'         => $request->nama_karyawan,
+            //             'jabatan'               => $request->jabatan,
+            //             'divisi'                => $request->divisi,
+            //             'lokasi_kerja'          => $request->lokasi_kerja,
+            //             'jam_mulai'             => $request->jam_mulai,
+            //             'jam_selesai'           => $request->jam_selesai,
+            //             'total_jam'             => $request->jumlah_jam,
+            //             'alasan_lembur'         => $request->alasan_lembur,
+            //             'tugas'                 => $request->tugas,
+            //             'batch'                 => $request->batch,
+            //             'group'                 => $request->group,
+            //             'status'                => 0,
+            //             'tanggal_lembur'        => $request->tanggal_lembur,
+            //             'id_client'             => Auth::user()->id_client,
+            //             'ttd_karyawan'          => $ttd->path,
+            //         ];
+            //         Lembur::create($data);
+            //         $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Data berhasil ditambahkan'];
+            //     }
+            //     else if($role == 'hrd'){
+            //         $dataUpdate = [
+
+            //             'status'    => 2,
+            //             'ttd_admin_korlap' => $ttd->path,
+            //         ];
+            //         $pesan = ['status' => TRUE ,'title' => 'sukses'  ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah tandatangani' ];
+
+            //         return $this->update($request->id_lembur,$dataUpdate,$pesam);
+            //     }
+            //     else {
+            //         dd(Auth::user()->roles);
+            //     }
+
+            // }else {
+
+            //     $pesan = ['status' => FALSE,'title' => 'Belum ditandatangani' ,'pesan' => 'Tandatangani terlebih dahulu'];
+            // }
+
+
+        return response()->json($status);
 
     }
 
-    // function save_data($request) {
+    function save_data($data) {
 
-    //     $insert = [
-    //         'id_karyawan'       =>$request->a,
-    //         'nama_karyawan'     =>$request->a,
-    //         'jabatan'           =>$request->a,
-    //         'divisi'            =>$request->a,
-    //         'lokasi_kerja'      =>$request->a,
-    //         'tanggal_lembur'    =>$request->a,
-    //         'batch'             =>$request->a,
-    //         'group'             =>$request->a,
-    //         'jam_mulai'         =>$request->a,
-    //         'jam_selesai'       =>$request->a,
+    }
 
-    //         'jam_mulai_rl'      =>$request->a,
-    //         'jam_selesai_rl'    =>$request->a,
+    function update($id,$data) {
+        $update = Lembur::where('id',$id)->update($data);
+        $data   = Lembur::find($id);
+        $pesan = ['status' => TRUE ,'title' => 'sukses'  ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah tandatangani' ];
+        return response()->json($pesan);
 
-    //         'jam_mulai_la'      =>$request->a,
-    //         'jam_selesai_la'    =>$request->a,
-
-    //         'total_jam'         =>$request->a,
-    //         'alasan_lembur'     =>$request->a,
-    //         'tugas'             =>$request->a,
-    //         'status'            =>$request->a,
-    //         'ttd_admin_korlap'  =>$request->a,
-    //         'ttd_karyawan'      =>$request->a,
-    //         'id_client'         =>$request->a,
-    //     ];
-    // }
+    }
 
     function detail(Request $request) {
         $id_lembur  = $request->id;
@@ -308,21 +377,32 @@ class LemburController extends Controller
         $enc            = EncryprVariable($hash);
         $data           = Lembur::find($enc);
         if(in_array(Auth::user()->id_client,[3,4])) {
-            $update = Lembur::find($enc);
-            $update->status = 2;
-            $update->update();
-            $id_kr_admin    = Filemanager::where('path',$data->ttd_admin_korlap)->where("slug",'signature')->first()->id_karyawan;
-            $nama_admin     = User::where('id_karyawan',$id_kr_admin)->first()->name;
+            if(Auth::user()->roles == 'kr-project'){
+                $id_kr_admin    = Filemanager::where('path',$data->ttd_admin_korlap)->where("slug",'signature')->first()->id_karyawan;
+                $nama_admin     = User::where('id_karyawan',$id_kr_admin)->first()->name;
+                $ttd_direktur   = User::where('roles','direktur')->first();
 
-            $filename   = 'Surat Perintah Kerja Lembur '.$data->nama_karyawan.'('.$data->tanggal_lembur.')';
-            $pdf        = PDF::loadview("layouts.pdf_view.pdfLemburAIOSukabumi",['data' => $data,'nama_admin' => $nama_admin,'filename'=> $filename]);
-            $pdf->setPaper('A4', 'potrait');
+                $pdf      = PDF::loadview("layouts.pdf_view.pdfLemburPFI",['data' => $data,'nama_admin' => $nama_admin]);
+                $filename = 'Form Lembur '.$data->nama_karyawan;
+                $pdf->setPaper('A4', 'landscape');
+            }
+            else {
+                $update = Lembur::find($enc);
+                $update->status = 2;
+                $update->update();
+                $id_kr_admin    = Filemanager::where('path',$data->ttd_admin_korlap)->where("slug",'signature')->first()->id_karyawan;
+                $nama_admin     = User::where('id_karyawan',$id_kr_admin)->first()->name;
+
+                $filename   = 'Surat Perintah Kerja Lembur '.$data->nama_karyawan.'('.$data->tanggal_lembur.')';
+                $pdf        = PDF::loadview("layouts.pdf_view.pdfLemburAIOSukabumi",['data' => $data,'nama_admin' => $nama_admin,'filename'=> $filename]);
+                $pdf->setPaper('A4', 'potrait');
+
+            }
 
         }elseif (Auth::user()->id_client == 1){
             $id_kr_admin    = Filemanager::where('path',$data->ttd_admin_korlap)->where("slug",'signature')->first()->id_karyawan;
             $nama_admin     = User::where('id_karyawan',$id_kr_admin)->first()->name;
             $ttd_direktur   = User::where('roles','direktur')->first();
-            // dd($ttd_direktur);
 
             $pdf      = PDF::loadview("layouts.pdf_view.pdfLemburPFI",['data' => $data,'nama_admin' => $nama_admin]);
             $filename = 'Form Lembur '.$data->nama_karyawan;
@@ -439,6 +519,17 @@ class LemburController extends Controller
 
         $pesan = ['status' => TRUE,'title' => "Sukses !" ,'pesan' => "Laporan Telah Disetujui dan dikirim ke karyawan"];
         return response()->json($pesan);
+    }
+
+    function accepted(Request $request ){
+        $data = Lembur::find($request->id);
+        $data->status = 4;
+        $data->disetujui_oleh = 'Direktur HRD';
+        $data->update();
+
+        return response()->json(['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Form pengajuan izin '.$data->nama_karyawan.' telah disetujui']);
+
+
     }
 
 }

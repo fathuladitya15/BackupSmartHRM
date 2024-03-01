@@ -129,7 +129,7 @@ function detail(id) {
                 document.getElementById("button_ttd").style.display         = "block";
                 document.getElementById("exampleModalLongTitle").innerHTML  = "Detail Data";
                 $("#nama_ttd_korlap").css( 'margin-top', '-50px !important')
-                console.log(data)
+                // console.log(data)
             }else {
                 Swal.fire({
                     title: "Terjadi kesalahan",
@@ -209,3 +209,42 @@ $("#Add").submit(function(e) {
         })
     }
 })
+
+function acc(id) {
+    const acc          = document.getElementById("acc_"+id+"");
+    const stoploading   = '<i class="bx bx-check"></i>Setujui';
+    const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+
+    $.ajax({
+        url: url_acc,
+        data: {id : id} ,
+        type: "POST",
+        beforeSend:function(){
+            acc.innerHTML = loading;
+            acc.disabled = true;
+        },success: function(s) {
+            if(s.status == true) {
+                Swal.fire({
+                    title: s.title,
+                    text: s.pesan,
+                    icon: "success"
+                });
+            }else {
+                Swal.fire({
+                    title: "Terjadi kesalahan",
+                    text: "Hubungi tim IT",
+                    icon: "error"
+                });
+            }
+        }, error :function(e) {  Swal.fire({
+            title: "Terjadi kesalahan",
+            text: "Hubungi tim IT",
+            icon: "error"
+        });
+        }, complete : function() {
+            acc.innerHTML = stoploading;
+            acc.disabled = false;
+            table.DataTable().ajax.reload();
+        }
+    })
+}

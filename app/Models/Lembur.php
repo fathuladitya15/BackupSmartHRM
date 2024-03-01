@@ -37,6 +37,7 @@ class Lembur extends Model
        'ttd_direktur',
        'ttd_manajer',
        'ttd_karyawan',
+       'disetujui_oleh',
        'id_client',
        'id_shift',
        'id_filemanager'
