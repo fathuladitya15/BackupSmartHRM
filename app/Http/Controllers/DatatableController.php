@@ -268,13 +268,16 @@ class DatatableController extends Controller
             }else if(in_array(Auth::user()->id_client,[3,4])) {
                 if(Auth::user()->roles == 'kr-project') {
                     if($row->status == 0 ) {
-                        $st = "<span class='badge bg-warning'> Menuggu Persetujuan  Manager Divisi</span>";
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani  Manager Divisi</span>";
                     }else if($row->status == 1) {
-                        $st = "<span class='badge bg-warning'> Menuggu Persetujuan  HRD</span>";
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani  HRD</span>";
                     }else if($row->status == 2 ){
-                        $st = "<span class='badge bg-warning'> Menuggu Tanda Tangan Direktur</span>";
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangai Direktur</span>";
                     }
                     else if($row->status == 3) {
+                        $st = "<span class='badge bg-warning'> Menuggu persetujuan </span>";
+                    }
+                    else if($row->status == 4) {
                         $st = "<span class='badge bg-success'> Telah disetujui </span>";
                     }
                 }else {
@@ -572,6 +575,14 @@ class DatatableController extends Controller
             ->addColumn("tanggal_pembuatan", function($row) {
                 return Carbon::parse($row->tanggal_pembuatan)->translatedFormat('d F Y');
             })
+            ->addColumn("disetujui_oleh",function($row) {
+                if($row->status == 4) {
+                    $sts = $row->disetujui_oleh;
+                }else {
+                    $sts = "";
+                }
+                return $sts;
+            })
             ->addColumn("no_surat", function($row) {
                 if($row->no_surat == null) {
                     return "";
@@ -592,7 +603,7 @@ class DatatableController extends Controller
 
                 }else  {
                     if(Auth::user()->roles == 'kr-project'){
-                        if($row->status == 3) {
+                        if($row->status == 4) {
                             $btn = $download;
                         }else {
                             $btn = $edit;
@@ -614,24 +625,32 @@ class DatatableController extends Controller
 
                 }else {
                     if(Auth::user()->roles == 'kr-project') {
-                        if(in_array($row->status,[0,1])) {
-                            $st = "<span class='badge bg-warning'>MENUNGGU TANDATANGANI </span>";
-                        }else if($row->status == 2) {
-                            $st = "<span class='badge bg-success'>SUDAH DITANDATANGANI </span>";
-                        }else if($row->status == 3) {
-                            $st = "<span class='badge bg-success'>TELAH DISETUJUI </span>";
-                        }else {
-                            $st = "";
+                        if($row->status == 0 ) {
+                            $st = "<span class='badge bg-warning'> Menuggu ditangatangani  Manager Divisi</span>";
+                        }else if($row->status == 1) {
+                            $st = "<span class='badge bg-warning'> Menuggu ditangatangani  HRD</span>";
+                        }else if($row->status == 2 ){
+                            $st = "<span class='badge bg-warning'> Menuggu ditangatangani Direktur HRD</span>";
+                        }
+                        else if($row->status == 3) {
+                            $st = "<span class='badge bg-warning'> Menunggu persetujuan </span>";
+                        }else if($row->status  == 4){
+                            $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
                         }
                     }else{
-                        if($row->status == 0) {
-                            $st = "<span class='badge bg-warning'>MENUNGGU TANDA TANGAN ( KORLAP )</span>";
+                        if($row->status == 0 ) {
+                            $st = "<span class='badge bg-warning'> Menuggu ditangatangani  Manager Divisi</span>";
                         }else if($row->status == 1) {
-                            $st = "<span class='badge bg-success'>MENUNGGU DISETUJUI ( SUPERVISOR )</span>";
-                        }else if($row->status == 2) {
-                            $st = "<span class='badge bg-success'>MENUNGGU DISETUJUI ( SUPERVISOR )</span>";
-                        }else if($row->status == 3){
-                            $st = "";
+                            $st = "<span class='badge bg-warning'> Menuggu ditangatangani  HRD</span>";
+                        }else if($row->status == 2 ){
+                            $st = "<span class='badge bg-warning'> Menuggu ditangatangani Direktur HRD</span>";
+                        }
+                        else if($row->status == 3) {
+                            $st = "<span class='badge bg-success'> Menunggu persetujuan </span>";
+                        }else if($row->status  == 4){
+                            $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
                         }
 
                     }
@@ -756,8 +775,14 @@ class DatatableController extends Controller
     // DATA IZIN DIREKTUR
 
     function data_izin_admin_direktur($request) {
-        $data = Izin::where('id_client',Auth::user()->id_client)->get();
-
+        $dataMasters = Izin::where('id_client',Auth::user()->id_client);
+        $divisi = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->divisi;
+        $nama_divisi = Divisi::find($divisi)->nama_divisi;
+        if($nama_divisi == 'MPO'){
+            $data = $dataMasters->get();
+        }else {
+            $data = $dataMasters->where('status','>=','2')->get();
+        }
         $dt = DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('tanggal_pembuatan',function($row){
@@ -788,6 +813,7 @@ class DatatableController extends Controller
                 $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
                 $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
                 $download = '<a href="'.route("izin-download",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm"  ><i class="bx bx-download"></i>Download</a>';
+                $acc   = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="acc_'.$row->id.'" onclick="acc('.$row->id.')"  ><i class="bx bx-check"></i>Setujui</a>';
 
                 $divisi = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->divisi;
                 $nama_divisi = Divisi::find($divisi)->nama_divisi;
@@ -795,7 +821,7 @@ class DatatableController extends Controller
                 if($nama_divisi == 'MPO') {
                     if($row->status == 0) {
                         $btn = $edit;
-                    }else if($row->status == 3) {
+                    }else if($row->status == 4) {
                         $btn = $download;
                     }else {
                         $btn = "";
@@ -804,9 +830,12 @@ class DatatableController extends Controller
                     if($row->status == 2) {
                         $btn = $edit;
                     }else if($row->status == 3) {
+                        $btn = $acc;
+                    }else if($row->status == 4) {
                         $btn = $download;
-                    }else  {
+                    }else {
                         $btn = "";
+
                     }
                 }
 
@@ -819,22 +848,31 @@ class DatatableController extends Controller
                 $divisi = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->divisi;
                 $nama_divisi = Divisi::find($divisi)->nama_divisi;
                 if($nama_divisi == 'MPO') {
-                    if($row->status == 0) {
-                        $st  = $wait;
+                    if($row->status == 0 ) {
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani  Manager Divisi</span>";
+                    }else if($row->status == 1) {
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani  HRD</span>";
+                    }else if($row->status == 2 ){
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani Direktur HRD</span>";
                     }
-                    if(in_array($row->status, [1,3])) {
-                        $st = $acc;
-                    }else  {
-                        $st = $wait;
+                    else if($row->status == 3) {
+                        $st = "<span class='badge bg-warning'> Menunggu persetujuan </span>";
+                    }else if($row->status  == 4){
+                        $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
                     }
                 }else {
-                    if($row->status == 2) {
-                        $st = $wait;
-
-                    }else if($row->status == 3) {
-                        $st = $acc;
-                    }else {
-                        $st = $wait;
+                    if($row->status == 0 ) {
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani  Manager Divisi</span>";
+                    }else if($row->status == 1) {
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani  HRD</span>";
+                    }else if($row->status == 2 ){
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani Direktur HRD</span>";
+                    }
+                    else if($row->status == 3) {
+                        $st = "<span class='badge bg-warning'> Menunggu persetujuan </span>";
+                    }else if($row->status  == 4){
+                        $st = "<span class='badge bg-success'> Telah disetujui </span>";
 
                     }
                 }
@@ -892,26 +930,31 @@ class DatatableController extends Controller
                 $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
                 $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
                 $download = '<a href="'.route("izin-download",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm"  ><i class="bx bx-download"></i>Download</a>';
+                $acc   = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="acc_'.$row->id.'" onclick="acc('.$row->id.')"  ><i class="bx bx-check"></i>Setujui</a>';
 
                 if($row->status == 1){
                     $btn = $edit;
-                }else if ($row->status == 3){
+                }else if ($row->status == 4) {
                     $btn = $download;
-                }else {
-                    $btn = "";
 
-                }
+                }else {$btn = "";}
                 return $btn;
             })
             ->addColumn('status', function($row) {
                 $wait =  "<span class='badge bg-warning'>Menuggu ditandatangani</span>";
                 $acc =  "<span class='badge bg-success'>Telah ditandatangani</span>";
-                if(in_array($row->status,[0,1])) {
-                    $st = $wait;
-                }else if($row->status == 2){
-                    $st = $acc;
-                }else if($row->status == 3){
-                    $st = $acc;
+                if($row->status == 0 ) {
+                    $st = "<span class='badge bg-warning'> Menuggu ditangatangani  Manager Divisi</span>";
+                }else if($row->status == 1) {
+                    $st = "<span class='badge bg-warning'> Menuggu ditangatangani  HRD</span>";
+                }else if($row->status == 2 ){
+                    $st = "<span class='badge bg-warning'> Menuggu ditangatangani Direktur HRD</span>";
+                }
+                else if($row->status == 3) {
+                    $st = "<span class='badge bg-success'> Menunggu persetujuan </span>";
+                }else if($row->status  == 4){
+                    $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
                 }
                 return $st;
             })

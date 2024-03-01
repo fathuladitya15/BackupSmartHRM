@@ -107,7 +107,7 @@
                 <tr>
                     <td>Waktu</td>
                     <td>:</td>
-                    <td > {{ Carbon\Carbon::parse($data->tanggal_pembuatan)->translatedFormat("d F Y")  }}, Pukul  {{ $data->jam_keluar }} WIB </td>
+                    <td > {{ Carbon\Carbon::parse($data->tanggal_pembuatan)->translatedFormat("l, d F Y")  }}, Pukul  {{ $data->jam_keluar }} WIB </td>
                 </tr>
                     <td></td>
                     <td>:</td>
@@ -125,15 +125,31 @@
             </table>
             <br>
 
-            <br><br><br>
+            <br>
+
+            <div class="row" style="">
+                <div style="background-color: rgb(3, 79, 203)">
+                    <div class="row" style="margin: 10px">
+                        <p style="color: white">
+                            Form ini untuk digunakan di lingkungan kerja PT. Proven Force Indonesia.  Form ini tidak dapat diproses jika tidak disertai tanda tangan seluruh bagian terkait.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+            <br><br>
 
 
             <div class="row" style="text-align: center">
                 <div class="col-lg-3">
                     Pemohon
                 </div>
-                <div class="col-lg-3">
-                    Mengetahui
+                <div class="col-lg-6" style="text-align: center">
+                    Mengetahui,
+                </div>
+                <div class="col-lg-3" style="text-align: center">
+                    Disetujui
                 </div>
             </div>
 
@@ -154,7 +170,7 @@
                 <div class="col-lg-3">
                     <img class="gambar_tanda_tangan_admin" src="{{ public_path($data->ttd_hrd)}}" alt="" id="gambar_tanda_tangan_admin" width="100"> <br  />
                     <div class="over_text">
-                        <p  id="nama_ttd_karyawan" >Hrd</p>
+                        <p  id="nama_ttd_karyawan" >Supervisor HRD</p>
                     </div>
                 </div>
                 <div class="col-lg-3">
@@ -164,7 +180,6 @@
                     </div>
                 </div>
             </div>
-
     </div>
 </body>
 </html>

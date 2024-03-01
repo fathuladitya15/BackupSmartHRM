@@ -55,6 +55,7 @@ $('#exampleModalCenter').on('hidden.bs.modal', function(e) {
     $(this).find('form').trigger('reset');
     $("#ttd").val(null);
     $("#id_izin").val(null);
+    $("#g_kembali").attr('checked',true);
 
 });
 
@@ -118,7 +119,7 @@ $("#Add").submit(function(e) {
 
 function detail(id) {
     const edit          = document.getElementById("edit_"+id+"");
-    const stoploading   = '<i class="bx bx-edit-alt"></i>Edit';
+    const stoploading   = '<i class="bx bx-edit-alt"></i>Detail';
     const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
     $.ajax({
         url : url_detail,
@@ -132,25 +133,21 @@ function detail(id) {
             if(s.status == true) {
                 $("#exampleModalCenter").modal("show");
                 $("#id_izin").val(data.id);
-                if(s.alasan == 'Pribadi') {
-                    $("#g_pribadi").prop("checked", true);
-                }else {
-                    $("#g_dinas").prop("checked", true);
+                $("#nama_karyawan").val(data.nama_karyawan);
+                $("#id_karyawan").val(data.karyawan_id);
+                $("#divisi").val(data.divisi);
+                $("#jabatan").val(data.jabatan);
 
-                }
-
-                $("#waktu").val(data.jam_keluar);
-
-                if(data.kembali == 0) {
-                    $("#g_kembali").prop("checked",true)
-                }else {
-                    $("#g_tidak_kembali").prop("checked",true)
-
-                }
-                $("textarea#detail").val(data.detail)
+                $('#jam_keluar').val(data.jam_keluar);
+                $('#jam_masuk').val(data.jam_masuk);
+                $("textarea#alasan").val(data.alasan)
                 $("#tanggal").val(data.tanggal_pembuatan);
+                if(data.kembali == 0) {
+                    $("#g_kembali").attr('checked',true);
+                }else {
+                    $("#g_tidak_kembali").attr('checked',true);
+                }
 
-                $("ttd").val(1);
                 document.getElementById("image_ttd").src = assets + data.ttd_karyawan;
                 document.getElementById("button_ttd").style.display = "none";
                 document.getElementById("exampleModalLongTitle").innerHTML = "Detail Data";
@@ -178,7 +175,7 @@ function detail(id) {
         }
     })
 }
-s
+
 function handleClick(myRadio) {
     var val = myRadio.value;
     if(val == 1){

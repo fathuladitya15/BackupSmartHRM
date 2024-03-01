@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\LemburController;
 use App\Http\Controllers\DivisiController;
+use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\DatatableController;
@@ -100,10 +101,14 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/izin',[IzinController::class,'saving'])->name('izin-save');
             Route::get('/izin-get',[DatatableController::class,'data_izin_karyawan'])->name('izin-data');
             Route::get('/izin-get-adm',[DatatableController::class,'data_izin_admin_korlap'])->name('izin-data-admin-korlap');
+            Route::post('/izin-acc',[IzinController::class,'data_izin_accept'])->name('izin-acc');
             Route::post('/izin-detail',[IzinController::class,'detail'])->name('izin-detail');
             Route::post('/izin-upload',[IzinController::class,'upload'])->name('izin-upload');
             Route::post('/izin-file',[IzinController::class,'get_files'])->name('izin-file');
             Route::get('/izin-download/{hash}',[IzinController::class,'download_file'])->name('izin-download');
+
+
+            Route::get('/produk',[ProdukController::class,'index'])->name('produk');
 
 
             Route::middleware(['role:superadmin'])->group(function(){

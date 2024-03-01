@@ -36,8 +36,8 @@ $('#formAuthentication').submit(function(e) {
                 // console.log(e)
                 if(e.status == false) {
                     Swal.fire({
-                        title: "Username / Password Tidak Sesuai !",
-                        text: "Silahkan Cek Kembali !",
+                        title: "Opps ! ",
+                        text: e.messages,
                         icon: "error"
                       });
                 }else {
@@ -68,8 +68,6 @@ $('#formAuthentication').submit(function(e) {
                     });
                 }
             },error: function(e) {
-                // console.log(e)
-                // console.log(e.responseJSON.message);
                 Swal.fire({
                         title: "Opps !",
                         text: e.responseJSON.message,

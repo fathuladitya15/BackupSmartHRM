@@ -242,6 +242,7 @@
     var url_data    = "{{ route('izin-data-admin-korlap') }}";
     var url_save    = "{{ route('izin-save') }}";
     var url_detail  = "{{ route('izin-detail') }}";
+    var url_acc     = "{{ route('izin-acc') }}";
     var assets      = "{{ asset('') }}";
 </script>
 <script src="{{ asset('assets/js/admin_korlap/izin_pfi.js') }}"></script>

@@ -234,25 +234,75 @@
 
                     </li>
 
-                    {{-- SURAT PERINGATAN --}}
-                    <li class="menu-item {{  menuOpen(['peringatan']) }} ">
+                    @if(in_array(Auth::user()->roles,['admin','korlap']))
+                    @if (in_array(Auth::user()->id_client,[2,8]))
+                    <li class="menu-item {{  menuOpen(['produk']) }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-file"></i>
-                        <div data-i18n="Authentications">Surat</div>
+                        <i class="menu-icon tf-icons bx bx-cube"></i>
+                        <div data-i18n="Authentications">Produk</div>
                         </a>
                         <ul class="menu-sub">
-                            <li class="menu-item {{  menuActive('peringatan') }}">
-                                <a href="{{ route('peringatan') }}" class="menu-link" >
-                                <div data-i18n="Basic">Surat Peringatan</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{  menuActive('spv-packlaring-index') }}">
+                            <li class="menu-item {{ menuActive("produk-list") }}">
                                 <a href="#" class="menu-link" >
-                                <div data-i18n="Basic">Surat Referensi Kerja</div>
+                                <div data-i18n="Basic">List Produk</div>
                                 </a>
                             </li>
+                            <li class="menu-item {{ menuActive("produk-satuan") }}">
+                                <a href="#" class="menu-link" >
+                                <div data-i18n="Basic">List Satuan Produk</div>
+                                </a>
+                            </li>
+                            @if (Auth::user()->id_client == 2)
+                                <li class="menu-item ">
+                                    <a href="{{ route('produk') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Buat Laporan Produksi</div>
+                                    </a>
+                                </li>
+
+                            @endif
+                            @if (Auth::user()->id_client == 8)
+
+                                <li class="menu-item ">
+                                    <a href="{{ route('produk') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Rekap FG Y3</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item ">
+                                    <a href="" class="menu-link" >
+                                    <div data-i18n="Basic">Rekap FG Y4</div>
+                                    </a>
+                                </li>
+                            @endif
+                            @if (in_array(Auth::user()->role, ['super-admin', 'spv-internal']))
+                                <li class="menu-item {{ menuActive(["spv-laporan-produksi","spv-laporan-produksi-detail"]) }}">
+                                    <a href="{{ route('spv-laporan-produksi') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Laporan Produksi</div>
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
                     </li>
+                @endif
+                        {{-- SURAT PERINGATAN --}}
+                        <li class="menu-item {{  menuOpen(['peringatan']) }} ">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-file"></i>
+                            <div data-i18n="Authentications">Surat</div>
+                            </a>
+                            <ul class="menu-sub">
+                                <li class="menu-item {{  menuActive('peringatan') }}">
+                                    <a href="{{ route('peringatan') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Surat Peringatan</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item {{  menuActive('spv-packlaring-index') }}">
+                                    <a href="#" class="menu-link" >
+                                    <div data-i18n="Basic">Surat Referensi Kerja</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endif
 
                     {{-- IZIN --}}
                     <li class="menu-item {{  menuOpen(['izin']) }} ">

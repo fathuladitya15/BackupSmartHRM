@@ -62,6 +62,7 @@ class KaryawanSeeder extends Seeder
             'kd_bank'       => 427,
             'norek_bank'    => 77987321,
             'status'        => 0,
+            'kategori'      => 'pusat'
         ]);
 
         // KARYAWAN AIO SUKABUMI
@@ -89,6 +90,7 @@ class KaryawanSeeder extends Seeder
             'kd_bank'       => 427,
             'norek_bank'    =>5554442255,
             'status'        => 0,
+            'kategori'      => 'project'
         ]);
         Karyawan::create([
             'nama_karyawan' => 'Achmad Siswanto',
@@ -120,5 +122,90 @@ class KaryawanSeeder extends Seeder
             'no_kpj'        => '20092523230',
 
         ]);
+
+        // KARYAWAN PFI
+
+        Karyawan::create([
+            'nama_karyawan' => 'Dwi',
+            'id_karyawan'   => 'PFI1001',
+            'no_hp'         => "0877912768863",
+            'tanggal_lahir' => "2024-02-06",
+            'tempat_lahir'  => "JAKARTA",
+            'jenis_kelamin' => "P",
+            'nik'           => 3201301502010099,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 1,
+            'divisi'        => 4,
+            'jabatan'       => 2,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK BRI (BANK RAKYAT INDONESIA)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 002,
+            'norek_bank'    => 712534123,
+            'status'        => 0,
+            'cuti'          => 0,
+            'kategori'      => 'pusat',
+
+        ]);
+        Karyawan::create([
+            'nama_karyawan' => 'Rommy Ghannny',
+            'id_karyawan'   => 'DR1001',
+            'no_hp'         => "0877912761263",
+            'tanggal_lahir' => "2024-02-06",
+            'tempat_lahir'  => "JAKARTA",
+            'jenis_kelamin' => "L",
+            'nik'           => 3202301502010099,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 1,
+            'divisi'        => 1,
+            'jabatan'       => 5,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK BRI (BANK RAKYAT INDONESIA)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 002,
+            'norek_bank'    => 7125134123,
+            'status'        => 0,
+            'cuti'          => 0,
+            'kategori'      => 'pusat',
+
+        ]);
+        Karyawan::create([
+            'nama_karyawan' => 'Direktur HRD',
+            'id_karyawan'   => 'PFI18723',
+            'no_hp'         => "0877122761263",
+            'tanggal_lahir' => "2024-02-06",
+            'tempat_lahir'  => "JAKARTA",
+            'jenis_kelamin' => "L",
+            'nik'           => 3202301502010100,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 1,
+            'divisi'        => 5,
+            'jabatan'       => 6,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK BRI (BANK RAKYAT INDONESIA)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 002,
+            'norek_bank'    => 712555134123,
+            'status'        => 0,
+            'cuti'          => 0,
+            'kategori'      => 'pusat',
+
+        ]);
+
     }
 }

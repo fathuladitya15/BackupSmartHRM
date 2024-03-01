@@ -95,6 +95,7 @@ class IzinController extends Controller
                         'jam_masuk'             => $request->jam_masuk,
                         'tanggal_pembuatan'     => $request->tanggal,
                         'ttd_karyawan'          => $ttdCreate->path,
+                        'kembali'               => $request->kembali,
                         'status'                => 0,
                         'id_client'             => 1,
                     ];
@@ -264,5 +265,13 @@ class IzinController extends Controller
 
         return response()->json( ['status' => TRUE,'nama_file' => $files->nama_file, 'type_file' => $files->extension , 'links' => $files->path]);
 
+    }
+
+
+    function data_izin_accept(Request $request) {
+        $data = Izin::find($request->id);
+        $data->status = 4;
+        $data->update();
+        return response()->json(['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Form pengajuan izin '.$data->nama_karyawan.' telah disetujui']);
     }
  }

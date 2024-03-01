@@ -55,7 +55,6 @@ class UserSeeder extends Seeder
             'id_client' => 3,
             'id_karyawan' => 'PFI00123'
         ]);
-
         User::create([
             'username' => 'achmad',
             'name' => 'Achmad Siswanto',
@@ -64,6 +63,40 @@ class UserSeeder extends Seeder
             'roles' => 'karyawan',
             'id_client' => 3,
             'id_karyawan' => 'B0483'
+        ]);
+
+
+        // USER HRD
+        User::create([
+            'username'  => 'dwi',
+            'name'      => 'Dwi',
+            'email'     => 'ack1asd23@gmail.com',
+            'password'  => Hash::make('password'),
+            'roles'     => 'hrd',
+            'id_client' => 1,
+            'id_karyawan' => 'PFI1001'
+        ]);
+
+        // DIREKTUR MPO
+        User::create([
+            'username'  => 'rommy',
+            'name'      => 'Rommy Ghannny',
+            'email'     => 'rmm12@gmail.com',
+            'password'  => Hash::make('password'),
+            'roles'     => 'direktur',
+            'id_client' => 1,
+            'id_karyawan' => 'DR1001'
+        ]);
+
+        // DIREKTUR HRD
+        User::create([
+            'username'  => 'direktur_hrd',
+            'name'      => 'Direktur HRD',
+            'email'     => 'testingmail@gmail.com',
+            'password'  => Hash::make('password'),
+            'roles'     => 'direktur',
+            'id_client' => 1,
+            'id_karyawan' => 'PFI18723'
         ]);
     }
 }

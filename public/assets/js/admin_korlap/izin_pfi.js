@@ -164,7 +164,11 @@ function detail(id) {
                 $("textarea#alasan").val(data.alasan)
                 $("#tanggal").val(data.tanggal_pembuatan);
 
-
+                if(data.kembali == 0) {
+                    $("#g_kembali").attr('checked',true);
+                }else {
+                    $("#g_tidak_kembali").attr('checked',true);
+                }
                 if(data.ttd_direktur == null) {
                     document.getElementById("button_ttd").style.display = "block";
                     document.getElementById("aksi").style.display = "block";
@@ -198,3 +202,44 @@ function detail(id) {
         }
     })
 }
+
+function acc(id) {
+    const acc          = document.getElementById("acc_"+id+"");
+    const stoploading   = '<i class="bx bx-check"></i>Setujui';
+    const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+
+    $.ajax({
+        url: url_acc,
+        data: {id : id} ,
+        type: "POST",
+        beforeSend:function(){
+            acc.innerHTML = loading;
+            acc.disabled = true;
+        },success: function(s) {
+            if(s.status == true) {
+                Swal.fire({
+                    title: s.title,
+                    text: s.pesan,
+                    icon: "success"
+                });
+            }else {
+                Swal.fire({
+                    title: "Terjadi kesalahan",
+                    text: "Hubungi tim IT",
+                    icon: "error"
+                });
+            }
+        }, error :function(e) {  Swal.fire({
+            title: "Terjadi kesalahan",
+            text: "Hubungi tim IT",
+            icon: "error"
+        });
+        }, complete : function() {
+            acc.innerHTML = stoploading;
+            acc.disabled = false;
+            table.DataTable().ajax.reload();
+        }
+    })
+}
+
+
