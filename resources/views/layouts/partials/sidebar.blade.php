@@ -235,54 +235,54 @@
                     </li>
 
                     @if(in_array(Auth::user()->roles,['admin','korlap']))
-                    @if (in_array(Auth::user()->id_client,[2,8]))
-                    <li class="menu-item {{  menuOpen(['produk']) }}">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-cube"></i>
-                        <div data-i18n="Authentications">Produk</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item {{ menuActive("produk-list") }}">
-                                <a href="#" class="menu-link" >
-                                <div data-i18n="Basic">List Produk</div>
+                        @if (in_array(Auth::user()->id_client,[2,8]))
+                            <li class="menu-item {{  menuOpen(['produk']) }}">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <i class="menu-icon tf-icons bx bx-cube"></i>
+                                <div data-i18n="Authentications">Produk</div>
                                 </a>
-                            </li>
-                            <li class="menu-item {{ menuActive("produk-satuan") }}">
-                                <a href="#" class="menu-link" >
-                                <div data-i18n="Basic">List Satuan Produk</div>
-                                </a>
-                            </li>
-                            @if (Auth::user()->id_client == 2)
-                                <li class="menu-item ">
-                                    <a href="{{ route('produk') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Buat Laporan Produksi</div>
-                                    </a>
-                                </li>
+                                <ul class="menu-sub">
+                                    <li class="menu-item {{ menuActive("produk-list") }}">
+                                        <a href="#" class="menu-link" >
+                                        <div data-i18n="Basic">List Produk</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item {{ menuActive("produk-satuan") }}">
+                                        <a href="#" class="menu-link" >
+                                        <div data-i18n="Basic">List Satuan Produk</div>
+                                        </a>
+                                    </li>
+                                    @if (Auth::user()->id_client == 2)
+                                        <li class="menu-item ">
+                                            <a href="{{ route('produk') }}" class="menu-link" >
+                                            <div data-i18n="Basic">Buat Laporan Produksi</div>
+                                            </a>
+                                        </li>
 
-                            @endif
-                            @if (Auth::user()->id_client == 8)
+                                    @endif
+                                    @if (Auth::user()->id_client == 8)
 
-                                <li class="menu-item ">
-                                    <a href="{{ route('produk') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Rekap FG Y3</div>
-                                    </a>
-                                </li>
-                                <li class="menu-item ">
-                                    <a href="" class="menu-link" >
-                                    <div data-i18n="Basic">Rekap FG Y4</div>
-                                    </a>
-                                </li>
-                            @endif
-                            @if (in_array(Auth::user()->role, ['super-admin', 'spv-internal']))
-                                <li class="menu-item {{ menuActive(["spv-laporan-produksi","spv-laporan-produksi-detail"]) }}">
-                                    <a href="{{ route('spv-laporan-produksi') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Laporan Produksi</div>
-                                    </a>
-                                </li>
-                            @endif
-                        </ul>
-                    </li>
-                @endif
+                                        <li class="menu-item ">
+                                            <a href="{{ route('produk') }}" class="menu-link" >
+                                            <div data-i18n="Basic">Rekap FG Y3</div>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item ">
+                                            <a href="" class="menu-link" >
+                                            <div data-i18n="Basic">Rekap FG Y4</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                    @if (in_array(Auth::user()->role, ['super-admin', 'spv-internal']))
+                                        <li class="menu-item {{ menuActive(["spv-laporan-produksi","spv-laporan-produksi-detail"]) }}">
+                                            <a href="{{ route('spv-laporan-produksi') }}" class="menu-link" >
+                                            <div data-i18n="Basic">Laporan Produksi</div>
+                                            </a>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </li>
+                        @endif
                         {{-- SURAT PERINGATAN --}}
                         <li class="menu-item {{  menuOpen(['peringatan']) }} ">
                             <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -319,6 +319,31 @@
 
                         </ul>
                     </li>
+
+                    {{-- CUTI --}}
+                    @if(in_array(Auth::user()->roles,['kr-project','kr-pusat','hrd','direktur','manager']))
+                        <li class="menu-item {{  menuOpen(['cuti','cuti-kategori']) }} ">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+                            <div data-i18n="Authentications">Cuti</div>
+                            </a>
+                            <ul class="menu-sub">
+                                <li class="menu-item {{  menuActive('cuti') }}">
+                                    <a href="{{ route('cuti') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Pengajuan Cuti</div>
+                                    </a>
+                                </li>
+                                @if(Auth::user()->roles == 'hrd')
+                                    <li class="menu-item {{  menuActive('cuti-kategori') }}">
+                                        <a href="{{ route('cuti-kategori') }}" class="menu-link" >
+                                        <div data-i18n="Basic">Kategori Cuti</div>
+                                        </a>
+                                    </li>
+                                @endif
+
+                            </ul>
+                        </li>
+                    @endif
 
                 @endif
 

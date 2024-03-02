@@ -17,6 +17,7 @@ use App\Models\Jabatan;
 use App\Models\Karyawan;
 use App\Models\Filemanager;
 use Illuminate\Http\Request;
+use App\Models\KategoriCuti;
 
 class DatatableController extends Controller
 {
@@ -975,6 +976,23 @@ class DatatableController extends Controller
         return $dt;
     }
 
+    // DATA KATEGORI CUTI
+
+    function data_kategori_cuti(Request $request) {
+        $data = KategoriCuti::all();
+
+        $dt = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('aksi', function($row) {
+                $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+                $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+                return $edit.'&nbsp;'.$hapus;
+            })
+            ->rawColumns(['aksi'])
+
+            ->make(true);
+            return $dt;
+    }
 
 
 }

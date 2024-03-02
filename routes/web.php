@@ -6,6 +6,7 @@ use App\Models\Bank;
 use Illuminate\Http\Request;
 use App\Http\Controllers\IzinController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CutiController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\LemburController;
 use App\Http\Controllers\DivisiController;
@@ -111,6 +112,13 @@ Route::middleware('revalidate')->group(function() {
 
             Route::get('/produk',[ProdukController::class,'index'])->name('produk');
 
+
+            Route::get('/cuti',[CutiController::class,'index'])->name('cuti');
+            Route::get('/cuti-kategori',[CutiController::class,'kategori_cuti'])->name('cuti-kategori');
+            Route::get('/cuti-kategori-data',[DatatableController::class,'data_kategori_cuti'])->name('cuti-kategori-data');
+            Route::post('/cuti-kategori-save',[CutiController::class,'kategori_cuti_save'])->name('cuti-kategori-save');
+            Route::post('/cuti-kategori-get',[CutiController::class,'kategori_cuti_get'])->name('cuti-kategori-get');
+            Route::delete('/cuti-kategori-delete',[CutiController::class,'kategori_cuti_delete'])->name('cuti-kategori-delete');
 
             Route::middleware(['role:superadmin'])->group(function(){
                 Route::get('/karyawan/data-superadmin',[DatatableController::class,'data_karyawan_superadmin'])->name('data-kr-superadmin');

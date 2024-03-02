@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('table_cuti', function (Blueprint $table) {
             $table->id();
-            // $table->
+            $table->string('karyawan_id');
+            $table->string('keterangan_cuti');
+            $table->string('jumlah_cuti');
+            $table->string('ambil_cuti');
+            $table->string('ttd_manager')->nullable();
+            $table->string('ttd_hrd')->nullable();
+            $table->string('ttd_direktur')->nullable();
+            $table->string('disetujui_oleh')->nullable();
             $table->timestamps();
         });
     }
