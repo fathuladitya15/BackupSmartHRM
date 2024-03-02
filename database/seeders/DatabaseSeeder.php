@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             KaryawanSeeder::class,
             IzinSeeder::class,
             FilemanagerSeeder::class,
+            KategoriCutiSeeder::class,
         ]);
     }
 }

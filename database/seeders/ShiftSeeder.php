@@ -50,5 +50,20 @@ class ShiftSeeder extends Seeder
             'waktu_selesai' => '23.00',
         ]);
 
+        Shift::create([
+            'type' => 'Shift',
+            'ke'   => 1,
+            'id_client'   => 3,
+            'waktu_mulai' => '07.00',
+            'waktu_selesai' => '15.00',
+        ]);
+        Shift::create([
+            'type' => 'Shift',
+            'id_client'   => 2,
+            'ke'   => 3,
+            'waktu_mulai' => '15.00',
+            'waktu_selesai' => '23.00',
+        ]);
+
     }
 }

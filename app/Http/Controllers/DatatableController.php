@@ -413,7 +413,7 @@ class DatatableController extends Controller
                     }else if($row->status == '4'){
                         return $view_f;
                     }else {
-                        return $edit.'&nbsp'.$view_f;
+                        return $edit;
                     }
 
                 }else {
