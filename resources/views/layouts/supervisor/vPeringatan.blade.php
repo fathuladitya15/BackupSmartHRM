@@ -45,6 +45,7 @@
         width: 150px;
     }
 </style>
+
 @endpush
 @section('content')
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Surat /</span>Peringatan</h4>
@@ -101,37 +102,32 @@
             </div>
             <form id="Add" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="id" id="id_peringatan" value="">
                 <div class="modal-body">
                     <div class="row">
                         <div class="form-group col-md-6">
-                            <label class=" col-form-label" for="basic-default-name">Pilih Karyawan</label>
+                            <label class=" col-form-label" for="id_karyawan">Pilih Karyawan</label>
                             <span class="text-danger pl-1">*</span>
-                            <select name="id_karyawan" id="id_karyawan" class="form-control" required>
-                                <option value="">-- Pilih Karyawan-- </option>
-                                @foreach ($karyawan as $item)
-                                    <option value="{{ $item->id_karyawan }}">{{ $item->id_karyawan }} - {{ $item->name }}</option>
-                                @endforeach
-
-                            </select>
+                            <input type="text" class="form-control" id="id_karyawan" value="" readonly>
                         </div>
                         <div class="form-group col-md-6">
-                            <label class="col-form-label" for="basic-default-name">No SP</label>
+                            <label class="col-form-label" for="no_sp">No SP</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required" placeholder="Nomor Surat" name="no_sp" type="text" value="">
+                            <input class="form-control" required="required" placeholder="Nomor Surat" name="no_sp" type="text" value="" readonly id="no_sp">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="form-group col-md-6">
-                            <label class=" col-form-label" for="basic-default-name">Jabatan</label>
+                            <label class=" col-form-label" for="jabatan">Jabatan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input type="text" class="form-control" disabled name="jabatan" id="jabatan">
+                            <input type="text" class="form-control" value="" readonly name="jabatan" id="jabatan">
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="col-form-label" for="basic-default-name">Lokasi Kerja</label>
                             <span class="text-danger pl-1">*</span>
-                            <input type="text" disabled required="required" name="lokasi_kerja" id="lokasi_kerja" value="" class="form-control">
+                            <input type="text"  required="required" name="lokasi_kerja" id="lokasi_kerja" value="" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="row">
@@ -201,20 +197,20 @@
                     <br><br>
                     <div class="row">
                         <div class="col-lg-12">
-                            <label for="" class="col-form-label"> Tanda Tangani Surat Ini</label> <br>
-                            <a href="javascript:void(0)" onclick="ttd()" class="btn btn-primary btn-sm" id="button_ttd">Tanda Tangani</a>
-                            <img class="gambar_tanda_tangan_admin" src="" alt="" id="gambar_tanda_tangan_admin" width="100"> <br  />
-                            <div class="over_text">
-                                <p  id="" >( {{ Auth::user()->name }} )</p>
+                            <label class="col-form-label" for="basic-default-name">Tanda Tangan</label> <br/>
+                            <a href="javascript:void(0)" onclick="ttd('{{ Auth::user()->id_karyawan }}')" class="btn btn-primary btn-sm" id="button_ttd">Tanda Tangani</a>
+                            <img class="image_ttd" src="" alt="" id="image_ttd" width="100"> <br  />
+                            <div class="" style="">
+                                <p id=""> {{ Str::title(Auth::user()->name) }} </p>
                             </div>
-                            <input type="hidden" name="ttd" value="0" id="ttd" >
+                            <input type="hidden" name="ttd" value="" id="ttd" required >
                         </div>
                     </div>
                 </div>
                 <div id="aksi">
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="submit" class="btn btn-success">Setujui</button>
                     </div>
 
                 </div>
@@ -231,6 +227,10 @@
 <script src="{{ asset("assets/js/jquery.signature.js") }}"></script>
 <script>
     var  url_karyawan = "{{ route('peringatan-detail-karyawan') }}" ;
+    var  url_get_karyawan = "{{ route('peringatan-data-karyawan') }}";
+    var  url_save   = "{{ route('peringatan-save') }}";
+    var  url_data   = "{{ route('peringatan-data-spv') }}";
+    var  url_detail = "{{ route('peringatan-detail') }}";
 </script>
-<script src="{{ asset('assets/js/peringatan.js') }}"></script>
+<script src="{{ asset('assets/js/supervisor/peringatan.js') }}"></script>
 @endpush

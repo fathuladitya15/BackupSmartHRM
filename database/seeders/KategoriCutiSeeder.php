@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-use KategoriCuti;
+use App\Models\KategoriCuti;
 
 class KategoriCutiSeeder extends Seeder
 {

@@ -96,7 +96,13 @@ Route::middleware('revalidate')->group(function() {
 
 
             Route::get('/surat-peringatan',[PeringatanController::class,'index'])->name('peringatan');
-            Route::post('/surat-peringatan/details-karyawan',[PeringatanController::class,'get_detail_karyawan'])->name("peringatan-detail-karyawan");
+            Route::post('/surat-peringatan/update-karyawan',[PeringatanController::class,'get_detail_karyawan'])->name("peringatan-detail-karyawan");
+            Route::post('/surat-peringatan/get-karyawan',[PeringatanController::class,'data_karyawan'])->name("peringatan-data-karyawan");
+            Route::post('/surat-peringatan/save',[PeringatanController::class,'save'])->name('peringatan-save');
+            Route::get('/surat-peringatan/data',[DatatableController::class,'data_peringatan_admin'])->name('peringatan-data');
+            Route::post('/surat-peringatan/details',[PeringatanController::class,'details'])->name('peringatan-detail');
+            Route::post('/surat-peringatan/update',[PeringatanController::class,'update'])->name('peringatan-update');
+            route::get('/surat-peringatan/files/{id}',[PeringatanController::class,'files'])->name('peringatan-file');
 
             Route::get('/izin',[IzinController::class,'index'])->name('izin');
             Route::get('/izin-self',[IzinController::class,'self'])->name('izin-self');
@@ -120,6 +126,17 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/cuti-kategori-get',[CutiController::class,'kategori_cuti_get'])->name('cuti-kategori-get');
             Route::delete('/cuti-kategori-delete',[CutiController::class,'kategori_cuti_delete'])->name('cuti-kategori-delete');
 
+            Route::middleware(['role:karyawan'])->group(function(){
+                Route::get('/surat-peringatan/data-karyawan',[DatatableController::class,"data_peringatan_karyawan"])->name('peringatan-data-karyawan');
+            });
+
+            Route::middleware(['role:spv-internal'])->group(function(){
+                Route::get('/surat-peringatan/data-spv',[DatatableController::class,'data_peringatan_spv'])->name('peringatan-data-spv');
+
+            });
+            Route::middleware(['role:admin:korlap'])->group(function() {
+                Route::get('/surat-peringatan/data-admin',[DatatableController::class,'data_peringatan_admin'])->name('peringatan-data-admin');
+            });
             Route::middleware(['role:superadmin'])->group(function(){
                 Route::get('/karyawan/data-superadmin',[DatatableController::class,'data_karyawan_superadmin'])->name('data-kr-superadmin');
 

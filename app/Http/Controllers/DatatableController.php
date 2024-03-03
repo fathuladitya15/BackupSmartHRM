@@ -13,8 +13,10 @@ use App\Models\Izin;
 use App\Models\Shift;
 use App\Models\Divisi;
 use App\Models\Lembur;
+use App\Models\Clients;
 use App\Models\Jabatan;
 use App\Models\Karyawan;
+use App\Models\Peringatan;
 use App\Models\Filemanager;
 use Illuminate\Http\Request;
 use App\Models\KategoriCuti;
@@ -993,6 +995,134 @@ class DatatableController extends Controller
             ->make(true);
             return $dt;
     }
+
+
+    // DATA SURAT PERINGATAN
+
+    function data_peringatan_karyawan() {
+        $data = Peringatan::where("karyawan_id",Auth::user()->id_karyawan)->where('status','>',2)->get();
+
+        $dt = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('lokasi_kerja',function($row) {
+                $nama_client = Clients::find($row->lokasi_kerja)->nama_client;
+                return $nama_client;
+            })
+            ->addColumn('status', function($row) {
+                $info = '<span class="badge badge bg-success"> Telah Disetujui </span>';
+                return $info;
+            })
+            ->addColumn('aksi', function($row) {
+                $file = '<a href="'.route('peringatan-file',['id' => $row->id]).'" class="btn btn-danger btn-sm"><i class="bx bx-download"></i> Lihat File';
+
+                return $file;
+            })
+            ->rawColumns(['aksi','status'])
+
+            ->make(true);
+            return $dt;
+    }
+
+    // DATA PERINGATAN ADMIN/KORLAP
+    function data_peringatan_admin(Request $request) {
+        $role = Auth::user()->role;
+        if(in_array($role,['admin','korlap'])){
+            $data = Peringatan::where('lokasi_kerja',Auth::user()->id_client)->get();
+        }
+        else {
+            $data = Peringatan::all();
+        }
+
+        $dt = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('lokasi_kerja',function($row) {
+                $nama_client = Clients::find($row->lokasi_kerja)->nama_client;
+                return $nama_client;
+            })
+            ->addColumn('status', function($row) {
+                if($row->status == 0) {
+                    $info = '<span class="badge badge bg-warning"> Sedang diriview </span>';
+                }else  if($row->status == 1) {
+                    $info = '<span class="badge badge bg-warning"> Sedang diriview </span>';
+                }else if($row->status == 2) {
+                    $info = '<span class="badge badge bg-success"> Disetujui </span>';
+                }else if($row->status == 3){
+                    $info = '<span class="badge badge bg-primary"> Telah disampaikan </span>';
+                }else {
+                    $info = '<span class="badge badge bg-danger"> error </span>';
+                }
+                return $info;
+            })
+            ->addColumn('aksi', function($row) {
+                $info = '<a href="javascript:void(0)" class="edit btn btn-info btn-actions btn-sm" onclick="kirim_spv('.$row->id.')">Kirim Ke Supervisor</a>';
+                $kirim = '<a href="javascript:void(0)" class="edit btn btn-info btn-actions btn-sm" onclick="kirim_kr('.$row->id.')">Kirim Ke Karyawan</a>';
+                $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+                $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+                if($row->status == 0) {
+                    $btn = $edit.'&nbsp;'.$info;
+                }
+                else if($row->status == 1) {
+                    $btn = $edit;
+                }else if($row->status == 2){
+                    $btn = $edit.'&nbsp;'.$kirim;
+                }
+                else {
+                    $btn = $edit.'&nbsp;'.$hapus;
+                }
+                return $btn;
+            })
+            ->rawColumns(['aksi','status'])
+
+            ->make(true);
+            return $dt;
+    }
+    // DATA PERINGATAN SUPERVISOR
+    function data_peringatan_spv(Request $request) {
+        $role = Auth::user()->role;
+        $data = Peringatan::where('lokasi_kerja',Auth::user()->id_client)->where('status','>',0
+        )->get();
+
+        $dt = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('lokasi_kerja',function($row) {
+                $nama_client = Clients::find($row->lokasi_kerja)->nama_client;
+                return $nama_client;
+            })
+            ->addColumn('status', function($row) {
+                if($row->status == 0) {
+                    $info = '<span class="badge badge bg-warning"> Menunggu Persetujuan </span>';
+                }else  if($row->status == 1) {
+                    $info = '<span class="badge badge bg-warning"> Menunggu Persetujuan </span>';
+                }else if($row->status == 2) {
+                    $info = '<span class="badge badge bg-success"> Telah Disetujui </span>';
+                }else if($row->status == 3){
+                    $info = '<span class="badge badge bg-primary"> Telah disampaikan </span>';
+                }else {
+                    $info = '<span class="badge badge bg-danger"> error </span>';
+                }
+                return $info;
+            })
+            ->addColumn('aksi', function($row) {
+                $info = '<a href="javascript:void(0)" class="edit btn btn-info btn-actions btn-sm" onclick="kirim_spv('.$row->id.')">Kirim Ke Supervisor</a>';
+                $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+                $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+                if($row->status == 0) {
+                    $btn = $edit.'&nbsp;'.$info;
+                }
+               else if($row->status > 1) {
+                    $btn = $edit;
+                }
+                else {
+                    $btn = $edit.'&nbsp;'.$hapus;
+                }
+                return $btn;
+            })
+            ->rawColumns(['aksi','status'])
+
+            ->make(true);
+            return $dt;
+    }
+
 
 
 }

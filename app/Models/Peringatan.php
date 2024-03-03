@@ -13,6 +13,10 @@ class Peringatan extends Model
 
     protected $fillable = [
         'karyawan_id',
+        'nama_karyawan',
+        'divisi',
+        'jabatan',
+        'lokasi_kerja',
         'no_surat',
         'karyawan_id_pembuat',
         'tipe_peringatan',
@@ -23,5 +27,7 @@ class Peringatan extends Model
         'tanggal_kadaluarsa',
         'nama_pemberi_sp',
         'status',
+        'disetujui_oleh',
+        'disetujui_pada'
     ];
 }
