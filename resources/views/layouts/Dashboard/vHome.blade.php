@@ -3,6 +3,16 @@
 @section('title') {{ 'Dashboard' }} @endsection
 
 @section('content')
+@if (in_array(Auth::user()->roles ,['admin','kr-project']))
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-primary" role="alert">
+                Anda Login Sebagai {{ Auth::user()->roles == 'admin' ? "Admin" : "Karyawan" }}
+            </div>
+        </div>
+    </div>
+
+@endif
 <div class="row">
     <div class="col-lg-8 mb-4 order-0">
     <div class="card">
@@ -12,7 +22,17 @@
             <h5 class="card-title text-primary"> {{ salam() }}, {{ Str::upper(Auth::user()->name) }}! 🎉</h5>
             <p class="mb-4">
                 Apakah sudah absensi hari ini ? Cek Absensi Kehadiran mu disini <br>
-                {{ Carbon\Carbon::now()->translatedFormat('D, m F Y') }}
+                @php
+                    $nama_hari = Carbon\Carbon::now()->translatedFormat('l');
+
+                    if($nama_hari == 'Sabtu' || $nama_hari == 'Minggu' ){
+                        $status = 'Selamat Beristirahat';
+                    }else {
+                        $status = 'Selamat Beraktivitas.       '. Carbon\Carbon::now()->translatedFormat('l, m F Y') ;
+                    }
+
+                @endphp
+                {{ $status }}
             </p>
             <a href="javascript:;" class="btn btn-sm btn-outline-primary">Lihat Absensi  </a>
             </div>

@@ -284,27 +284,28 @@
                                 </ul>
                             </li>
                         @endif
+                         {{-- SURAT PERINGATAN --}}
+                        <li class="menu-item {{  menuOpen(['peringatan']) }} ">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-file"></i>
+                            <div data-i18n="Authentications">Surat</div>
+                            </a>
+                            <ul class="menu-sub">
+                                <li class="menu-item {{  menuActive('peringatan') }}">
+                                    <a href="{{ route('peringatan') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Surat Peringatan</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item {{  menuActive('spv-packlaring-index') }}">
+                                    <a href="#" class="menu-link" >
+                                    <div data-i18n="Basic">Surat Referensi Kerja</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     @endif
 
-                    {{-- SURAT PERINGATAN --}}
-                    <li class="menu-item {{  menuOpen(['peringatan']) }} ">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-file"></i>
-                        <div data-i18n="Authentications">Surat</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item {{  menuActive('peringatan') }}">
-                                <a href="{{ route('peringatan') }}" class="menu-link" >
-                                <div data-i18n="Basic">Surat Peringatan</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{  menuActive('spv-packlaring-index') }}">
-                                <a href="#" class="menu-link" >
-                                <div data-i18n="Basic">Surat Referensi Kerja</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+
 
                     {{-- IZIN --}}
                     <li class="menu-item {{  menuOpen(['izin']) }} ">
@@ -352,7 +353,7 @@
 
 
                 @if (Auth::user()->roles == 'direktur')
-                <hr>
+                    <hr>
                     {{-- LEMBUR --}}
                     <li class="menu-item {{ menuOpen('lembur') }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">

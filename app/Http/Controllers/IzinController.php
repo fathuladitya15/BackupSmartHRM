@@ -35,6 +35,8 @@ class IzinController extends Controller
                 return view('layouts.izin.vIzinDefault',compact('detail','jabatan','divisi'));
             }else if(in_array($role,['direktur','hrd','manajer'])) {
                 return view('layouts.admin_korlap.vIzinPFI');
+            }else if(in_array($role,['kr-project','kr-pusat'])){
+                return view('layouts.izin.vIzinPFI',compact('jabatan','divisi','detail'));
             }
         }else {
             if(in_array($role,['admin','korlap'])){
@@ -43,6 +45,8 @@ class IzinController extends Controller
                 return view('layouts.izin.vIzinAIOSukabumi',compact('detail','jabatan','divisi'));
             }else if(in_array($role,['kr-project','kr-pusat'])){
                 return view('layouts.izin.vIzinPFI',compact('jabatan','divisi','detail'));
+            }else {
+                dd($role);
             }
         }
 
