@@ -13,12 +13,21 @@ class Cuti extends Model
 
     protected $fillable = [
         'id_karyawan',
-        'keterangan_cuti',
+        'nama_karyawan',
+        'divisi',
+        'jabatan',
+        'kategori_cuti',
+        'alasan',
         'jumlah_cuti',
         'ambil_cuti',
+        'start_date',
+        'end_date',
+        'ttd_karyawan',
         'ttd_manager',
         'ttd_hrd',
         'ttd_direktur',
         'disetujui_oleh',
+        'disetujui_pada',
+        'status',
     ];
 }

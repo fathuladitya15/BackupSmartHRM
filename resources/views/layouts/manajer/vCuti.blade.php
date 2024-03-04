@@ -56,21 +56,19 @@
             <div class="card-header d-flex align-items-center justify-content-between" >
                 <h5 class="mb-0">Data  Cuti</h5>
             </div>
-            <div class="card-title">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" style="float: right">
-                    <i class='bx bx-plus'></i> Tambah Cuti
-                </button>
-            </div>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">
                     <table class="table" id="myTable">
                         <thead>
                         <tr class="text-nowrap">
                             <th>No</th>
-                            <th>Mulai tanggal</th>
-                            <th>Sampai tanggal</th>
-                            <th>Kategori Cuti</th>
-                            <th>Alasan Cuti</th>
+                            <th>ID Karyawan</th>
+                            <th>Nama Karyawan</th>
+                            <th>Divisi</th>
+                            <th>Jabatan</th>
+                            <th>mulai tanggal</th>
+                            <th>sampai tanggal</th>
+                            <th>alasan cuti</th>
                             <th>periode cuti</th>
                             <th>sisa cuti</th>
                             <th>status</th>
@@ -87,11 +85,12 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title black" id="exampleModalLongTitle">Tambah Cuti</h5>
+                <h5 class="modal-title black" id="exampleModalLongTitle">Detail</h5>
                 <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -102,27 +101,26 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="form-group col-md-6">
-                            <label class=" col-form-label" for="id_karyawan">ID Karyawan</label>
+                            <label class=" col-form-label" for="id_karyawan">Nama Karyawan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input type="text" class="form-control" id="id_karyawan" name="id_karyawan" value="{{ Auth::user()->id_karyawan }}" readonly>
-                            <input type="hidden" class="form-control" id="nama_karyawan" name="nama_karyawan" value="{{ Auth::user()->name }}">
+                            <input type="text" name="id_karyawan" id="id_karyawan" value="" class="form-control">
                         </div>
                         <div class="form-group col-md-6">
                             <label class="col-form-label" for="divisi">Divisi</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required" placeholder="Pilih Karyawan terlebih dahulu" name="divisi" type="text" value="{{ $divisi }}" id="divisi" readonly>
+                            <input class="form-control" required="required" placeholder="Pilih Karyawan terlebih dahulu" name="divisi" type="text" value="" id="divisi" readonly>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-md-6">
                             <label class=" col-form-label" for="jabatan">Jabatan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input type="text" id="jabatan" name="jabatan" class="form-control" placeholder="Pilih Karyawan terlebih dahulu" value="{{ $jabatan }}" readonly>
+                            <input type="text" id="jabatan" name="jabatan" class="form-control" placeholder="Pilih Karyawan terlebih dahulu" value="" readonly>
                         </div>
                         <div class="form-group col-md-6">
                             <label class=" col-form-label" for="cuti">Periode / Periode Sisa Cuti</label>
                             <span class="text-danger pl-1">*</span>
-                            <input type="text" id="sisa_cuti" name="sisa_cuti" class="form-control" placeholder="Pilih Karyawan terlebih dahulu" value="{{ $periode_cuti }}" readonly>
+                            <input type="text" id="sisa_cuti" name="sisa_cuti" class="form-control" placeholder="Pilih Karyawan terlebih dahulu" value="" readonly>
                         </div>
                     </div>
                     <div class="row">
@@ -142,24 +140,20 @@
                         <div class="form-group col-md-12">
                             <label for="alasan_cuti" class="col-form-label">Alasan Cuti</label>
                             <span class="text-danger pl-1">*</span>
-                            <textarea name="alasan_cuti" id="alasan_cuti" cols="30" rows="10" class="form-control" required></textarea>
+                            <textarea name="alasan_cuti" id="alasan_cuti" cols="30" rows="10" class="form-control"></textarea>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-md-6">
                             <label for="sisa_cuti" class="col-form-label">Total Cuti/Sisa Cuti Tahun ini</label>
                             <span class="text-danger pl-1"> *</span>
-                            <input type="text" class="form-control" name="total_cuti" placeholder="Pilih Karyawan terlebih dahulu" id="total_cuti" value="{{ $sisa_cuti }}" readonly>
+                            <input type="text" class="form-control" name="total_cuti" placeholder="Pilih Karyawan terlebih dahulu" id="total_cuti" value="" readonly>
                         </div>
                         <div class="form-group col-md-6" >
                             <label for="kategori_cuti" class="col-form-label">Kategori Cuti</label>
                             <span class="text-danger pl-1"> *</span>
-                            <select name="kategori_cuti" id="kategori_cuti" class="form-control">
-                                <option value="">-- Pilih Kategori Cuti --</option>
-                                @foreach ($kategori_cuti as $item)
-                                    <option value="{{ $item->nama_kategori }}">{{ $item->nama_kategori }}</option>
-                                @endforeach
-                            </select>
+                            <input type="text" value="" id="kategori_cuti" name="kategori_cuti" class="form-control">
+
                         </div>
                     </div>
                     <br>
@@ -191,12 +185,11 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="{{ asset("assets/js/jquery.signature.js") }}"></script>
 <script>
-    var url_data       = "{{ route('data-cuti-karyawan') }}";
+    var url_data       = "{{ route('data-cuti-manajer') }}";
     var url_save       = "{{ route('cuti-save') }}";
-    var url_get_detail = "{{ route('cuti-detail') }}";
-    var url_validate_jumlah_cuti = "{{ route('cuti-validasi-cuti') }}";
     var url_detail     = "{{ route('cuti-details-data') }}";
+    var url_validate_jumlah_cuti = "{{ route('cuti-validasi-cuti') }}";
 </script>
-<script src="{{ asset("assets/js/karyawan/cuti.js") }}"></script>
+<script src="{{ asset("assets/js/manager/cuti.js") }}"></script>
 @endpush
 

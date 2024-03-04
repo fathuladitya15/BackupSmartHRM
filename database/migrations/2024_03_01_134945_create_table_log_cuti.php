@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('table_log_cuti', function (Blueprint $table) {
             $table->id();
-            $table->string('karyawan_id');
+            $table->string('id_karyawan');
             $table->string('total_hari');
             $table->string('cuti_get');
             $table->string('keterangan_cuti');
+            $table->string("tahun");
             $table->timestamps();
         });
     }

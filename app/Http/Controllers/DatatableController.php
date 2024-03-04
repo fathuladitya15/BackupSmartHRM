@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Izin;
+use App\Models\Cuti;
 use App\Models\Shift;
 use App\Models\Divisi;
 use App\Models\Lembur;
@@ -1121,6 +1122,234 @@ class DatatableController extends Controller
 
             ->make(true);
             return $dt;
+    }
+
+    // DATA CUTI HRD
+    function data_cuti_hrd(Request $request) {
+        $data = Cuti::all();
+
+        $dt = DataTables::of($data)
+        ->addIndexColumn()
+
+        ->addColumn('start_date', function($row) {
+            return Carbon::parse($row->start_date)->translatedFormat("l, d F Y");
+        })
+        ->addColumn('end_date', function($row) {
+            return Carbon::parse($row->end_date)->translatedFormat("l, d F Y");
+        })
+        ->addColumn("periode_cuti", function($row) {
+            return $row->jumlah_cuti." Hari";
+        })
+        ->addColumn("sisa_cuti", function($row) {
+            return $row->jumlah_cuti  - $row->ambil_cuti . " Hari";
+        })
+        ->addColumn('status',function($row) {
+            $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
+            $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani  </span>";
+            $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+            if($row->status == 0 ) {
+                $st = $wait;
+            }else if($row->status == 1 ) {
+                $st = $waitHRD;
+            }else if($row->status == 2) {
+                $st = $waitDirektur;
+            }else if($row->status == 3) {
+                $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
+
+            }else {
+                $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
+            }
+            return $st;
+        })
+        ->addColumn('aksi',function($row) {
+            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+            if($row->status == 1 ) {
+                $button = $edit;
+            } else if($row->status > 3 ) {
+                $button = $edit;
+            }
+            else {
+                $button = "";
+
+            }
+            return $button;
+        })
+        ->rawColumns(['periode_cuti','sisa_cuti','aksi','status','start_date','end_date'])
+        ->make(true);
+
+        return $dt;
+    }
+
+    // DATA CUTI KARYAWAN
+    function data_cuti_karyawan(Request $request) {
+        $data = Cuti::where('id_karyawan',Auth::user()->id_karyawan)->get();
+
+        $dt = DataTables::of($data)
+        ->addIndexColumn()
+        ->addColumn('start_date', function($row) {
+            return Carbon::parse($row->start_date)->translatedFormat("l, d F Y");
+        })
+        ->addColumn('end_date', function($row) {
+            return Carbon::parse($row->end_date)->translatedFormat("l, d F Y");
+        })
+        ->addColumn("periode_cuti", function($row) {
+            return $row->jumlah_cuti." Hari";
+        })
+        ->addColumn("sisa_cuti", function($row) {
+            return $row->jumlah_cuti  - $row->ambil_cuti . " Hari";
+        })
+        ->addColumn('status',function($row) {
+            $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
+            $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
+            $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+            if($row->status == 0 ) {
+                $st = $wait;
+            }else if($row->status == 1 ) {
+                $st = $waitHRD;
+            }else if($row->status == 2) {
+                $st = $waitDirektur;
+            }else if($row->status == 3) {
+                $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
+
+            }else {
+                $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
+            }
+            return $st;
+        })
+        ->addColumn('aksi',function($row) {
+            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+
+            if($row->status >= 4){
+                $button = $edit;
+            }else {
+                $button = "";
+            }
+            return $button;
+        })
+        ->rawColumns(['periode_cuti','sisa_cuti','aksi','status','start_date','end_date'])
+        ->make(true);
+
+        return $dt;
+    }
+
+    // DATA CUTI MANAGER
+    function data_cuti_manajer(Request $request) {
+        $detail_data = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first();
+        $divisi      = Divisi::find($detail_data->divisi)->nama_divisi;
+
+        $data        = Cuti::where('divisi','like','%'.$divisi.'%')->where('status','>=',0)->get();
+
+        $dt = DataTables::of($data)
+        ->addIndexColumn()
+
+        ->addColumn('start_date', function($row) {
+            return Carbon::parse($row->start_date)->translatedFormat("l, d F Y");
+        })
+        ->addColumn('end_date', function($row) {
+            return Carbon::parse($row->end_date)->translatedFormat("l, d F Y");
+        })
+        ->addColumn("periode_cuti", function($row) {
+            return $row->jumlah_cuti." Hari";
+        })
+        ->addColumn("sisa_cuti", function($row) {
+            return $row->jumlah_cuti  - $row->ambil_cuti . " Hari";
+        })
+        ->addColumn('status',function($row) {
+            $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani  </span>";
+            $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
+            $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+            if($row->status == 0 ) {
+                $st = $wait;
+            }else if($row->status == 1 ) {
+                $st = $waitHRD;
+            }else if($row->status == 2) {
+                $st = $waitDirektur;
+            }else if($row->status == 3) {
+                $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
+
+            }else {
+                $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
+            }
+            return $st;
+        })
+        ->addColumn('aksi',function($row) {
+            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+            if($row->status == 0 ) {
+                $button = $edit;
+            }else if($row->status >= 4){
+                $button = $edit;
+            }
+            else {
+                $button = "";
+
+            }
+            return $button;
+        })
+        ->rawColumns(['periode_cuti','sisa_cuti','aksi','status','start_date','end_date'])
+        ->make(true);
+
+        return $dt;
+    }
+
+    // DATA CUTI DIREKTUR
+    function data_cuti_direktur(Request $request) {
+        $data = Cuti::where('status','>=' ,2)->get();
+
+        $dt = DataTables::of($data)
+        ->addIndexColumn()
+
+        ->addColumn('start_date', function($row) {
+            return Carbon::parse($row->start_date)->translatedFormat("l, d F Y");
+        })
+        ->addColumn('end_date', function($row) {
+            return Carbon::parse($row->end_date)->translatedFormat("l, d F Y");
+        })
+        ->addColumn("periode_cuti", function($row) {
+            return $row->jumlah_cuti." Hari";
+        })
+        ->addColumn("sisa_cuti", function($row) {
+            return $row->jumlah_cuti  - $row->ambil_cuti . " Hari";
+        })
+        ->addColumn('status',function($row) {
+            $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani  </span>";
+            $waitDirutHRD   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+            $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+            if($row->status == 2 ) {
+                $st = $wait;
+            }else if($row->status == 3 ) {
+                $st = "<span class='badge bg-warning'> Menuggu Persetujuan Direktur HRD </span>";
+            }else if($row->status == 4) {
+                $st = "<span class='badge bg-success'>Telah disetujui </span>";
+
+            }else {
+                $st = "<span class='badge bg-danger'> Error </span>";
+
+            }
+            return $st;
+        })
+        ->addColumn('aksi',function($row) {
+            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+            $acc    = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="acc_'.$row->id.'" onclick="acc('.$row->id.')"  ><i class="bx bx-check"></i>Setujui</a>';
+            if($row->status == 2 ) {
+                $button = $edit;
+            }else if($row->status == 3 ){
+                $button = $acc;
+            }else if($row->status >= 4){
+                $button = $edit;
+            }
+            else {
+                $button = "";
+
+            }
+            return $button;
+        })
+        ->rawColumns(['periode_cuti','sisa_cuti','aksi','status','start_date','end_date'])
+        ->make(true);
+
+        return $dt;
     }
 
 

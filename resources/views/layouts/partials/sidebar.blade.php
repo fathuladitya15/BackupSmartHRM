@@ -285,6 +285,7 @@
                             </li>
                         @endif
                     @endif
+
                     {{-- SURAT PERINGATAN --}}
                     <li class="menu-item {{  menuOpen(['peringatan']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -322,7 +323,7 @@
                     </li>
 
                     {{-- CUTI --}}
-                    @if(in_array(Auth::user()->roles,['kr-project','kr-pusat','hrd','direktur','manager']))
+                    @if(in_array(Auth::user()->roles,['kr-project','kr-pusat','hrd','direktur','manajer']))
                         <li class="menu-item {{  menuOpen(['cuti','cuti-kategori']) }} ">
                             <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-calendar-event"></i>
@@ -376,6 +377,21 @@
                             <li class="menu-item {{  menuActive('izin') }}">
                                 <a href="{{ route('izin') }}" class="menu-link" >
                                 <div data-i18n="Basic">Pengajuan Izin</div>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+                    {{-- CUTI --}}
+                    <li class="menu-item {{  menuOpen(['cuti','cuti-kategori']) }} ">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+                        <div data-i18n="Authentications">Cuti</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item {{  menuActive('cuti') }}">
+                                <a href="{{ route('cuti') }}" class="menu-link" >
+                                <div data-i18n="Basic">Pengajuan Cuti</div>
                                 </a>
                             </li>
 

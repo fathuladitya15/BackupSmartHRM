@@ -68,7 +68,8 @@ $('#tanggal_lembur').on('change', function() {
     var str = date + '/' + month + '/' + years;
     dates  = tanggal;
     total_jam(start,end,dates)
-})
+});
+
 $('#jam_mulai').on('change',function() {
     start = $(this).val();
     total_jam(start,end,dates)

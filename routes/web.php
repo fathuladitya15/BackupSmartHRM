@@ -119,11 +119,20 @@ Route::middleware('revalidate')->group(function() {
 
 
             Route::get('/cuti',[CutiController::class,'index'])->name('cuti');
+            Route::post('/cuti-detail-data',[CutiController::class,'cuti_data'])->name('cuti-detail');
+            Route::post('/cuti/get-data-cuti',[CutiController::class,'detail_data_cuti'])->name("cuti-details-data");
+            Route::post('/cuti/save',[CutiController::class,'save_cuti'])->name('cuti-save');
+            Route::post('/cuti/validasi-cuti',[CutiController::class,'validasi_tanggal_cuti'])->name('cuti-validasi-cuti');
             Route::get('/cuti-kategori',[CutiController::class,'kategori_cuti'])->name('cuti-kategori');
             Route::get('/cuti-kategori-data',[DatatableController::class,'data_kategori_cuti'])->name('cuti-kategori-data');
             Route::post('/cuti-kategori-save',[CutiController::class,'kategori_cuti_save'])->name('cuti-kategori-save');
             Route::post('/cuti-kategori-get',[CutiController::class,'kategori_cuti_get'])->name('cuti-kategori-get');
             Route::delete('/cuti-kategori-delete',[CutiController::class,'kategori_cuti_delete'])->name('cuti-kategori-delete');
+
+            Route::get('/cuti/data-karyawan',[DatatableController::class,'data_cuti_karyawan'])->name('data-cuti-karyawan');
+            Route::get('/cuti/data-manajer',[DatatableController::class,'data_cuti_manajer'])->name('data-cuti-manajer');
+            Route::get('/cuti/data-direktur',[DatatableController::class,'data_cuti_direktur'])->name('data-cuti-direktur');
+
 
             Route::middleware(['role:karyawan'])->group(function(){
                 Route::get('/surat-peringatan/data-karyawan',[DatatableController::class,"data_peringatan_karyawan"])->name('peringatan-data-karyawan');
@@ -154,6 +163,7 @@ Route::middleware('revalidate')->group(function() {
 
             Route::middleware(['role:hrd'])->group(function() {
                 Route::get('/karyawan/data-hrd',[DatatableController::class,'data_karyawan_hrd'])->name('data-kr-hrd');
+                Route::get('/cuti/data-hrd',[DatatableController::class,'data_cuti_hrd'])->name('data-cuti-hrd');
             });
 
             Route::middleware(['role:korlap:admin:hrd'])->group(function() {
