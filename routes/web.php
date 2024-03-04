@@ -97,7 +97,6 @@ Route::middleware('revalidate')->group(function() {
 
             Route::get('/surat-peringatan',[PeringatanController::class,'index'])->name('peringatan');
             Route::post('/surat-peringatan/update-karyawan',[PeringatanController::class,'get_detail_karyawan'])->name("peringatan-detail-karyawan");
-            Route::post('/surat-peringatan/get-karyawan',[PeringatanController::class,'data_karyawan'])->name("peringatan-data-karyawan");
             Route::post('/surat-peringatan/save',[PeringatanController::class,'save'])->name('peringatan-save');
             Route::get('/surat-peringatan/data',[DatatableController::class,'data_peringatan_admin'])->name('peringatan-data');
             Route::post('/surat-peringatan/details',[PeringatanController::class,'details'])->name('peringatan-detail');
@@ -135,6 +134,8 @@ Route::middleware('revalidate')->group(function() {
 
             });
             Route::middleware(['role:admin:korlap'])->group(function() {
+            Route::post('/surat-peringatan/get-karyawan',[PeringatanController::class,'data_karyawan'])->name("peringatan-data-karyawan");
+
                 Route::get('/surat-peringatan/data-admin',[DatatableController::class,'data_peringatan_admin'])->name('peringatan-data-admin');
             });
             Route::middleware(['role:superadmin'])->group(function(){

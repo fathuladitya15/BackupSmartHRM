@@ -1026,12 +1026,12 @@ class DatatableController extends Controller
     // DATA PERINGATAN ADMIN/KORLAP
     function data_peringatan_admin(Request $request) {
         $role = Auth::user()->role;
-        if(in_array($role,['admin','korlap'])){
-            $data = Peringatan::where('lokasi_kerja',Auth::user()->id_client)->get();
-        }
-        else {
-            $data = Peringatan::all();
-        }
+        $data = Peringatan::where('lokasi_kerja',Auth::user()->id_client)->get();
+        // if(in_array($role,['admin','korlap'])){
+        // }
+        // else {
+        //     $data = Peringatan::all();
+        // }
 
         $dt = DataTables::of($data)
             ->addIndexColumn()
