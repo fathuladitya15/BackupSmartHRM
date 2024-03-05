@@ -207,5 +207,33 @@ class KaryawanSeeder extends Seeder
 
         ]);
 
+        Karyawan::create([
+            'nama_karyawan' => 'MANAGER FINANCE',
+            'id_karyawan'   => 'PFI18723111',
+            'no_hp'         => "08771227612632",
+            'tanggal_lahir' => "2024-02-06",
+            'tempat_lahir'  => "JAKARTA",
+            'jenis_kelamin' => "L",
+            'nik'           => 3202301502010100,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 1,
+            'divisi'        => 2,
+            'jabatan'       => 4,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK BRI (BANK RAKYAT INDONESIA)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 002,
+            'norek_bank'    => 7125553,
+            'status'        => 0,
+            'cuti'          => 0,
+            'kategori'      => 'pusat',
+
+        ]);
+
     }
 }

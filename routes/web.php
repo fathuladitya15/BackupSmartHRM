@@ -123,12 +123,15 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/cuti/get-data-cuti',[CutiController::class,'detail_data_cuti'])->name("cuti-details-data");
             Route::post('/cuti/save',[CutiController::class,'save_cuti'])->name('cuti-save');
             Route::post('/cuti/validasi-cuti',[CutiController::class,'validasi_tanggal_cuti'])->name('cuti-validasi-cuti');
+            Route::get('/cuti/dokumen/{id}',[CutiController::class,'dokumen_cuti'])->name('dokumen-cuti');
+
+
             Route::get('/cuti-kategori',[CutiController::class,'kategori_cuti'])->name('cuti-kategori');
-            Route::get('/cuti-kategori-data',[DatatableController::class,'data_kategori_cuti'])->name('cuti-kategori-data');
             Route::post('/cuti-kategori-save',[CutiController::class,'kategori_cuti_save'])->name('cuti-kategori-save');
             Route::post('/cuti-kategori-get',[CutiController::class,'kategori_cuti_get'])->name('cuti-kategori-get');
             Route::delete('/cuti-kategori-delete',[CutiController::class,'kategori_cuti_delete'])->name('cuti-kategori-delete');
 
+            Route::get('/cuti-kategori-data',[DatatableController::class,'data_kategori_cuti'])->name('cuti-kategori-data');
             Route::get('/cuti/data-karyawan',[DatatableController::class,'data_cuti_karyawan'])->name('data-cuti-karyawan');
             Route::get('/cuti/data-manajer',[DatatableController::class,'data_cuti_manajer'])->name('data-cuti-manajer');
             Route::get('/cuti/data-direktur',[DatatableController::class,'data_cuti_direktur'])->name('data-cuti-direktur');

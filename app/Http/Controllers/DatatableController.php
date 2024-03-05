@@ -1145,7 +1145,7 @@ class DatatableController extends Controller
         })
         ->addColumn('status',function($row) {
             $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
-            $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani  </span>";
+            $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani HRD  </span>";
             $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
             if($row->status == 0 ) {
                 $st = $wait;
@@ -1154,7 +1154,7 @@ class DatatableController extends Controller
             }else if($row->status == 2) {
                 $st = $waitDirektur;
             }else if($row->status == 3) {
-                $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
+                $st = "<span class='badge bg-warning'> Menunggu Persetujuan Direktur HRD </span>";
 
             }else {
                 $st = "<span class='badge bg-success'> Telah disetujui </span>";
@@ -1210,7 +1210,7 @@ class DatatableController extends Controller
             }else if($row->status == 2) {
                 $st = $waitDirektur;
             }else if($row->status == 3) {
-                $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
+                $st = "<span class='badge bg-warning'> Menuggu Persetujuan Direktur HRD </span>";;
 
             }else {
                 $st = "<span class='badge bg-success'> Telah disetujui </span>";
@@ -1220,9 +1220,9 @@ class DatatableController extends Controller
         })
         ->addColumn('aksi',function($row) {
             $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
-
+            $doc    = '<a href="'.route('dokumen-cuti',['id' => $row->id]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i>Download File</a>';
             if($row->status >= 4){
-                $button = $edit;
+                $button = $edit.'&nbsp;'.$doc;
             }else {
                 $button = "";
             }
@@ -1257,7 +1257,7 @@ class DatatableController extends Controller
             return $row->jumlah_cuti  - $row->ambil_cuti . " Hari";
         })
         ->addColumn('status',function($row) {
-            $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani  </span>";
+            $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani MANAGER DIVISI  </span>";
             $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
             $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
             if($row->status == 0 ) {
@@ -1267,7 +1267,7 @@ class DatatableController extends Controller
             }else if($row->status == 2) {
                 $st = $waitDirektur;
             }else if($row->status == 3) {
-                $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
+                $st = "<span class='badge bg-warning'> Menuggu Persetujuan Direktur HRD </span>";;
 
             }else {
                 $st = "<span class='badge bg-success'> Telah disetujui </span>";
@@ -1314,18 +1314,20 @@ class DatatableController extends Controller
             return $row->jumlah_cuti  - $row->ambil_cuti . " Hari";
         })
         ->addColumn('status',function($row) {
-            $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani  </span>";
-            $waitDirutHRD   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+            $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani MANAGER DIVISI  </span>";
+            $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
             $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
-            if($row->status == 2 ) {
+            if($row->status == 0 ) {
                 $st = $wait;
-            }else if($row->status == 3 ) {
-                $st = "<span class='badge bg-warning'> Menuggu Persetujuan Direktur HRD </span>";
-            }else if($row->status == 4) {
-                $st = "<span class='badge bg-success'>Telah disetujui </span>";
+            }else if($row->status == 1 ) {
+                $st = $waitHRD;
+            }else if($row->status == 2) {
+                $st = $waitDirektur;
+            }else if($row->status == 3) {
+                $st = "<span class='badge bg-warning'> Menuggu Persetujuan Direktur HRD </span>";;
 
             }else {
-                $st = "<span class='badge bg-danger'> Error </span>";
+                $st = "<span class='badge bg-success'> Telah disetujui </span>";
 
             }
             return $st;

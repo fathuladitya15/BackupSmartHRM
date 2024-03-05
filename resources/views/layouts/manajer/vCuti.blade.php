@@ -1,5 +1,5 @@
 @extends('vBase')
-@section('title') {{  'Data Kategori' }}@endsection
+@section('title') {{  'Data Pengajuan Cuti' }}@endsection
 @push('css')
 <link rel="stylesheet" href="{{ asset('assets/css/jquery.signature.css') }}">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />

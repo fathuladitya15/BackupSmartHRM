@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+USE PDF;
 use Auth;
 use Datetime;
 use Carbon\Carbon;
@@ -24,7 +25,7 @@ class CutiController extends Controller
     function index() {
         $roles = Auth::user()->roles;
 
-        if(in_array($roles,['kr-project','kr-pusat','manajer'])){
+        if(in_array($roles,['kr-project','kr-pusat'])){
             $kategori_cuti = KategoriCuti::all();
             $data          = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first();
             $divisi        = Divisi::find($data->divisi)->nama_divisi;
@@ -36,11 +37,12 @@ class CutiController extends Controller
                                 ->where('tahun',$tahun_ini)
                                 ->selectRaw('SUM(convert(int,cuti_get)) as cuti_yang_diambil')->first();
             $sisa_cuti     = 12 - (int) $total_semua_cuti->cuti_yang_diambil;
+            // dd($sisa_cuti);
             return view('layouts.karyawan.vCuti',compact('kategori_cuti','divisi','jabatan','periode_cuti','sisa_cuti'));
 
         }
         else if($roles == 'manajer') {
-
+            return view('layouts.manajer.vCuti');
         }
         else if($roles == 'hrd') {
             $kategori_cuti = KategoriCuti::all();
@@ -262,5 +264,13 @@ class CutiController extends Controller
         }
         return response()->json($status);
 
+    }
+
+    function dokumen_cuti($id) {
+        $data       = Cuti::find($id);
+        $filename   = 'Form Cuti '.$data->nama_karyawan;
+        $pdf        = PDF::loadview("layouts.pdf_view.pdfFormCuti",['data' => $data,'filename'=> $filename]);
+        $pdf->setPaper('A4', 'landscape');
+        return $pdf->stream($filename.'.pdf');
     }
 }
