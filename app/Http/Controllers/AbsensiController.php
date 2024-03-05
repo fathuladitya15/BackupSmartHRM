@@ -11,6 +11,6 @@ class AbsensiController extends Controller
     }
 
     function index() {
-        dd("INDEX ABSENSI");
+
     }
 }

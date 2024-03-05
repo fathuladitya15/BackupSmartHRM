@@ -11,6 +11,7 @@ use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\LemburController;
 use App\Http\Controllers\DivisiController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\DatatableController;
@@ -49,6 +50,8 @@ Route::middleware('revalidate')->group(function() {
     Route::middleware('SingelSession')->group(function() {
         Route::middleware('auth')->group(function() {
             Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+            Route::get('/absen',[AbsensiController::class,'index'])->name("absensi");
 
             Route::get('/karyawan',[ManageKaryawanController::class,'index'])->name('karyawan');
             Route::get('/karyawan/add',[ManageKaryawanController::class,'create'])->name('karyawan-add');

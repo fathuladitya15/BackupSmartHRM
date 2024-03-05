@@ -34,7 +34,7 @@
                 @endphp
                 {{ $status }}
             </p>
-            <a href="javascript:;" class="btn btn-sm btn-outline-primary">Lihat Absensi  </a>
+            <a href="{{ route('absensi') }}" class="btn btn-sm btn-outline-primary">Lihat Absensi  </a>
             </div>
         </div>
         <div class="col-sm-5 text-center text-sm-left">
