@@ -166,6 +166,8 @@ class ManageKaryawanController extends Controller
     function validate_hrd($request) {
 
         $validator = [
+            'username'           => 'unique|users,username',
+            'id_karyawan'        => 'unique|users,id_karyawan',
             'nohp'               => 'min:10|unique:table_karyawan,no_hp',
             'email'              => 'required|email|unique:users,email',
             'profile_pictures'   => 'mimes:jpg,jpeg,png|max:1000',
@@ -180,6 +182,8 @@ class ManageKaryawanController extends Controller
         ];
 
         $message = [
+            'username.unique'              => 'Username sudah terpakai',
+            'id_karyawan.unique'           => 'ID Karyawan Sudah terdaftar',
             'nohp.min'              => 'Nomor Handphone minimal 10 digit',
             'nohp.unique'           => 'Nomor Handphone sudah digunakan',
             'email.unique'          => 'Email sudah digunakan',
@@ -268,7 +272,6 @@ class ManageKaryawanController extends Controller
             'no_jkn'            => $request->jkn,
         ];
 
-        // dd($dataUsers,$dataKaryawan);
         if($crateUsers) {
 
             Karyawan::create($dataKaryawan);

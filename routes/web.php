@@ -46,6 +46,12 @@ Route::post('/search-bank',function(Request $request) {
     return response()->json($message);
 })->name("cari-bank");
 
+Route::get('/times', function(Request $request) {
+    $now = Carbon\Carbon::now()->translatedFormat('l, d F Y / H:i');
+
+    return response()->json($now) ;
+})->name("times");
+
 Route::middleware('revalidate')->group(function() {
     Route::middleware('SingelSession')->group(function() {
         Route::middleware('auth')->group(function() {

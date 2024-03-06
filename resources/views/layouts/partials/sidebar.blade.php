@@ -123,7 +123,7 @@
                     @endif
 
                     {{-- ABSENSI --}}
-                    <li class="menu-item {{  menuOpen(['shift']) }} ">
+                    <li class="menu-item {{  menuOpen(['shift','absensi']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-calendar"></i>
                             <div data-i18n="">Absensi</div>
@@ -163,9 +163,9 @@
                                 </li>
 
                             @endif
-                            @if (in_array(Auth::user()->roles,['kr-pusat','karyawan']))
-                                <li class="menu-item ">
-                                    <a href="#" class="menu-link" >
+                            @if (in_array(Auth::user()->roles,['kr-pusat','karyawan','kr-project']))
+                                <li class="menu-item {{ menuActive('absensi') }}">
+                                    <a href="{{ route('absensi') }}" class="menu-link" >
                                     <div data-i18n="Basic">Absensi Anda</div>
                                     </a>
                                 </li>
