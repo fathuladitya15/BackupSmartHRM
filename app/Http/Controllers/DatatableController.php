@@ -1356,4 +1356,21 @@ class DatatableController extends Controller
 
 
 
+    // FILEMANAGER USER
+
+    function file_manager(Request $request) {
+        $data = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->get();
+
+        $dt = DataTables::of($data)
+        ->addIndexColumn()
+        ->addColumn('aksi', function($row) {
+            $a = "<a href='javascript:void(0)' id='".$row->slug.'_'.Auth::user()->id_karyawan."' onclick='lihat_file(".'"'.$row->slug.'"'.",".'"'.Auth::user()->id_karyawan.'"'.")' class='btn btn-primary btn-sm'><i class='bx bxs-folder-open'></i>Lihat File</a>";
+            return $a;
+        })
+        ->rawColumns(['aksi'])
+        ->make(true);
+        return $dt;
+    }
+
+
 }

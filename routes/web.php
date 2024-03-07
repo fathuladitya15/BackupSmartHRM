@@ -13,6 +13,7 @@ use App\Http\Controllers\DivisiController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\JabatanController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\DatatableController;
 use App\Http\Controllers\SuperadminController;
@@ -184,6 +185,12 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/check-tanda-tangan',[HomeController::class,'checking_tanda_tangan'])->name('check-tanda-tangan');
             Route::post('/check-tanda-tangan/save',[HomeController::class,'save_tanda_tangan'])->name('save-tanda-tangan');
         });
+
+        Route::get("/profile",[ProfileController::class,'index'])->name('profile');
+        Route::get("/profile/dokumen",[ProfileController::class,'index_dokumen'])->name('profile-dokumen');
+        Route::post("/profile/update-password",[ProfileController::class,'update_password'])->name('update_password');
+        Route::post("/profile/upload-files",[ProfileController::class,'upload_files'])->name('files-uploads');
+        Route::get('/profile/filemanager',[DatatableController::class,'file_manager'])->name('profile-filemanager');
 
     });
 

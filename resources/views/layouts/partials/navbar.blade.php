@@ -7,6 +7,14 @@
     $jabatan    = App\Models\Jabatan::find($table_kr->jabatan)->nama_jabatan;
     $client     = App\Models\Clients::find(Auth::user()->id_client)->nama_client;
     $avatar     = $table_kr->jenis_kelamin == "L" ? 1 : 6;
+
+    $pp_cek  = App\Models\Filemanager::where("slug",'foto_profile')->where('id_karyawan', Auth::user()->id_karyawan)->first();
+
+    if($pp_cek) {
+        $foto_profile = asset($pp_cek->path) ;
+    }else {
+        $foto_profile = asset('assets/img/avatars/'.$avatar.'.png');
+    }
 @endphp
 @endif
 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"id="layout-navbar">
@@ -46,7 +54,7 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
             <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                 <div class="avatar avatar-online">
-                <img src="{{ asset('assets/img/avatars/'.$avatar.'.png') }}" alt class="w-px-40 h-auto rounded-circle" />
+                <img src="{{ $foto_profile }}" alt class="w-px-40 h-auto rounded-circle" />
                 </div>
             </a>
 
@@ -56,7 +64,7 @@
                     <div class="d-flex">
                     <div class="flex-shrink-0 me-3">
                         <div class="avatar avatar-online">
-                        <img src="{{ asset('assets/img/avatars/'.$avatar.'.png') }}" alt class="w-px-40 h-auto rounded-circle" />
+                        <img src="{{ $foto_profile }}" alt class="w-px-40 h-auto rounded-circle" />
                         </div>
                     </div>
                     <div class="flex-grow-1">
@@ -73,7 +81,7 @@
                     <div class="dropdown-divider"></div>
                 </li>
                 <li>
-                    <a href="#" class="dropdown-item">
+                    <a href="{{ route("profile") }}" class="dropdown-item">
                         <i class="bx bx-user me-2"></i>
                         <span class="align-middle">Profile</span>
                     </a>

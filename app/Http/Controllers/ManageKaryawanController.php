@@ -732,7 +732,7 @@ class ManageKaryawanController extends Controller
             $res = [
                 'status'    => TRUE,
                 'alt'       => $data->keterangan,
-                'path'      => asset($data->path.$data->filename),
+                'path'      => asset($data->path),
                 'extension' => $data->extension,
             ];
         }else {

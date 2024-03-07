@@ -1,6 +1,6 @@
 @extends('vBase')
 @section('title') {{  'Surat Peringatan' }}@endsection
-@push('css')=
+@push('css')
 <style>
     .black {
         color: black;
