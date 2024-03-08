@@ -70,7 +70,7 @@
 
             <ul class="menu-inner py-1">
                 <!-- Dashboard -->
-                <li class="menu-item {{ menuActive('home') }}">
+                <li class="menu-item {{ menuActive(['home','profile']) }}">
                     <a href="{{ route("home") }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-home-circle"></i>
                     <div data-i18n="Analytics">Dashboard</div>
@@ -146,7 +146,7 @@
                                 @endif
                                 @if (in_array(Auth::user()->roles,['hrd','spv-internal']))
                                     <li class="menu-item ">
-                                        <a href="#" class="menu-link" >
+                                        <a href="{{ route('absensi-data',['karyawan' => 'pusat']) }}" class="menu-link" >
                                         <div data-i18n="Basic">Log Absensi PUSAT</div>
                                         </a>
                                     </li>

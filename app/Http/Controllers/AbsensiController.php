@@ -14,7 +14,12 @@ class AbsensiController extends Controller
         $this->middleware("auth");
     }
 
-    function index(Request $request) {
+    function index($kr) {
+        // dd($kr);
+        return view('layouts.hrd.vAbsensi');
+    }
+
+    function cek(Request $request) {
 
         $ip = \Request::getClientIp(true); // Get the user's IP address
         // dd($ip);

@@ -58,7 +58,8 @@ Route::middleware('revalidate')->group(function() {
         Route::middleware('auth')->group(function() {
             Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-            Route::get('/absen',[AbsensiController::class,'index'])->name("absensi");
+            Route::get('/absen',[AbsensiController::class,'cek'])->name("absensi");
+            Route::get('/Absensi/{karyawan}',[AbsensiController::class,'index'])->name('absensi-data');
 
             Route::get('/karyawan',[ManageKaryawanController::class,'index'])->name('karyawan');
             Route::get('/karyawan/add',[ManageKaryawanController::class,'create'])->name('karyawan-add');
@@ -186,11 +187,11 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/check-tanda-tangan/save',[HomeController::class,'save_tanda_tangan'])->name('save-tanda-tangan');
         });
 
-        Route::get("/profile",[ProfileController::class,'index'])->name('profile');
-        Route::get("/profile/dokumen",[ProfileController::class,'index_dokumen'])->name('profile-dokumen');
+        Route::get("/profile/{menu}",[ProfileController::class,'index'])->name('profile');
+        Route::get("/profile/data-pribadi",[ProfileController::class,'index_dataPribadi'])->name('profile-datadiri');
         Route::post("/profile/update-password",[ProfileController::class,'update_password'])->name('update_password');
         Route::post("/profile/upload-files",[ProfileController::class,'upload_files'])->name('files-uploads');
-        Route::get('/profile/filemanager',[DatatableController::class,'file_manager'])->name('profile-filemanager');
+        Route::get('/profile/tes/filemanager',[DatatableController::class,'file_manager'])->name('profile-filemanager');
 
     });
 

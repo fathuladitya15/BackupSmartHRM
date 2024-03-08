@@ -81,7 +81,7 @@
                     <div class="dropdown-divider"></div>
                 </li>
                 <li>
-                    <a href="{{ route("profile") }}" class="dropdown-item">
+                    <a href="{{ route("profile",['menu' => 'akun']) }}" class="dropdown-item">
                         <i class="bx bx-user me-2"></i>
                         <span class="align-middle">Profile</span>
                     </a>

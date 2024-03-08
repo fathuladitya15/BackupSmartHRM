@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\Filemanager;
 use App\Models\Karyawan;
 use App\Models\Jabatan;
+use App\Models\Clients;
 use App\Models\User;
 use App\Models\Divisi;
 use Carbon\Carbon;
@@ -22,7 +23,7 @@ class ProfileController extends Controller
         $this->middleware("auth");
     }
 
-    function index() {
+    function index($menu) {
 
 
         $role       = Auth::user()->roles;
@@ -31,6 +32,7 @@ class ProfileController extends Controller
         $divisi     = Divisi::find($kr->divisi)->nama_divisi;
         $join_date  = Carbon::parse($kr->join_date)->translatedFormat('l, d F Y');
         $avatar     = $kr->jenis_kelamin == "L" ? 1 : 6;
+        $lokasi_kerja = Clients::find($kr->lokasi_kerja);
 
 
         $pp_cek  = Filemanager::where("slug",'foto_profile')->where('id_karyawan', Auth::user()->id_karyawan)->first();
@@ -41,11 +43,26 @@ class ProfileController extends Controller
             $foto_profile = asset('assets/img/avatars/'.$avatar.'.png');
         }
 
-        if(in_array($role,['kr-pusat','kr-project'])){
-            return view("layouts.karyawan.vProfile",compact('jabatan','divisi','join_date','kr','foto_profile'));
+        if($menu == 'akun') {
+            $v = 'layouts.profile.pAkun';
+        }else if($menu == 'dokumen') {
+            $v = 'layouts.profile.pDokumen';
+        }else if($menu == 'datadiri'){
+            $v = 'layouts.profile.pDatadiri';
+        }else if($menu == 'karyawan') {
+            $v = 'layouts.profile.pKaryawan';
         }else {
-            dd($role);
+            abort(404);
         }
+
+        return view("layouts.profile.vBaseProfile",compact('jabatan','divisi','join_date','kr','foto_profile','v','lokasi_kerja'));
+
+
+        // if(in_array($role,['kr-pusat','kr-project','spv-internal','hrd','direktur','admin'])){
+        //     return view("layouts.profile.vBaseProfile",compact('jabatan','divisi','join_date','kr','foto_profile'));
+        // }else {
+        //     dd($role);
+        // }
 
     }
 
@@ -123,30 +140,7 @@ class ProfileController extends Controller
         return response()->json($pesan);
     }
 
-    function index_dokumen() {
-        $role       = Auth::user()->roles;
-        $kr         = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first();
-        $jabatan    = Jabatan::find($kr->jabatan)->nama_jabatan;
-        $divisi     = Divisi::find($kr->divisi)->nama_divisi;
-        $avatar     = $kr->jenis_kelamin == "L" ? 1 : 6;
-        $join_date  = Carbon::parse($kr->join_date)->translatedFormat('l, d F Y');
 
-        $file       = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->whereIn('slug',['signature','jkn','kpj','npwp','ktp','cv','lainnya'])->get();
-
-        $pp_cek  = Filemanager::where("slug",'foto_profile')->where('id_karyawan', Auth::user()->id_karyawan)->first();
-        if($pp_cek) {
-            $foto_profile = asset($pp_cek->path) ;
-        }else {
-            $foto_profile = asset('assets/img/avatars/'.$avatar.'.png');
-        }
-
-
-        if(in_array($role,['kr-pusat','kr-project'])){
-            return view("layouts.karyawan.vDokumen",compact('jabatan','divisi','join_date','kr','foto_profile','file'));
-        }else {
-            dd($role);
-        }
-    }
 
     function upload_files(Request $request) {
         $cek_files = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug',$request->jenis_file)->count();
