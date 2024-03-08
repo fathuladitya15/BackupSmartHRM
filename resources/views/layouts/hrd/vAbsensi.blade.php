@@ -1,7 +1,6 @@
 @extends('vBase')
 @section('title') {{  'Data Absensi ' }}@endsection
 @push('css')
-<link rel="stylesheet" href="{{ asset('assets/css/jquery.signature.css') }}">
 
 
 <style>
@@ -32,25 +31,23 @@
     .swal2-container {
         z-index: 999999;
     };
-    p#nama_karyawan {
-        margin-top: -50px !important;
-    }
-    p#nama_korlap {
-        margin-top: -50px !important;
-    }
-    .over_text {
-        margin-top: -50px !important;
-    }
-    #button_ttd{
-        width: 150px;
-    }
 </style>
 @endpush
 @section('content')
 
-<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Absensi /</span> Data Absensi {{ Str::title(Request::segment(2)) }}</h4>
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Absensi /</span> Data Absensi Internal {{ Str::title(Request::segment(2)) }} PFI</h4>
 
 <br><br>
+@if ($errors->any())
+@foreach ($errors->all() as $item)
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ $item }}
+        <button type="button" class="btn btn-default " style="float: right;" data-bs-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+@endforeach
+@endif
 <div class="row">
     <div class="col-xxl">
         <div class="card mb-4">
@@ -58,8 +55,14 @@
                 <h5 class="mb-0">Data  Absensi {{ Str::title(Request::segment(2)) }}</h5>
             </div>
             <div class="card-body">
-                <div class="col-lg-6">
-                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalFilter">Filter</button>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <button class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#modalFilter"> <i class='bx bx-filter' ></i> Filter</button>
+                    </div>
+                    <div class="col-lg-6">
+                        <button class="btn btn-danger " data-bs-toggle="modal" data-bs-target="#modalDownload" style="float: right"> <i class='bx bx-download' ></i> Download</button>
+                    </div>
+
                 </div>
             </div>
             <br>
@@ -102,25 +105,150 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="Add" enctype="multipart/form-data">
+            <form id="Add" enctype="multipart/form-data" method="GET" action="{{ route('absensi-search-one',['id' => $kr]) }}">
                 @csrf
+                <input type="hidden" value="{{ $kr }}" name="kr">
                 <div class="modal-body">
-                    <div class="form-group col-lg-6">
-                        <label for="" class="col-form-label">Pilih Karyawan</label>
-                        <select name="id_karyawan" id="id_karyawan" class="form-control">
-                            <option value="">-- Pilih Karyawan --</option>
-                        </select>
+                    <div class="row">
+                        <div class="form-group col-lg-6">
+                            <label for="" class="col-form-label">Pilih Karyawan</label>
+                            <select name="id_karyawan" id="id_karyawan" class="form-control" required>
+                                <option value="">-- Pilih Karyawan --</option>
+                                @foreach ($karyawan as $kr )
+                                    <option value="{{ $kr->id_karyawan }}">{{ $kr->id_karyawan }} - {{  $kr->nama_karyawan }}</option>
+
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-3">
+                            <label for="" class="col-form-label">Dari</label>
+                            <input type="date" class="form-control" name="from_date" value="" required>
+                        </div>
+                        <div class="form-group col-lg-3">
+                            <label for="" class="col-form-label">Sampai</label>
+                            <input type="date" class="form-control" name="to_date" value="" required>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer" id="aksi">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDownload" tabindex="-1" role="dialog" aria-labelledby="modalDownloadTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title black" id="exampleModalLongTitle">Download Data</h5>
+                <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="Add" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-lg-6">
+                            <label for="" class="col-form-label">Dari</label>
+                            <input type="date" class="form-control" name="from_date" value="">
+                        </div>
+                        <div class="form-group col-lg-6">
+                            <label for="" class="col-form-label">Sampai</label>
+                            <input type="date" class="form-control" name="to_date" value="">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer" id="aksi">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Download</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 @endsection
+@push('js')
+    <script>
+        var url_data = "{{ $route_data_table }}";
+        var table  = $('#myTable').dataTable({
+            processing: true,
+            serverSide: true,
+            ajax: url_data,
+            columns: [{
+                data: 'DT_RowIndex',
+                orderable: false,
+                searchable: false
+            },  {
+                data: 'face_id',
+                name: 'face_id',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'id_karyawan',
+                name: 'id_karyawan',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'nama_karyawan',
+                name: 'nama_karyawan',
+                orderable: false,
+                searchable: false
+            },{
+                data: 'jabatan',
+                name: 'jabatan',
+                orderable: false,
+                searchable: false
+            },{
+                data: 'divisi',
+                name: 'divisi',
+                orderable: false,
+                searchable: false
+            },{
+                data: 'tanggal',
+                name: 'tanggal',
+                orderable: false,
+                searchable: false
+            },{
+                data: 'jam_masuk',
+                name: 'jam_masuk',
+                orderable: false,
+                searchable: false
+            },{
+                data: 'lokasi_absen_masuk',
+                name: 'lokasi_absen_masuk',
+                orderable: false,
+                searchable: false
+            },{
+                data: 'jam_keluar',
+                name: 'jam_keluar',
+                orderable: false,
+                searchable: false
+            },{
+                data: 'lokasi_absen_plg',
+                name: 'lokasi_absen_plg',
+                orderable: false,
+                searchable: false
+            },{
+                data: 'catatan',
+                name: 'catatan',
+                orderable: false,
+                searchable: false
+            },{
+                data: 'aksi',
+                name: 'aksi',
+                orderable: false,
+                searchable: false
+            },]
+        });
+    </script>
+@endpush
 {{-- @push('js')
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>

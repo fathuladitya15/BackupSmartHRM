@@ -20,17 +20,17 @@ return new class extends Migration
             $table->date('tanggal');
             $table->string('jam_masuk');
             $table->string('lokasi_absen_masuk');
-            $table->string('detail_lokasi_absen_masuk');
+            $table->text('detail_lokasi_absen_masuk');
 
             $table->string('jam_keluar');
-            $table->string('mulai_istirahat');
-            $table->string('selesai_istirahat');
+            $table->string('mulai_istirahat')->nullable();
+            $table->string('selesai_istirahat')->nullable();
             $table->string('shift');
             $table->string('lokasi_absen_plg');
-            $table->string('detail_lokasi_absen_plg');
-            $table->string('latitude');
-            $table->string('longitude');
-            $table->text('catatan');
+            $table->text('detail_lokasi_absen_plg');
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
+            $table->text('catatan')->nullable();
             $table->timestamps();
         });
     }

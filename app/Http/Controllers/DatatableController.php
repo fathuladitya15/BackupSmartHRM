@@ -1372,5 +1372,24 @@ class DatatableController extends Controller
         return $dt;
     }
 
+    // DATA ABSENSI HRD
+    function absensi_hrd(Request $request,$kr) {
+        $data  = DB::table('table_karyawan as kr')->select('ta.*')
+                ->join('table_absensi as ta','ta.id_karyawan','=','kr.id_karyawan')->where('kategori',$kr)->get();
+
+        $dt = DataTables::of($data)
+        ->addIndexColumn()
+        ->addColumn('face_id', function($row) {
+            return "";
+        })
+        ->addColumn('aksi', function($row) {
+            // $a = "<a href='javascript:void(0)')' class='btn btn-primary btn-sm'><i class='bx bxs-folder-open'></i>Lihat File</a>";
+            return "";
+        })
+        ->rawColumns(['aksi','face_id'])
+        ->make(true);
+        return $dt;
+    }
+
 
 }

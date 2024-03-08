@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 // use Location;
+use DB;
 use Str;
+use Auth;
+use PDF;
 use App\Models\Clients;
+use App\Models\Karyawan;
+use App\Models\Absensi;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -15,8 +20,55 @@ class AbsensiController extends Controller
     }
 
     function index($kr) {
-        // dd($kr);
-        return view('layouts.hrd.vAbsensi');
+        $role = Auth::user()->roles;
+        if($role == 'hrd'){
+            $karyawan = Karyawan::where('kategori',$kr)->get();
+            $absensi  = DB::table('table_karyawan as kr')->select('ta.*')
+                ->join('table_absensi as ta','ta.id_karyawan','=','kr.id_karyawan')->where('kategori',$kr)->get();
+                // dd($absensi);
+            $route_data_table = route('absensi-data-ajax',['karyawan' =>$kr]);
+            return view('layouts.hrd.vAbsensi',compact("route_data_table",'karyawan','kr'));
+        }
+    }
+
+    function search_by_one(Request $request) {
+        $j         = $request->kr;
+        $karyawan = Karyawan::where('kategori',$j)->get();
+
+        $data_karyawan = Karyawan::where('id_karyawan',$request->id_karyawan)->first();
+        $id_karyawan    = $request->id_karyawan;
+        $from_date      = $request->from_date;
+        $to_date        = $request->to_date;
+
+        $cek = Absensi::whereBetween('tanggal',[$from_date,$to_date])->where('id_karyawan',$id_karyawan)->count();
+        if($cek == 0) {
+            $f = Carbon::parse($from_date)->translatedFormat('d F Y');
+            $t = Carbon::parse($to_date)->translatedFormat('d F Y');
+            $pesan = ['message' => 'Riwayat absensi '.$data_karyawan->nama_karyawan.' pada tanggal '.$f.' s/d '.$t.' tidak tersedia'];
+            return redirect()->route('absensi-data',['karyawan' => $j])->withErrors($pesan);
+        }
+
+        $search         = Absensi::whereBetween('tanggal',[$from_date,$to_date])->where('id_karyawan',$id_karyawan)->get();
+
+        return view('layouts.hrd.vAbsensiSearchOne',compact('search','karyawan','from_date','to_date','j','data_karyawan'));
+    }
+
+    function dokumen_perorang(Request $request) {
+        $karyawan = Karyawan::where('id_karyawan',$request->id_karyawan)->first();
+
+        $id_karyawan    = $request->id_karyawan;
+        $from_date      = $request->from_date;
+        $to_date        = $request->to_date;
+
+
+        $filename = "Riwayat Absensi ".$karyawan->nama_karyawan." - ".$karyawan->id_karyawan." periode ".$from_date."/".$to_date;
+
+        $search         = Absensi::whereBetween('tanggal',[$from_date,$to_date])->where('id_karyawan',$id_karyawan)->get();
+        $pdf = PDF::loadview('layouts.pdf_view.pdfAbsensi',['data' => $search,'from_date' => $from_date,'to_date' => $to_date,'data_kr' => $karyawan,'filename' => $filename]);
+        $pdf->setPaper('A4', 'landscape');
+        return $pdf->stream();
+        // return view('');
+        // dd($request->all());
     }
 
     function cek(Request $request) {

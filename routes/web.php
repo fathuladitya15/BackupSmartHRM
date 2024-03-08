@@ -60,6 +60,9 @@ Route::middleware('revalidate')->group(function() {
 
             Route::get('/absen',[AbsensiController::class,'cek'])->name("absensi");
             Route::get('/Absensi/{karyawan}',[AbsensiController::class,'index'])->name('absensi-data');
+            Route::get('/Absensi/{karyawan}/data',[DatatableController::class,'absensi_hrd'])->name('absensi-data-ajax');
+            Route::get('/Absensi/data/search/{id}',[AbsensiController::class,'search_by_one'])->name('absensi-search-one');
+            Route::post('/Absensi/data/search/dokumen',[AbsensiController::class,'dokumen_perorang'])->name('absensi-doc-perorang');
 
             Route::get('/karyawan',[ManageKaryawanController::class,'index'])->name('karyawan');
             Route::get('/karyawan/add',[ManageKaryawanController::class,'create'])->name('karyawan-add');

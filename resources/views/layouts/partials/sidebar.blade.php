@@ -123,7 +123,7 @@
                     @endif
 
                     {{-- ABSENSI --}}
-                    <li class="menu-item {{  menuOpen(['shift','absensi']) }} ">
+                    <li class="menu-item {{  menuOpen(['shift','absensi-data']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-calendar"></i>
                             <div data-i18n="">Absensi</div>
@@ -145,13 +145,13 @@
                                     </li>
                                 @endif
                                 @if (in_array(Auth::user()->roles,['hrd','spv-internal']))
-                                    <li class="menu-item ">
+                                    <li class="menu-item {{ Request::segment(2) == 'pusat' ? 'active' : '' }}">
                                         <a href="{{ route('absensi-data',['karyawan' => 'pusat']) }}" class="menu-link" >
                                         <div data-i18n="Basic">Log Absensi PUSAT</div>
                                         </a>
                                     </li>
-                                    <li class="menu-item ">
-                                        <a href="#" class="menu-link" >
+                                    <li class="menu-item {{ Request::segment(2) == 'project' ? 'active' : '' }}">
+                                        <a href="{{ route('absensi-data',['karyawan' => 'project']) }}" class="menu-link" >
                                         <div data-i18n="Basic">Log Absensi PROJECT</div>
                                         </a>
                                     </li>
