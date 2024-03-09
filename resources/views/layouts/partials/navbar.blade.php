@@ -10,11 +10,16 @@
 
     $pp_cek  = App\Models\Filemanager::where("slug",'foto_profile')->where('id_karyawan', Auth::user()->id_karyawan)->first();
 
-    if($pp_cek) {
+    if($pp_cek > 0) {
         $foto_profile = asset($pp_cek->path) ;
     }else {
         $foto_profile = asset('assets/img/avatars/'.$avatar.'.png');
     }
+@endphp
+@else
+@php
+        $foto_profile = asset('assets/img/avatars/1.png');
+    // $foto_profile =
 @endphp
 @endif
 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"id="layout-navbar">

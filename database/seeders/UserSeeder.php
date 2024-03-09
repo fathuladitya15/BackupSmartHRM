@@ -44,14 +44,14 @@ class UserSeeder extends Seeder
         ]);
 
         $admin_AIO_sukabumi     =   User::create([
-                                        'username' => 'rehan',
-                                        'name' => 'REHAN ERLANGGA',
-                                        'email' => 'raihan@gmail.com',
-                                        'password' => Hash::make('password'),
-                                        'roles' => 'admin',
-                                        'id_client' => 3,
-                                        'id_karyawan' => 'PFI00123'
-                                    ]);
+            'username' => 'rehan',
+            'name' => 'REHAN ERLANGGA',
+            'email' => 'raihan@gmail.com',
+            'password' => Hash::make('password'),
+            'roles' => 'admin',
+            'id_client' => 3,
+            'id_karyawan' => 'PFI00123'
+        ]);
         $karyawan_AIO_sukabumi  =   User::create([
             'username' => 'achmad',
             'name' => 'Achmad Siswanto',
