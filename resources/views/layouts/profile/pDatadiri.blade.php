@@ -33,11 +33,11 @@
             <div class="row">
                 <div class="col-md-6">
                     <label for="gender" class="col-form-label">Jenis Kelamin</label><span class="text-danger pl-1">*</span>
-                    <input class="form-control"   name="tglLhr"  value="{{ $kr->jenis_kelamin }}"  type="date" id="tglLhr" readonly>
+                    <input class="form-control"   name="tglLhr"  value="{{ $kr->jenis_kelamin == 'P' ? 'Perempuan' : 'Laki - Laki' }}"  type="text" id="tglLhr" readonly>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="gender" class="col-form-label">Pendidikan</label><span class="text-danger pl-1">*</span>
-                    <input class="form-control"   name="tglLhr"  value="{{ $kr->pendidikan }}"  type="date" id="tglLhr" readonly>
+                    <input class="form-control"   name="tglLhr"  value="{{ $kr->pendidikan }}"  type="text" id="tglLhr" readonly>
                 </div>
             </div>
             <div class="row">
