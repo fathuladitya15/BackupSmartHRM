@@ -8,6 +8,8 @@ use App\Models\Divisi;
 use Carbon\Carbon;
 use App\Models\Filemanager;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
+
 
 class HomeController extends Controller
 {
@@ -26,11 +28,12 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
 
-        $roles = Auth::user()->roles;
-
+        $user = Auth::user();
+        dd($user);
+        dd($user->hasRole(['karyawan','superadmin']));
         // if($roles == 'admin') {
         //     return view('layouts.vSelect');
         // }

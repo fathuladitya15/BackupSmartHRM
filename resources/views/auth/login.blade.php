@@ -72,9 +72,9 @@
                             <button onclick="roles('admin')" class="btn btn-primary btn-sm">Direktur / Supervisor / Admin</button>
                             <button onclick="roles('karyawan')" class="btn btn-primary btn-sm">Karyawan</button>
                         </div>
-                        <form id="formAuthentication" class="mb-3"  >
+                        <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}"  >
                             @csrf
-                            <input type="hidden" class="form-control" id="roles" name="roles" value="" />
+                            <input type="hidden" class="form-control" id="roles" name="as_login" value="" />
                             <div class="mb-3">
                                 <label for="email" class="form-label">Username</label>
                                 <input type="text" class="form-control" id="email" name="username" placeholder="Masukan Username Anda" autofocus/>
@@ -150,6 +150,6 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ asset('assets/js/auth/login.js') }}"></script>
+    {{-- <script src="{{ asset('assets/js/auth/login.js') }}"></script> --}}
   </body>
 </html>

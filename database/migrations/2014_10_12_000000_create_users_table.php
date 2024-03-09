@@ -18,9 +18,10 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('kategori_k')->default('karyawan');
             $table->string('last_session')->nullable();
             $table->string('last_seen')->nullable();
-            $table->string('roles');
+            // $table->string('roles')->nullable();
             $table->string('id_client')->nullable();
             $table->string('id_karyawan')->nullable();
             $table->rememberToken();

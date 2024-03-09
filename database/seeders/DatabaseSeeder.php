@@ -20,18 +20,18 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            UserSeeder::class,
-            ClientSeeder::class,
-            IndoBankSeeder::class,
-            JabatanSeeder::class,
-            DivisiSeeder::class,
             RoleSeeder::class,
-            ShiftSeeder::class,
-            KaryawanSeeder::class,
-            IzinSeeder::class,
-            FilemanagerSeeder::class,
-            KategoriCutiSeeder::class,
-            AbsesnsiSeader::class,
+            UserSeeder::class,
+            // ClientSeeder::class,
+            // IndoBankSeeder::class,
+            // JabatanSeeder::class,
+            // DivisiSeeder::class,
+            // ShiftSeeder::class,
+            // KaryawanSeeder::class,
+            // IzinSeeder::class,
+            // FilemanagerSeeder::class,
+            // KategoriCutiSeeder::class,
+            // AbsesnsiSeader::class,
         ]);
     }
 }
