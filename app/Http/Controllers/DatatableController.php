@@ -1002,6 +1002,7 @@ class DatatableController extends Controller
 
     function data_peringatan_karyawan() {
         $data = Peringatan::where("karyawan_id",Auth::user()->id_karyawan)->where('status','>',2)->get();
+        // dd($data);
 
         $dt = DataTables::of($data)
             ->addIndexColumn()

@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
 
-        $SuperAdmiin = User::create([
+        $SuperAdmin = User::create([
             'username' => 'mfa',
             'name' => 'fathul',
             'email' => 'Email@gmail.com',
@@ -33,6 +33,7 @@ class UserSeeder extends Seeder
             'id_client' => 2,
             'id_karyawan' => '22001'
         ]);
+
         $admin_megasari     = User::create([
             'username' => 'rasya',
             'name' => 'Rasya Bayu Pamungkas',
@@ -52,6 +53,7 @@ class UserSeeder extends Seeder
             'id_client' => 3,
             'id_karyawan' => 'PFI00123'
         ]);
+
         $karyawan_AIO_sukabumi  =   User::create([
             'username' => 'achmad',
             'name' => 'Achmad Siswanto',
@@ -90,7 +92,7 @@ class UserSeeder extends Seeder
                 'roles'     => 'direktur',
                 'id_client' => 1,
                 'id_karyawan' => 'PFI18723'
-            ]);
+        ]);
 
         $manager_Finance   =    User::create([
             'username'  => 'manager_finance',
@@ -101,6 +103,7 @@ class UserSeeder extends Seeder
             'id_client' => 1,
             'id_karyawan' => 'PFI18723111'
         ]);
+
 
 
     }

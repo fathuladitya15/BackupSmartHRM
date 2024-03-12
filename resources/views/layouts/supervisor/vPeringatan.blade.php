@@ -50,16 +50,40 @@
 @section('content')
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Surat /</span>Peringatan</h4>
 <div class="row">
+    <div class="col-md-6" style="">
+        <div class="card bg-success">
+            <div class="card-body">
+                <h5 >Surat Peringatan</h5>
+                <h3 >{{ $total_surat }} Surat Peringatan</h3>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-warning" >
+            <div class="card-body">
+                <h5 >Menunggu Persetujuan</h5>
+                <h3 >{{ $total_menuggu }} Permintaan</h3>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br>
+<div class="row">
     <div class="col-xxl">
         <div class="card mb-4">
+
             <div class="card-header d-flex align-items-center justify-content-between" >
                 <h5 class="mb-0">Data Surat Peringatan </h5>
             </div>
+            @if ( in_array(Auth::user()->roles,['admin','korlap']))
             <div class="card-title">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" style="float: right">
                     <i class='bx bx-plus'></i> Tambah Lembur
                 </button>
             </div>
+
+            @endif
             <br>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">

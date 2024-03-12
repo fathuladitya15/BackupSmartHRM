@@ -30,6 +30,7 @@ class HomeController extends Controller
     {
 
         $roles = Auth::user()->roles;
+        // dd($roles);
 
         // if($roles == 'admin') {
         //     return view('layouts.vSelect');

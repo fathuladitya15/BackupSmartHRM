@@ -152,7 +152,7 @@ Route::middleware('revalidate')->group(function() {
 
 
             Route::middleware(['role:karyawan'])->group(function(){
-                Route::get('/surat-peringatan/data-karyawan',[DatatableController::class,"data_peringatan_karyawan"])->name('peringatan-data-karyawan');
+                Route::get('/surat-peringatan/data-karyawan',[DatatableController::class,"data_peringatan_karyawan"])->name('peringatan-data-kr');
             });
 
             Route::middleware(['role:spv-internal'])->group(function(){
@@ -160,7 +160,7 @@ Route::middleware('revalidate')->group(function() {
 
             });
             Route::middleware(['role:admin:korlap'])->group(function() {
-            Route::post('/surat-peringatan/get-karyawan',[PeringatanController::class,'data_karyawan'])->name("peringatan-data-karyawan");
+                Route::post('/surat-peringatan/get-karyawan',[PeringatanController::class,'data_karyawan'])->name("peringatan-data-karyawan");
 
                 Route::get('/surat-peringatan/data-admin',[DatatableController::class,'data_peringatan_admin'])->name('peringatan-data-admin');
             });

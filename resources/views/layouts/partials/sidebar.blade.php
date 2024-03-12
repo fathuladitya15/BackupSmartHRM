@@ -138,11 +138,12 @@
                                         </a>
                                     </li>
                                     @endif
-                                    <li class="menu-item ">
-                                        <a href="#" class="menu-link" >
+                                    <li class="menu-item  {{ Request::segment(2) == 'khl' ? 'active' : '' }} ">
+                                        <a href="{{ route('absensi-data',['karyawan' => 'khl']) }}" class="menu-link" >
                                         <div data-i18n="Basic">Log Absensi KHL</div>
                                         </a>
                                     </li>
+
                                 @endif
                                 @if (in_array(Auth::user()->roles,['hrd','spv-internal']))
                                     <li class="menu-item {{ Request::segment(2) == 'pusat' ? 'active' : '' }}">
@@ -235,7 +236,7 @@
 
                     </li>
 
-                    @if(in_array(Auth::user()->roles,['admin','korlap']))
+                    @if(in_array(Auth::user()->roles,['admin','korlap','spv-internal']))
                         @if (in_array(Auth::user()->id_client,[2,8]))
                             <li class="menu-item {{  menuOpen(['produk']) }}">
                                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -305,6 +306,27 @@
                         </li>
                     @endif
 
+                    @if(in_array(Auth::user()->roles,['karyawan']))
+                            <li class="menu-item {{  menuOpen(['peringatan']) }} ">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <i class="menu-icon tf-icons bx bx-file"></i>
+                                <div data-i18n="Authentications">Surat</div>
+                                </a>
+                                <ul class="menu-sub">
+                                    <li class="menu-item {{  menuActive('peringatan') }}">
+                                        <a href="{{ route('peringatan') }}" class="menu-link" >
+                                        <div data-i18n="Basic">Surat Peringatan</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item {{  menuActive('spv-packlaring-index') }}">
+                                        <a href="#" class="menu-link" >
+                                        <div data-i18n="Basic">Surat Referensi Kerja</div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                    @endif
 
 
                     {{-- IZIN --}}

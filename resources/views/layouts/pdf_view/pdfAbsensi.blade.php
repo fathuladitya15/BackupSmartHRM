@@ -50,19 +50,21 @@
     <table class="table table-striped" border="1" width="100%">
         <thead>
             <tr>
-                <th style="text-align:center; font-size:80%" colspan="10"> <b>({{ \Carbon\Carbon::parse($from_date)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($to_date)->translatedFormat('d F Y') }})</b></th>
+                <th style="text-align:center; font-size:80%" colspan="12"> <b>({{ \Carbon\Carbon::parse($from_date)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($to_date)->translatedFormat('d F Y') }})</b></th>
             </tr>
-            <tr style="font-size:60%">
+            <tr class="text-nowrap" style="font-size: 70%">
                 <th>No</th>
                 <th>Tanggal</th>
                 <th>Jabatan</th>
                 <th>Divisi</th>
                 <th>Absen Masuk</th>
-                <th>Mulai Istirahat</th>
-                <th>Selesai Istirahat</th>
+                <th>Lokasi Absen </th>
+                <th>Detail Lokasi</th>
                 <th>Absen Pulang</th>
+                <th>Lokasi Absen</th>
+                <th>Detail Lokasi</th>
                 <th>shift</th>
-                <th>lokasi</th>
+                <th>Catatan</th>
             </tr>
         </thead>
         <tbody>
@@ -76,11 +78,13 @@
                     <td>{{ $item->jabatan }}</td>
                     <td>{{ $item->divisi }}</td>
                     <td>{{ $item->jam_masuk }}</td>
-                    <td>12.00</td>
-                    <td>13.00</td>
+                    <td>{{ $item->lokasi_absen_masuk }}</td>
+                    <td>{{ $item->detail_lokasi_absen_masuk }}</td>
                     <td>{{ $item->jam_keluar }}</td>
-                    <td>Non Shift</td>
                     <td>{{ $item->lokasi_absen_plg }}</td>
+                    <td>{{ $item->detail_lokasi_absen_plg }}</td>
+                    <td>Non Shift</td>
+                    <td>{{ $item->catatan }}</td>
                 </tr>
             @endforeach
         </tbody>

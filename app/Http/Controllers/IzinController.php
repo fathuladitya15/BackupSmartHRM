@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use PDF;
 use Auth;
 use Validator;
@@ -27,9 +28,20 @@ class IzinController extends Controller
         $divisi         = Divisi::find($detail->divisi);
         $jabatan        = Jabatan::find($detail->jabatan);
 
+        $izin_karyawan  = DB::table("table_izin as ti")
+            ->join('table_karyawan as us','us.id_karyawan','=','ti.karyawan_id')
+            ->where('ti.id_client','LIKE','%'.Auth::user()->id_client.'%')
+            ->count();
+
+        $menunggu_tanda_tangan = DB::table("table_izin as ti")
+            ->join('table_karyawan as us','us.id_karyawan','=','ti.karyawan_id')
+            ->where('ti.status','0')
+            ->where('ti.id_client','LIKE','%'.Auth::user()->id_client.'%')
+            ->count();
+
         if($detail->lokasi_kerja != 3) {
             if (in_array($role,['admin','korlap'])){
-                return view('layouts.admin_korlap.vIzinDefault');
+                return view('layouts.admin_korlap.vIzinDefault',compact('izin_karyawan','menunggu_tanda_tangan'));
             }
             elseif($role == 'karyawan') {
                 return view('layouts.izin.vIzinDefault',compact('detail','jabatan','divisi'));

@@ -129,19 +129,22 @@
         <br>
         <table  style="font-size: 80%" >
             <tr style="text-align: center">
-                <td width="80" >Karyawan</td>
+                <td width="80" ></td>
                 <td width="350"></td>
                 <td width="80">HRD Personalia</td>
             </tr>
         </table>
         <br>
+        {{-- @php
+            $signature = App\Models\Filemanager::where('id_karyawan',$data->karyawan_id_pembuat)->where('slug','signature')->first()->path;
+        @endphp
         <div id="ttd">
-            <img src="" alt="" width="100" style="float: right">
-        </div>
+            <img src="{{ asset($signature) }}" alt="" width="100" style="float: right">
+        </div> --}}
         <br><br>
         <table  style="font-size: 100%" >
             <tr style="text-align: center">
-                <td width="90" style="font-size: 80%">{{ Str::title($data->nama_karyawan) }}</td>
+                <td width="90" style="font-size: 80%"></td>
                 <td width="340"></td>
                 <td width="90" style="font-size:80%">{{ $data->nama_pemberi_sp }}</td>
             </tr>

@@ -91,6 +91,7 @@ $("#id_karyawan").change(function() {
         type: "POST",
         data: {id : id_karyawan},
         success : function(s) {
+            console.log(s)
             $("#jabatan").val(s.jabatan)
             $("#lokasi_kerja").val(s.lokasi_kerja)
         },error: function(e) {
@@ -134,7 +135,7 @@ $("#Add").submit(function(e) {
                 });
             }
         },error: function(e) {
-            // console.log(e)
+            console.log(e)
             Swal.fire({
                 title: "Terjadi kesalahan",
                 text: "Hubungi tim IT",

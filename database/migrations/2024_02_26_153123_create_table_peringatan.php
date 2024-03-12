@@ -28,8 +28,8 @@ return new class extends Migration
             $table->string('tanggal_kadaluarsa');
             $table->string('nama_pemberi_sp');
             $table->string('status');
-            $table->string('disetujui_pada');
-            $table->string('disetujui_oleh');
+            $table->string('disetujui_pada')->nullable();
+            $table->string('disetujui_oleh')->nullable();
             $table->timestamps();
         });
     }

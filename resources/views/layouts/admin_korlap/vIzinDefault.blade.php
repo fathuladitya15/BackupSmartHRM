@@ -44,6 +44,26 @@
 @section('content')
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Izin  /</span>Data Pengajuan Izin</h4>
 <div class="row">
+    <div class="col-md-6" style="">
+        <div class="card bg-info">
+            <div class="card-body">
+                <h5>Izin Karyawan</h5>
+                <h3 style="color: white">{{ $izin_karyawan }} Karyawan</h3>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-warning">
+            <div class="card-body">
+                <h5>Menunggu Ditandatangani</h5>
+                <h3 style="color: white"> {{ $menunggu_tanda_tangan }} Karyawan</h3>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br>
+<div class="row">
     <div class="col-xxl">
         @if(session()->has('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -66,24 +86,20 @@
             <div class="card-header d-flex align-items-center justify-content-between" >
                 <h5 class="mb-0">Data Izin </h5>
             </div>
-            <div class="card-title">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" style="float: right">
-                    <i class='bx bx-plus'></i> Tambah Izin
-                </button>
-            </div>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">
                     <table class="table" id="myTable">
                         <thead>
                             <tr class="text-nowrap">
                                 <th>#</th>
+                                <th>Tanggal</th>
                                 <th>No Surat</th>
                                 <th>ID Karyawan</th>
                                 <th>Nama Karyawan</th>
                                 <th>Divisi</th>
                                 <th>Jabatan</th>
                                 <th>Alasan</th>
-                                <th>Jam</th>
+                                <th>Jam Keluar</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
@@ -229,7 +245,7 @@
                     <div class="row" >
                         <div class="form-group col-md-12">
                             <label class=" col-form-label" for="basic-default-name" style="float: right">{{ $lokasi }},
-                            <input type="date" name="tanggal" id="tanggal" required="required" style="border-radius: 10%;border:1px solid;font-size:0.9375rem">
+                            <input type="date" name="tanggal" id="tanggal" required="required" style="border-radius: 10%;border:1px solid;font-size:0.9375rem" disabled>
                         </label>
 
                         </div>

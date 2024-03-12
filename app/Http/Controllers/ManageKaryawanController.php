@@ -50,6 +50,7 @@ class ManageKaryawanController extends Controller
 
     function index() {
         $tipe_akun  = Auth::user()->roles;
+        // dd($tipe_akun);
 
         if($tipe_akun == 'superadmin'){
             $link_data = route('data-kr-superadmin');
@@ -419,8 +420,15 @@ class ManageKaryawanController extends Controller
         $client         = Clients::where('nama_client','Like','%'.$nama_client.'%')->get();
         $data_karyawan  = Karyawan::where('id_karyawan',$id_karyawan)->first();
         $view           = 'layouts.akun.data_perusahaan';
-        $jabatan    = Jabatan::where('id_client',$data_users->id_client)->get();
-        $divisi     = Divisi::where('id_client',$data_users->id_client)->get();
+        if(Auth::user()->roles == 'hrd') {
+            $jabatan = Jabatan::where('id_client',1)->get();
+            $divisi     = Divisi::where('id_client',1)->get();
+
+        }else {
+            $jabatan    = Jabatan::where('id_client',$data_users->id_client)->get();
+            $divisi     = Divisi::where('id_client',$data_users->id_client)->get();
+        }
+
         return view('layouts.akun.index',compact('data_users','view','client','jabatan','divisi','data_karyawan'));
 
     }

@@ -8,6 +8,9 @@ var table  = $('#myTable').dataTable({
         orderable: false,
         searchable: false
     }, {
+        data: 'tanggal_pembuatan',
+        name: 'tanggal_pembuatan',
+    },{
         data: 'no_surat',
         name: 'no_surat',
     }, {
@@ -140,6 +143,7 @@ function detail(id) {
             edit.disabled = true;
         }, success: function(s) {
             var data = s.data;
+            console.log(s)
             if(s.status == true) {
                 $("#exampleModalCenter").modal("show");
 
@@ -151,8 +155,11 @@ function detail(id) {
 
                 if(s.alasan == 'Pribadi') {
                     $("#g_pribadi").prop("checked", true);
+                    $("g_dinas").attr("disabled",true);
                 }else {
+                    $("#g_pribadi").attr("disabled",true);
                     $("#g_dinas").prop("checked", true);
+
 
                 }
 
@@ -160,8 +167,11 @@ function detail(id) {
 
                 if(data.kembali == 0) {
                     $("#g_kembali").prop("checked",true)
+                    $("#g_tidak_kembali").prop("checked", true);
+
                 }else {
                     $("#g_tidak_kembali").prop("checked",true)
+                    $("#g_kembali").prop("checked", true);
 
                 }
                 $("textarea#detail").val(data.detail)

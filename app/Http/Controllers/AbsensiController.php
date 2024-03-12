@@ -12,6 +12,7 @@ use App\Models\Karyawan;
 use App\Models\Absensi;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\User;
 
 class AbsensiController extends Controller
 {
@@ -25,9 +26,20 @@ class AbsensiController extends Controller
             $karyawan = Karyawan::where('kategori',$kr)->get();
             $absensi  = DB::table('table_karyawan as kr')->select('ta.*')
                 ->join('table_absensi as ta','ta.id_karyawan','=','kr.id_karyawan')->where('kategori',$kr)->get();
-                // dd($absensi);
+
             $route_data_table = route('absensi-data-ajax',['karyawan' =>$kr]);
             return view('layouts.hrd.vAbsensi',compact("route_data_table",'karyawan','kr'));
+        }else if(in_array($role,['admin','korlap'])){
+            $data = DB::table('table_karyawan as tk')->select('ta.*')
+                        ->join('table_absensi as ta','ta.id_karyawan','=','tk.id_karyawan')
+                        ->join('users as us ','us.id_karyawan','=','tk.id_karyawan')
+                        ->where('us.id_client',Auth::user()->id_client)
+                        ->where('gol_karyawan',$kr)
+                        ->get();
+                    // dd($data);
+            $karyawan = User::where('id_client',Auth::user()->id_client)->where('roles','karyawan')->get();
+
+            return view('layouts.admin_korlap.vAbsensiMegasari',compact('data','kr','karyawan'));
         }
     }
 

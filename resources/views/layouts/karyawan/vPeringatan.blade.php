@@ -81,7 +81,7 @@
 @push('js')
 <script>
 
-    var  url_data    = "{{ route('peringatan-data-karyawan') }}";
+    var  url_data    = "{{ route('peringatan-data-kr') }}";
 </script>
 <script src="{{ asset('assets/js/karyawan/peringatan.js') }}"></script>
 @endpush

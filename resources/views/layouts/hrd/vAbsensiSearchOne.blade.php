@@ -75,8 +75,8 @@
             <br>
             <div class="card-body">
                 <div class="header-detail">
-                    <div class="logo">
-                        <img class="absensi" src="{{ asset('assets/img/layouts/logo-pfi-dark.png') }}" alt="">
+                    <div class="logo" style="text-align: center">
+                        <img class="absensi" src="{{ asset('assets/img/layouts/logo-pfi-dark.png') }}" style="width: 50%" alt="">
                     </div>
                     <br>
                     <h4 style="color: black; text-align:center;">{{ $data_karyawan->nama_karyawan }}</h4>
@@ -94,9 +94,11 @@
                                 <th>Jabatan</th>
                                 <th>Divisi</th>
                                 <th>Absen Masuk</th>
-                                <th>Mulai Istirahat</th>
-                                <th>Selesai Istirahat</th>
+                                <th>Lokasi Absen </th>
+                                <th>Detail Lokasi</th>
                                 <th>Absen Pulang</th>
+                                <th>Lokasi Absen</th>
+                                <th>Detail Lokasi</th>
                                 <th>shift</th>
                                 <th>lokasi</th>
                             </tr>
@@ -113,11 +115,13 @@
                                 <td>{{ $dt->jabatan }}</td>
                                 <td>{{ $dt->divisi }}</td>
                                 <td>{{ $dt->jam_masuk }}</td>
-                                <td>{{ $dt->mulai_istirahat }}</td>
-                                <td>{{ $dt->selesai_istirahat }}</td>
+                                <td>{{ $dt->lokasi_absen_masuk }}</td>
+                                <td>{{ $dt->detail_lokasi_absen_masuk }}</td>
                                 <td>{{ $dt->jam_keluar }}</td>
+                                <td>{{ $dt->lokasi_absen_pulang }}</td>
+                                <td>{{ $dt->detail_lokasi_absen_masuk }}</td>
                                 <td>Non Shift</td>
-                                <td>{{ Str::limit($dt->detail_lokasi_absen_plg,10)  }}</td>
+                                <td>{{ $dt->catatan  }}</td>
 
                             </tr>
 
