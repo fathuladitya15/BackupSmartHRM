@@ -102,5 +102,54 @@ class AbsesnsiSeader extends Seeder
             'lokasi_absen_plg'              => 'PT Amerta Indah Otsuka ( Sukabumi )',
             'detail_lokasi_absen_plg'       => 'Jl. Siliwangi No.KM. 28, Kutajaya, Kec. Cicurug, Kabupaten Sukabumi, Jawa Barat 43359',
         ]);
+
+        $absen_tgl_1_m = Absensi::create([
+            'id_karyawan'                   => '22001',
+            'nama_karyawan'                 => 'Mamat Alkatiri',
+            'divisi'                        => 'Produksi',
+            'jabatan'                       => 'Pakcing',
+            'tanggal'                       => '2024-03-04',
+            'jam_masuk'                     => '06.55',
+            'lokasi_absen_masuk'            => 'PT Megasari Makmur 3',
+            'detail_lokasi_absen_masuk'     => 'HW5M+F88, Cicadas, Kec. Gn. Putri, Kabupaten Bogor, Jawa Barat 16964',
+            'jam_keluar'                    => '15.05',
+            'shift'                         => '1',
+            'lokasi_absen_plg'              => 'PT Megasari Makmur 3',
+            'detail_lokasi_absen_plg'       => 'HW5M+F88, Cicadas, Kec. Gn. Putri, Kabupaten Bogor, Jawa Barat 16964',
+            'id_client'                     => 2,
+
+        ]);
+        $absen_tgl_2_m = Absensi::create([
+            'id_karyawan'                   => '22001',
+            'nama_karyawan'                 => 'Mamat Alkatiri',
+            'divisi'                        => 'Produksi',
+            'jabatan'                       => 'Pakcing',
+            'tanggal'                       => '2024-03-05',
+            'jam_masuk'                     => '06.55',
+            'lokasi_absen_masuk'            => 'PT Megasari Makmur 3',
+            'detail_lokasi_absen_masuk'     => 'HW5M+F88, Cicadas, Kec. Gn. Putri, Kabupaten Bogor, Jawa Barat 16964',
+            'jam_keluar'                    => '15.05',
+            'shift'                         => '1',
+            'lokasi_absen_plg'              => 'PT Megasari Makmur 3',
+            'detail_lokasi_absen_plg'       => 'HW5M+F88, Cicadas, Kec. Gn. Putri, Kabupaten Bogor, Jawa Barat 16964',
+            'id_client'                     => 2,
+        ]);
+        $absen_tgl_3_m = Absensi::create([
+            'id_karyawan'                   => '22001',
+            'nama_karyawan'                 => 'Mamat Alkatiri',
+            'divisi'                        => 'Produksi',
+            'jabatan'                       => 'Pakcing',
+            'tanggal'                       => '2024-03-06',
+            'jam_masuk'                     => '06.55',
+            'lokasi_absen_masuk'            => 'PT Megasari Makmur 3',
+            'detail_lokasi_absen_masuk'     => 'HW5M+F88, Cicadas, Kec. Gn. Putri, Kabupaten Bogor, Jawa Barat 16964',
+            'jam_keluar'                    => '15.05',
+            'shift'                         => '1',
+            'lokasi_absen_plg'              => 'PT Megasari Makmur 3',
+            'detail_lokasi_absen_plg'       => 'HW5M+F88, Cicadas, Kec. Gn. Putri, Kabupaten Bogor, Jawa Barat 16964',
+            'id_client'                     => 2,
+
+        ]);
+
     }
 }

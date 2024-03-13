@@ -164,17 +164,17 @@ function detail(id) {
 
                 $("ttd").val(1);
 
-                if(data.ttd_mengetahui == null) {
-                    document.getElementById("button_ttd").style.display = "block";
-                }else {
-                    $("ttd").val(1);
-                    document.getElementById("button_ttd").style.display = "none";
-                    document.getElementById("image_ttd").src = assets + data.ttd_mengetahui;
-                }
-                document.getElementById("exampleModalLongTitle").innerHTML = "Detail Data";
-                if(data.status != 0) {
-                    document.getElementById("aksi").style.display = "none";
-                }
+                // if(data.ttd_mengetahui == null) {
+                //     document.getElementById("button_ttd").style.display = "block";
+                // }else {
+                //     $("ttd").val(1);
+                //     document.getElementById("button_ttd").style.display = "none";
+                //     document.getElementById("image_ttd").src = assets + data.ttd_mengetahui;
+                // }
+                // document.getElementById("exampleModalLongTitle").innerHTML = "Detail Data";
+                // if(data.status != 0) {
+                //     document.getElementById("aksi").style.display = "none";
+                // }
             }else {
                 Swal.fire({
                     title: "Terjadi kesalahan",

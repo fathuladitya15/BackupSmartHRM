@@ -42,7 +42,7 @@
 
 @endpush
 @section('content')
-<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Lembur /</span>Data Lembur</h4>
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Izin /</span>Pengajuan Izin</h4>
 <div class="row">
     <div class="col-xxl">
         @if(session()->has('success'))
@@ -80,6 +80,7 @@
                                 <th>Hari</th>
                                 <th>Tanggal</th>
                                 <th>Alasan Keperluan</th>
+                                <th>Jam Keluar</th>
                                 <th>Status</th>
                                 <th>Disetujui Oleh</th>
                                 <th>Aksi</th>

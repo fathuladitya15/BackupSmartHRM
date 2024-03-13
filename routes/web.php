@@ -61,6 +61,7 @@ Route::middleware('revalidate')->group(function() {
 
             Route::get('/absen',[AbsensiController::class,'cek'])->name("absensi");
             Route::get('/Absensi/{karyawan}',[AbsensiController::class,'index'])->name('absensi-data');
+            Route::get('/Absensi/korlap/{gol_karyawan}',[DatatableController::class,'absensi_korlap'])->name("absensi-korlap");
             Route::get('/Absensi/{karyawan}/data',[DatatableController::class,'absensi_hrd'])->name('absensi-data-ajax');
             Route::get('/Absensi/data/search/{id}',[AbsensiController::class,'search_by_one'])->name('absensi-search-one');
             Route::post('/Absensi/data/search/dokumen',[AbsensiController::class,'dokumen_perorang'])->name('absensi-doc-perorang');
@@ -109,6 +110,7 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/lembur/get-files',[LemburController::class,'get_files'])->name('lembur-get-files');
             Route::post('/lember/send-files',[LemburController::class,'acc_data'])->name('lembur-kirim-files');
 
+            Route::get('/lembur/data-lembur-manajer/data',[DatatableController::class,'data_lembur_karyawan_manajer'])->name('lembur-manajer');
 
             Route::get('/surat-peringatan',[PeringatanController::class,'index'])->name('peringatan');
             Route::post('/surat-peringatan/update-karyawan',[PeringatanController::class,'get_detail_karyawan'])->name("peringatan-detail-karyawan");

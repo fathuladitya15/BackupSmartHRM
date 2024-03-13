@@ -58,12 +58,12 @@
                 <th>Jabatan</th>
                 <th>Divisi</th>
                 <th>Absen Masuk</th>
-                <th>Lokasi Absen </th>
-                <th>Detail Lokasi</th>
+                <th>Mulai_istirahat </th>
+                <th>Selesai Istirahat</th>
                 <th>Absen Pulang</th>
                 <th>Lokasi Absen</th>
-                <th>Detail Lokasi</th>
                 <th>shift</th>
+                <th>Detail Lokasi</th>
                 <th>Catatan</th>
             </tr>
         </thead>
@@ -78,12 +78,12 @@
                     <td>{{ $item->jabatan }}</td>
                     <td>{{ $item->divisi }}</td>
                     <td>{{ $item->jam_masuk }}</td>
-                    <td>{{ $item->lokasi_absen_masuk }}</td>
-                    <td>{{ $item->detail_lokasi_absen_masuk }}</td>
+                    <td>{{ $item->mulai_istirahat }}</td>
+                    <td>{{ $item->selesai_istirahat }}</td>
                     <td>{{ $item->jam_keluar }}</td>
                     <td>{{ $item->lokasi_absen_plg }}</td>
+                    <td>{{ $item->shift }}</td>
                     <td>{{ $item->detail_lokasi_absen_plg }}</td>
-                    <td>Non Shift</td>
                     <td>{{ $item->catatan }}</td>
                 </tr>
             @endforeach

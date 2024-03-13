@@ -27,7 +27,7 @@ class LemburController extends Controller
         $cek_divisi = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first()->divisi;
         $name_divisi = Divisi::find($cek_divisi)->nama_divisi;
 
-        if(in_array(Auth::user()->roles,['hrd','manajer','direktur'])) {
+        if(in_array(Auth::user()->roles,['hrd'])) {
             $daftar_kr = User::where('roles','kr-pusat')->orWhere('roles','kr-project')->where('id_client',Auth::user()->id_client)->get();
             $total_jam = DB::table('table_lembur')
                 ->selectRaw('SUM(CAST(total_jam as int)) as jam')
@@ -36,6 +36,12 @@ class LemburController extends Controller
             $kr_lembur = DB::table('table_lembur')->distinct()->where('id_client',Auth::user()->id_client)->count('id_karyawan');
             $wait_lembur = Lembur::where('id_client',Auth::user()->id_client)->where('status','0')->count();
             return view('layouts.hrd.vLembur',compact('daftar_kr'));
+        }else if(Auth::user()->roles == 'direktur') {
+            if($name_divisi == 'MPO'){
+                return view('layouts.manajer.vLembur');
+            }else {
+                return view('layouts.direktur.vLembur');
+            }
         }
         else if(in_array(Auth::user()->roles,['kr-pusat','kr-project'])) {
             $datakr         = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first();
@@ -110,8 +116,29 @@ class LemburController extends Controller
         if($cek_ttd == 1) {
 
             if(in_array($role,['kr-project','kr-pusat'])) {
-
-            }else if($role == 'manager'){
+                $data = [
+                    'id_karyawan'           => $request->id_karyawan,
+                    'nama_karyawan'         => $request->nama_karyawan,
+                    'jabatan'               => $request->jabatan,
+                    'divisi'                => $request->divisi,
+                    'lokasi_kerja'          => $request->lokasi_kerja,
+                    'jam_mulai'             => $request->jam_mulai,
+                    'jam_selesai'           => $request->jam_selesai,
+                    'total_jam'             => $request->jumlah_jam,
+                    'alasan_lembur'         => $request->alasan_lembur,
+                    'tugas'                 => $request->tugas,
+                    'batch'                 => $request->batch,
+                    'group'                 => $request->group,
+                    'status'                => 0,
+                    'tanggal_lembur'        => $request->tanggal_lembur,
+                    'id_client'             => Auth::user()->id_client,
+                    'ttd_karyawan'          => $ttd->path,
+                ];
+                Lembur::create($data);
+                $status = ['status' => TRUE,'title'=>'sukses','pesan' => 'Lembur berhasil ditambahkan'];
+            }
+            else if($role == 'manager'){
+                $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
                 $data = [
                     'status' == 1,
                     'ttd_manajer' => $ttd->path,
@@ -119,21 +146,27 @@ class LemburController extends Controller
                 return $this->update($request->id_lembur,$data);
             }
             else if($role == 'direktur') {
+                $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
+
                 if($divisi != 'MPO'){
                     $dataUpdate = [
                         'status'    => 3,
                         'ttd_direktur' => $ttd->path,
                     ];
                     return $this->update($request->id_lembur,$dataUpdate);
-                }else {
+                }
+                else {
                     $data = [
-                        'status' == 1,
-                        'ttd_manajer' => $ttd->path,
+                        'status' => 1,
+                        'ttd_manager' => $ttd->path,
                     ];
                     return $this->update($request->id_lembur,$data);
+                    // return response()->json($data);
                 }
             }
             else if($role == 'hrd'){
+                $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
+
                 $dataUpdate = [
                     'status'    => 2,
                     'ttd_admin_korlap' => $ttd->path,

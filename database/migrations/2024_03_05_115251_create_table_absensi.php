@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
             $table->text('catatan')->nullable();
+            $table->string('id_client')->nullable();
             $table->timestamps();
         });
     }

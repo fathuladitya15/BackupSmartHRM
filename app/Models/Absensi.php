@@ -29,5 +29,6 @@ class Absensi extends Model
      'latitude',
      'longitude',
      'catatan',
+     'id_client'
     ];
 }

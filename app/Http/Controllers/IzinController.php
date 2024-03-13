@@ -40,16 +40,16 @@ class IzinController extends Controller
             ->count();
 
         if($detail->lokasi_kerja != 3) {
-            if (in_array($role,['admin','korlap'])){
+            if (in_array($role,['admin','korlap'])){ // ADMIN
                 return view('layouts.admin_korlap.vIzinDefault',compact('izin_karyawan','menunggu_tanda_tangan'));
             }
-            elseif($role == 'karyawan') {
+            elseif($role == 'karyawan') { // Karyawan
                 return view('layouts.izin.vIzinDefault',compact('detail','jabatan','divisi'));
             }
-            else if(in_array($role,['direktur','hrd','manajer'])) {
+            else if(in_array($role,['direktur','hrd','manajer'])) { //Direktur
                 return view('layouts.admin_korlap.vIzinPFI',compact('izin_karyawan','menunggu_tanda_tangan'));
             }
-            else if(in_array($role,['kr-project','kr-pusat'])){
+            else if(in_array($role,['kr-project','kr-pusat'])){ // Karyawan
                 return view('layouts.izin.vIzinPFI',compact('jabatan','divisi','detail'));
             }
             else if($role == 'spv-internal') {
@@ -58,12 +58,19 @@ class IzinController extends Controller
         }else {
             if(in_array($role,['admin','korlap'])){
                 return view('layouts.admin_korlap.vIzinAIOSukabumi');
-            }else if($role == 'karyawan') {
+            }
+            else if($role == 'karyawan') {
                 return view('layouts.izin.vIzinAIOSukabumi',compact('detail','jabatan','divisi'));
-            }else if(in_array($role,['kr-project','kr-pusat'])){
+            }
+            else if(in_array($role,['kr-project','kr-pusat'])){
                 return view('layouts.izin.vIzinPFI',compact('jabatan','divisi','detail'));
-            }else {
-                dd($role);
+            }
+            else if($role == 'spv-internal') {
+                return view('layouts.spv.vIzinDefault');
+                // dd($role);
+            }
+            else if($role == 'spv-internal') {
+                abort(404);
             }
         }
 

@@ -68,7 +68,7 @@
             <br>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">
-                    <table class="table table-striped" id="table_Absensi"   >
+                    <table class="table table-striped" id="myTable"   >
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -87,7 +87,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($data as $item)
+                            {{-- @foreach ($data as $item)
                                 <tr>
                                     <td>1</td>
                                     <td>{{ $item->id_karyawan }}</td>
@@ -107,7 +107,7 @@
                                     </td>
                                 </tr>
 
-                            @endforeach
+                            @endforeach --}}
 
                         </tbody>
                     </table>
@@ -207,4 +207,10 @@
 </script>
 <script src="{{ asset("assets/js/hrd/cuti.js") }}"></script>
 @endpush --}}
+@push('js')
+    <script>
+       var url_data = "{{ $route_data_table }}";
+    </script>
+    <script src="{{ asset('assets/js/admin_korlap/absensi.js') }}"></script>
+@endpush
 

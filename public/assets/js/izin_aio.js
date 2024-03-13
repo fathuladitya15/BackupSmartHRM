@@ -23,7 +23,13 @@ var table  = $('#myTable').dataTable({
         name: 'alasan',
         orderable: false,
         searchable: false
-    },  {
+    },
+    {
+        data: 'jam_keluar',
+        name: 'jam_keluar',
+        orderable: false,
+        searchable: false
+    }, {
         data: 'status',
         name: 'status',
         orderable: false,
