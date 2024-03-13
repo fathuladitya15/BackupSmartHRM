@@ -48,7 +48,11 @@ class ProfileController extends Controller
         }else if($menu == 'dokumen') {
             $v = 'layouts.profile.pDokumen';
         }else if($menu == 'datadiri'){
-            $v = 'layouts.profile.pDatadiri';
+            if($role == 'karyawan') {
+                $v = 'layouts.profile.pDatadiri_eks';
+            }else {
+                $v = 'layouts.profile.pDatadiri';
+            }
         }else if($menu == 'karyawan') {
             $v = 'layouts.profile.pKaryawan';
         }else {
@@ -56,14 +60,6 @@ class ProfileController extends Controller
         }
 
         return view("layouts.profile.vBaseProfile",compact('jabatan','divisi','join_date','kr','foto_profile','v','lokasi_kerja'));
-
-
-        // if(in_array($role,['kr-pusat','kr-project','spv-internal','hrd','direktur','admin'])){
-        //     return view("layouts.profile.vBaseProfile",compact('jabatan','divisi','join_date','kr','foto_profile'));
-        // }else {
-        //     dd($role);
-        // }
-
     }
 
     function update_password(Request $request) {
@@ -183,5 +179,22 @@ class ProfileController extends Controller
             $pesan =['status' => TRUE,'title'=> 'Sukses' ,'pesan' => 'dokumen berhasil ditambahkan' ,'data' => 0];
         }
         return response()->json($pesan);
+    }
+
+    function update(Request $request) {
+        $field          = $request->dokumen;
+        $datakr         = Karyawan::where('id_karyawan',$request->id_karyawan)->first();
+        $data           = Karyawan::find($datakr->id);
+        if($field == 'no_nik'){
+            $data->nik   = $request->value_dokumen;
+
+        }else {
+            $data->$field   = $request->value_dokumen;
+        }
+        $data->update();
+
+        $r = str_replace('_',' ',$field);
+        $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => $r];
+        return response()->json($request->all());
     }
 }

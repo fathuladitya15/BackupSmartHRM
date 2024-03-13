@@ -204,6 +204,7 @@ Route::middleware('revalidate')->group(function() {
         Route::post("/profile/update-password",[ProfileController::class,'update_password'])->name('update_password');
         Route::post("/profile/upload-files",[ProfileController::class,'upload_files'])->name('files-uploads');
         Route::get('/profile/tes/filemanager',[DatatableController::class,'file_manager'])->name('profile-filemanager');
+        Route::post('/profile/update-da',[ProfileController::class,'update'])->name('profile-update');
 
     });
 

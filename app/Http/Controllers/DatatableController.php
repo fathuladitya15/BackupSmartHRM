@@ -1363,6 +1363,7 @@ class DatatableController extends Controller
 
     function file_manager(Request $request) {
         $data = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->get();
+        $karyawan = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first();
 
         $dt = DataTables::of($data)
         ->addIndexColumn()
@@ -1370,7 +1371,22 @@ class DatatableController extends Controller
             $a = "<a href='javascript:void(0)' id='".$row->slug.'_'.Auth::user()->id_karyawan."' onclick='lihat_file(".'"'.$row->slug.'"'.",".'"'.Auth::user()->id_karyawan.'"'.")' class='btn btn-primary btn-sm'><i class='bx bxs-folder-open'></i>Lihat File</a>";
             return $a;
         })
-        ->rawColumns(['aksi'])
+        ->addColumn('keterangan', function($row) use ($karyawan) {
+            if(in_array($row->slug, ['ktp','npwp','jkn','kpj'])){
+                if($row->slug == 'ktp'){
+                    $name_field = 'nik';
+                }else {
+                    $name_field = 'no_'.$row->slug;
+                }
+                $s          = "<input type='text' class='form-control' value='".$karyawan->$name_field."' id='input_".$name_field."'  onblur='blurFunction(".'"'.$name_field.'"'.")'>" ;
+
+            }else {
+                $s = "";
+            }
+            return $s;
+        })
+
+        ->rawColumns(['aksi','keterangan'])
         ->make(true);
         return $dt;
     }

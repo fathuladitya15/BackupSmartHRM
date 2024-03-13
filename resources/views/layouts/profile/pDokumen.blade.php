@@ -20,6 +20,7 @@
                         <th>No</th>
                         <th>Nama File</th>
                         <th>Jenis File File</th>
+                        <th>Keterangan</th>
                         <th>Aksi</th>
 
                     </tr>
@@ -110,6 +111,12 @@
         {
             data: 'extension',
             name: 'extension',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'keterangan',
+            name: 'keterangan',
             orderable: false,
             searchable: false
         },
@@ -282,5 +289,26 @@
     $('#exampleModalCenter').on('hidden.bs.modal', function(e) {
         $(this).find('form').trigger('reset');
     });
+
+    function blurFunction(val) {
+        var id      = "{{ Auth::user()->id_karyawan }}";
+        var value   = document.getElementById('input_'+val).value;
+
+        $.ajax({
+            url : "{{ route('profile-update') }}",
+            data : {id_karyawan : id, dokumen: val , value_dokumen: value},
+            type:"POST",
+            beforeSend: function() {
+
+            }, success: function(s) {
+                console.log(s);
+            }  ,error : function(e){
+                console.log(e);
+            }, complete:function() {
+
+            }
+        })
+
+    }
 </script>
 @endpush
