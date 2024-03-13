@@ -18,6 +18,7 @@ use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\DatatableController;
 use App\Http\Controllers\SuperadminController;
 use App\Http\Controllers\PeringatanController;
+use App\Http\Controllers\ReferensiKerjaController;
 use App\Http\Controllers\ManageKaryawanController;
 
 /*
@@ -116,6 +117,14 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/surat-peringatan/details',[PeringatanController::class,'details'])->name('peringatan-detail');
             Route::post('/surat-peringatan/update',[PeringatanController::class,'update'])->name('peringatan-update');
             route::get('/surat-peringatan/files/{id}',[PeringatanController::class,'files'])->name('peringatan-file');
+
+
+            Route::get('/surat-referensi-kerja',[ReferensiKerjaController::class,'index'])->name('index-rf');
+            Route::post('/surat-referensi-kerja/save',[ReferensiKerjaController::class,'save'])->name('save-rf');
+            Route::get('/surat-referensi-kerja/data',[DatatableController::class,'data_referensi_kerja'])->name('data-rf');
+            Route::post('/surat-referensi-kerja/update',[ReferensiKerjaController::class,'update'])->name('update-rf');
+            Route::post('/surat-referensi-kerja/detail',[ReferensiKerjaController::class,'detail'])->name('detail-rf');
+            Route::get('/surat-referensi-kerja/dokumen/{id}',[ReferensiKerjaController::class,'dokumen'])->name('dokumen-rf');
 
             Route::get('/izin',[IzinController::class,'index'])->name('izin');
             Route::get('/izin-self',[IzinController::class,'self'])->name('izin-self');

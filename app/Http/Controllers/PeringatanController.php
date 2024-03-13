@@ -44,7 +44,7 @@ class PeringatanController extends Controller
         $karyawan   =   Karyawan::where('id_karyawan',$request->id)->first();
         $jabatan    =   Jabatan::find($karyawan->jabatan)->nama_jabatan;
         $lokasi_    =   Clients::find($karyawan->lokasi_kerja)->nama_client;
-        return response()->json(['jabatan' => $jabatan,'lokasi_kerja' => $lokasi_]);
+        return response()->json(['jabatan' => $jabatan,'lokasi_kerja' => $lokasi_,'karyawan' => $karyawan]);
     }
 
     function save(Request $request) {

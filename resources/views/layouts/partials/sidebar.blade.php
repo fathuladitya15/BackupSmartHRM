@@ -286,7 +286,7 @@
                             </li>
                         @endif
                          {{-- SURAT PERINGATAN --}}
-                        <li class="menu-item {{  menuOpen(['peringatan']) }} ">
+                        <li class="menu-item {{  menuOpen(['peringatan','index-rf']) }} ">
                             <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-file"></i>
                             <div data-i18n="Authentications">Surat</div>
@@ -297,8 +297,8 @@
                                     <div data-i18n="Basic">Surat Peringatan</div>
                                     </a>
                                 </li>
-                                <li class="menu-item {{  menuActive('spv-packlaring-index') }}">
-                                    <a href="#" class="menu-link" >
+                                <li class="menu-item {{  menuActive('index-rf') }}">
+                                    <a href="{{ route('index-rf') }}" class="menu-link" >
                                     <div data-i18n="Basic">Surat Referensi Kerja</div>
                                     </a>
                                 </li>
@@ -307,7 +307,7 @@
                     @endif
 
                     @if(in_array(Auth::user()->roles,['karyawan']))
-                            <li class="menu-item {{  menuOpen(['peringatan']) }} ">
+                            <li class="menu-item {{  menuOpen(['peringatan','index-rf']) }} ">
                                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                                 <i class="menu-icon tf-icons bx bx-file"></i>
                                 <div data-i18n="Authentications">Surat</div>
@@ -318,8 +318,8 @@
                                         <div data-i18n="Basic">Surat Peringatan</div>
                                         </a>
                                     </li>
-                                    <li class="menu-item {{  menuActive('spv-packlaring-index') }}">
-                                        <a href="#" class="menu-link" >
+                                    <li class="menu-item {{  menuActive('index-rf') }}">
+                                        <a href="{{ route('index-rf') }}" class="menu-link" >
                                         <div data-i18n="Basic">Surat Referensi Kerja</div>
                                         </a>
                                     </li>
@@ -376,6 +376,20 @@
 
                 @if (Auth::user()->roles == 'direktur')
                     <hr>
+                    {{-- SURAT --}}
+                    <li class="menu-item {{  menuOpen(['index-rf']) }} ">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons bx bx-file"></i>
+                        <div data-i18n="Authentications">Surat</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item {{  menuActive('index-rf') }}">
+                                <a href="{{ route('index-rf') }}" class="menu-link" >
+                                <div data-i18n="Basic">Surat Referensi Kerja</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                     {{-- LEMBUR --}}
                     <li class="menu-item {{ menuOpen('lembur') }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">

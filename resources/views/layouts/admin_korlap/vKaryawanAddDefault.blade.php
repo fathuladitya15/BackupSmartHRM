@@ -128,15 +128,29 @@
                             <input class="form-control" required="required" placeholder="********" name="password" type="password" id="password">
                         </div>
                     </div>
-                    <div class="form-group col-md-12">
-                        <label class="col-form-label" for="alamat">Alamat Ktp</label>
-                        <span class="text-danger pl-1">*</span>
-                        <textarea  id="alamat" required="required" rows="3" cols="50"  name="alamat"  class="form-control">{{{ @old('alamat') }}}</textarea>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="alamat">Alamat Ktp</label>
+                            <span class="text-danger pl-1">*</span>
+                            <textarea  id="alamat" required="required" rows="4" cols="50"  name="alamat"  class="form-control">{{{ @old('alamat') }}}</textarea>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="alamat_domisili">Alamat Domisili</label>
+                            <span class="text-danger pl-1">*</span>
+                            <textarea  id="alamat_domisili" required="required" rows="4" cols="50" name="alamat_domisili"  class="form-control">{{ @old('alamat_domisili') }}</textarea>
+                        </div>
                     </div>
-                    <div class="form-group col-md-12">
-                        <label class="col-form-label" for="alamat_domisili">Alamat Domisili</label>
-                        <span class="text-danger pl-1">*</span>
-                        <textarea  id="alamat_domisili" required="required" rows="4" cols="50" name="alamat_domisili"  class="form-control">{{ @old('alamat_domisili') }}</textarea>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="basic-default-name">Nama Ibu</label>
+                            {{-- <span class="text-danger pl-1">*</span> --}}
+                            <input class="form-control" required="required" placeholder="Nama Ibu" name="nama_ibu" type="text" id="nama_ibu">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="basic-default-name">No KK</label>
+                            {{-- <span class="text-danger pl-1">*</span> --}}
+                            <input class="form-control" required="required" placeholder="Nomor Kartu Keluarga" name="no_kk" type="text" id="no_kk">
+                        </div>
                     </div>
                 </div>
             </div>

@@ -21,6 +21,7 @@ use App\Models\Peringatan;
 use App\Models\Filemanager;
 use Illuminate\Http\Request;
 use App\Models\KategoriCuti;
+use App\Models\ReferensiKerja;
 
 class DatatableController extends Controller
 {
@@ -602,6 +603,7 @@ class DatatableController extends Controller
                 $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
                 $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
                 $download = '<a href="'.route("izin-download",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm"  ><i class="bx bx-download"></i>Download</a>';
+                $view_file = '<a href="javascript:void(0)" onclick="view('.$row->id.')" class="btn btn-info btn-sm" id="view_'.$row->id.'"><i class="menu-icon tf-icons bx bx-folder-open"></i> Lihat File</a> &nbsp;';
                 if(Auth::user()->id_client != 3) {
                     if($row->status == 0) {
                         $btn = $edit;
@@ -1390,6 +1392,102 @@ class DatatableController extends Controller
         ->rawColumns(['aksi','face_id'])
         ->make(true);
         return $dt;
+    }
+
+    // REFERENSI KERJA
+    function data_referensi_kerja(Request $request) {
+        if(Auth::user()->roles == 'direktur') {
+            $data = ReferensiKerja::all();
+        }else if(Auth::user()->roles == 'karyawan') {
+            $data = ReferensiKerja::where('id_karyawan', Auth::user()->id_karyawan)->get();
+
+        }else {
+
+            $data = ReferensiKerja::where('id_client', Auth::user()->id_client)->get();
+        }
+        $dt = DataTables::of($data)
+        ->addIndexColumn()
+        ->addColumn('tanggal_pembuatan', function($row) {
+            return Carbon::parse($row->tanggal_pembuatan)->translatedFormat('d F Y');
+        })
+        ->addColumn('awal_masuk', function($row) {
+            return Carbon::parse($row->awal_masuk)->translatedFormat('d F Y');
+        })
+        ->addColumn('akhir_masuk', function($row) {
+            return Carbon::parse($row->akhir_masuk)->translatedFormat('d F Y');
+        })
+        ->addColumn('keterangan', function($row) {
+            if($row->keterangan == 1) {
+                $s = 'Menundurkan Diri';
+            }else if($row->keterangan == 2) {
+                $s = 'Habis Kontrak';
+            }else if($row->keterangan == 3) {
+                $s = 'Berkelakuan Buruk';
+            }else {
+                $s = "";
+            }
+            return $s;
+        })
+
+        ->addColumn('status',function ($row) {
+            $role = Auth::user()->roles;
+            if($role != 'karyawan') {
+                if(in_array($row->status, [0,1])) {
+                    $s = '<span class="badge badge bg-warning"> Menunggu ditandatangani Supervisor </span>';
+                }else if(in_array($row->status, [2,3])) {
+                    $s = '<span class="badge badge bg-warning"> Menunggu ditandatangani Direktur </span>';
+                }else if($row->status == 4) {
+                    $s = '<span class="badge badge bg-warning"> Sedang diriview Supervisor </span>';
+                }else if($row->status == 5) {
+                    $s = '<span class="badge badge bg-success"> Terkirim ke karyawan </span>';
+                }else {
+                    $s = '';
+                }
+            }else {
+                $s = "";
+            }
+            return $s;
+        })
+        ->addColumn('aksi', function($row) {
+            $detail   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="detail_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+            $acc      = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="acc_'.$row->id.'" onclick="acc('.$row->id.')"  ><i class="bx bx-check"></i>Setujui</a>';
+            $dokumen  = '<a href="'.route('dokumen-rf',['id' => $row->id]).'" class="btn btn-danger btn-sm" ><i class=bx bx-file ></i> Lihat File</a>';
+            $role = Auth::user()->roles;
+            if(in_array($role,['admin','korlap'])){
+                $btn = "";
+            }else if($role == 'spv-internal') {
+                if($row->status == 0){
+                    $btn = $acc;
+                }else  if($row->status == 1){
+                    $btn = $detail;
+                }else if($row->status == 4) {
+                    $btn = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="send_'.$row->id.'" onclick="send('.$row->id.')"  ><i class="bx bxs-send"></i>Kirim Ke Karyawan</a>' ;
+                }else {
+                    $btn = "";
+                }
+            }else if($role == 'direktur') {
+                if($row->status == 2) {
+                    $btn = $acc;
+                }else if($row->status == 3) {
+                    $btn = $detail;
+                }else {
+                    $btn = "";
+                }
+            }else if($role == 'karyawan') {
+                if($row->status == 5) {
+                    $btn = $dokumen;
+                }else {
+                    $btn = "";
+                }
+            }else {
+                $btn ="";
+            }
+            return $btn;
+        })
+        ->rawColumns(['aksi','status','keterangan','awal_masuk','akhir_masuk','tanggan_pembuatan'])
+        ->make(true);
+        return $dt;
+
     }
 
 
