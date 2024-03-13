@@ -184,6 +184,8 @@
     var url_get_karyawan    = "{{ route('peringatan-data-karyawan') }}";
 
 </script>
+<script src="{{ asset('assets/js/supervisor/referensi_kerja.js') }}"></script>
+
 <script>
 function acc(id) {
     const edit          = document.getElementById("acc_"+id+"");
@@ -307,6 +309,5 @@ function detail(id) {
     })
 }
 </script>
-<script src="{{ asset('assets/js/admin_korlap/referensi_kerja.js') }}"></script>
 
 @endpush

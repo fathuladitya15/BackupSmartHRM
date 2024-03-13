@@ -45,10 +45,15 @@ class IzinController extends Controller
             }
             elseif($role == 'karyawan') {
                 return view('layouts.izin.vIzinDefault',compact('detail','jabatan','divisi'));
-            }else if(in_array($role,['direktur','hrd','manajer'])) {
-                return view('layouts.admin_korlap.vIzinPFI');
-            }else if(in_array($role,['kr-project','kr-pusat'])){
+            }
+            else if(in_array($role,['direktur','hrd','manajer'])) {
+                return view('layouts.admin_korlap.vIzinPFI',compact('izin_karyawan','menunggu_tanda_tangan'));
+            }
+            else if(in_array($role,['kr-project','kr-pusat'])){
                 return view('layouts.izin.vIzinPFI',compact('jabatan','divisi','detail'));
+            }
+            else if($role == 'spv-internal') {
+                abort(404);
             }
         }else {
             if(in_array($role,['admin','korlap'])){

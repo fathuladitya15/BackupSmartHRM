@@ -67,6 +67,7 @@
                         <thead>
                             <tr class="text-nowrap">
                               <th>#</th>
+                              <th>No Arsip</th>
                               <th>No.Surat</th>
                               <th>ID Karyawan</th>
                               <th>Nama Karyawan</th>
@@ -232,7 +233,7 @@
 <script>
     var url_save          = "{{ route('save-rf') }}";
     var url_data          = "{{ route('data-rf') }}";
-    var  url_get_karyawan = "{{ route('peringatan-data-karyawan') }}";
+    var url_get_karyawan = "{{ route('peringatan-data-karyawan') }}";
 
 </script>
 <script src="{{ asset('assets/js/admin_korlap/referensi_kerja.js') }}"></script>

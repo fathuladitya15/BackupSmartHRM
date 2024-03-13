@@ -7,9 +7,6 @@ var table  = $('#myTable').dataTable({
         orderable: false,
         searchable: false
     },  {
-        data: 'no_arsip',
-        name: 'no_arsip',
-    },{
         data: 'no_surat',
         name: 'no_surat',
         orderable: false,
@@ -60,30 +57,6 @@ var table  = $('#myTable').dataTable({
     },]
 });
 
-$(document).ready(function() {
-    $('#id_karyawan').select2({
-        placeholder : "Pilih Karyawan",
-        dropdownParent: $('#exampleModalCenter'),
-        width : '100%',
-    });
-})
-
-$("#id_karyawan").change(function() {
-    var id_karyawan = $(this).val();
-    $.ajax({
-        url: url_get_karyawan,
-        type: "POST",
-        data: {id : id_karyawan},
-        success : function(s) {
-            console.log(s)
-            $("#jabatan").val(s.jabatan)
-            $("#nik").val(s.karyawan.nik)
-            $("#alamat").val(s.karyawan.alamat)
-        },error: function(e) {
-            Swal("Terjadi Kesalahan",'Hubungi Tim IT','error');
-        }
-    })
-})
 
 $("#Add").submit(function (e) {
     e.preventDefault();

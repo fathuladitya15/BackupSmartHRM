@@ -7,7 +7,13 @@ var table  = $('#myTable').dataTable({
         data: 'DT_RowIndex',
         orderable: false,
         searchable: false
-    }, {
+
+    },  {
+        data: 'tanggal_pembuatan',
+        name: 'tanggal_pembuatan',
+        orderable: false,
+        searchable: false
+    },{
         data: 'karyawan_id',
         name: 'karyawan_id',
         orderable: false,
@@ -26,6 +32,11 @@ var table  = $('#myTable').dataTable({
     }, {
         data: 'jabatan',
         name: 'jabatan',
+        orderable: false,
+        searchable: false
+    },  {
+        data: 'jam_keluar',
+        name: 'jam_keluar',
         orderable: false,
         searchable: false
     },  {

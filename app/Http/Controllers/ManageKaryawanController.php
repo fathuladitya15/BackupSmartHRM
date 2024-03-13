@@ -238,7 +238,7 @@ class ManageKaryawanController extends Controller
             'tempat_lahir'      => $request->TmptLhr,
             'jenis_kelamin'     => $request->jk,
             'nik'               => $request->n_ktp,
-            'no_kk'             => 0,
+            'no_kk'             => $request->no_kk,
             'alamat'            => $request->alamat,
             'alamat_domisili'   => $request->alamat_domisili,
             'lokasi_kerja'      => $request->branch,

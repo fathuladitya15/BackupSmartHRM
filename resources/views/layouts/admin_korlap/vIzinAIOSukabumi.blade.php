@@ -73,10 +73,12 @@
                         <thead>
                             <tr class="text-nowrap">
                                 <th>#</th>
+                                <th>Tanggal</th>
                                 <th>ID Karyawan</th>
                                 <th>Nama Karyawan</th>
                                 <th>Divisi</th>
                                 <th>Jabatan</th>
+                                <th>Jam Keluar</th>
                                 <th>Alasan</th>
                                 <th>Status</th>
                                 <th>Disetujui Oleh</th>

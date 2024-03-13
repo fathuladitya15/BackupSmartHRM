@@ -84,6 +84,7 @@ class LemburController extends Controller
             if(Auth::user()->id_client == 3) {
                 return view('layouts.supervisor.vLemburAIOS');
             }else {
+                return view('layouts.lembur.vLemburDefault');
                 dd(Auth::user()->id_client);
             }
 

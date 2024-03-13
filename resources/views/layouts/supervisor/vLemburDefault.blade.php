@@ -49,16 +49,19 @@
                     <table class="table" id="myTable">
                         <thead>
                             <tr class="text-nowrap">
-                                <th>No</th>
-                                <th>Tanggal</th>
+                                <th>#</th>
                                 <th>ID Karyawan</th>
                                 <th>Nama Karyawan</th>
                                 <th>Divisi</th>
                                 <th>Jabatan</th>
-                                <th>Shift</th>
-                                <th>status</th>
+                                <th>Tanggal</th>
+                                <th>Tugas Dikerjakan</th>
+                                <th>Mulai Jam</th>
+                                <th>Sampai Jam</th>
+                                <th>Jumlah Jam</th>
+                                <th>Status</th>
                                 <th>Aksi</th>
-                            </tr>
+                              </tr>
                         </thead>
                         <tbody>
 
@@ -109,6 +112,6 @@
     var url_view    = "{{ route('lembur-get-files') }}";
     var asset       = "{{ URL::to('') }}";
 </script>
-<script src="{{ asset('assets/js/supervisor/lembur_AIOS.js') }}"></script>
+<script src="{{ asset('assets/js/supervisor/lembur.js') }}"></script>
 
 @endpush
