@@ -113,13 +113,36 @@
 
         <br><br><br>
 
+        @if($jabatan == 'Manager')
+        <div class="row" style="text-align: center">
+            <div class="col-lg-6">
+                Pemohon
+            </div>
+            <div class="col-lg-6" style="text-align: center">
+                Disetujui
+            </div>
+        </div>
+        <div class="row" style="text-align: center;">
+            <div class="col-lg-6">
+                <img  src="{{ public_path($data->ttd_karyawan) }}" alt="" style="width: 100px;" ><br>
+                <div class="name_ttd" style="left:210px !important;" >{{ Str::title($data->nama_karyawan) }}</div>
+            </div>
+
+            <div class="col-lg-6">
+                <img  src="{{ $data->ttd_direktur }}" alt="" style="width: 100px;"> <br />
+                <div class="name_ttd" >Direktur HRD PT.PFI</div>
+            </div>
+        </div>
+        @else
         <div class="row" style="text-align: center">
             <div class="col-lg-3">
                 Pemohon
             </div>
+
             <div class="col-lg-6" style="text-align: center">
                 Mengetahui,
             </div>
+
             <div class="col-lg-3" style="text-align: center">
                 Disetujui
             </div>
@@ -129,6 +152,7 @@
                 <img  src="{{ public_path($data->ttd_karyawan) }}" alt="" style="width: 100px;" ><br>
                 <div class="name_ttd" style="left:210px !important;" >{{ Str::title($data->nama_karyawan) }}</div>
             </div>
+
             <div class="col-lg-3">
                 <img  src="{{ $data->ttd_manager }}" alt="" style="width: 100px;"> <br />
                 <div class="name_ttd" >Manager Divisi</div>
@@ -137,11 +161,13 @@
                 <img  src="{{ $data->ttd_hrd }}" alt="" style="width: 100px;"> <br />
                 <div class="name_ttd" >Supervisor HRD</div>
             </div>
+
             <div class="col-lg-3">
                 <img  src="{{ $data->ttd_direktur }}" alt="" style="width: 100px;"> <br />
                 <div class="name_ttd" >Direktur HRD PT.PFI</div>
             </div>
         </div>
+        @endif
 
     </div>
 </body>

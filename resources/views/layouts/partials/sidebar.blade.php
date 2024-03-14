@@ -192,20 +192,18 @@
 
 
                     {{-- LEMBUR --}}
+                    @php
+                        $id_jabatan = App\Models\Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->jabatan;
+                        $jabatan = App\Models\Jabatan::find($id_jabatan)->nama_jabatan;
 
+                    @endphp
+                    @if ($jabatan != 'Manager')
                     <li class="menu-item {{ menuOpen(['lembur','lembur-self']) }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-time"></i>
                         <div data-i18n="Authentications">Lembur</div>
                         </a>
                         @if (in_array(Auth::user()->roles,['admin']))
-                            {{-- <ul class="menu-sub">
-                                <li class="menu-item {{ menuActive('lembur-self') }}">
-                                    <a href="{{ route('lembur-self') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Data Lembur Anda</div>
-                                    </a>
-                                </li>
-                            </ul> --}}
 
                             <ul class="menu-sub">
                                 <li class="menu-item {{ menuActive('lembur') }}">
@@ -235,7 +233,10 @@
                         @endif
 
                     </li>
+                    @endif
 
+
+                    {{-- PRODDUK --}}
                     @if(in_array(Auth::user()->roles,['admin','korlap','spv-internal']))
                         @if (in_array(Auth::user()->id_client,[2,8]))
                             <li class="menu-item {{  menuOpen(['list-produk']) }}">
@@ -304,7 +305,7 @@
                             </ul>
                         </li>
                     @endif
-
+                    {{-- SURAT --}}
                     @if(in_array(Auth::user()->roles,['karyawan']))
                             <li class="menu-item {{  menuOpen(['peringatan','index-rf']) }} ">
                                 <a href="javascript:void(0);" class="menu-link menu-toggle">

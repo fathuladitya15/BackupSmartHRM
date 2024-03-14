@@ -3,7 +3,7 @@
 @section('title') {{ 'Dashboard' }} @endsection
 
 @section('content')
-@if (in_array(Auth::user()->roles ,['admin','kr-project']))
+@if (in_array(Auth::user()->roles ,['admin','kr-project','kr-pusat',]))
     <div class="row">
         <div class="col-lg-12">
             <div class="alert alert-primary" role="alert">

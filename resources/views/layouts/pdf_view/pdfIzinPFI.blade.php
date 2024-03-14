@@ -140,46 +140,73 @@
 
             <br><br>
 
+            @if ($jabatan == 'Manager')
+                <div class="row" style="text-align: center">
+                    <div class="col-lg-6">
+                        Pemohon
+                    </div>
+                    <div class="col-lg-6" style="text-align: center">
+                        Disetujui
+                    </div>
+                </div>
+                <div class="row" style="text-align:center;">
+                    <div class="col-lg-6">
+                        <img class="gambar_tanda_tangan_kr" src="{{ public_path($data->ttd_karyawan) }}" alt="" id="gambar_tanda_tangan_kr" width="100"> <br  />
+                        <div class="over_text">
+                            <p  id="nama_ttd_karyawan">{{ Str::title($data->nama_karyawan) }}</p>
+                        </div>
+                    </div>
 
-            <div class="row" style="text-align: center">
-                <div class="col-lg-3">
-                    Pemohon
+                    <div class="col-lg-6">
+                        <img class="gambar_tanda_tangan_admin" src="{{ public_path($data->ttd_direktur)}}" alt="" id="gambar_tanda_tangan_admin" width="100"> <br  />
+                        <div class="over_text">
+                            <p  id="nama_ttd_karyawan" >Direktur HRD</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-lg-6" style="text-align: center">
-                    Mengetahui,
+            @else
+
+                <div class="row" style="text-align: center">
+                    <div class="col-lg-3">
+                        Pemohon
+                    </div>
+                    <div class="col-lg-6" style="text-align: center">
+                        Mengetahui,
+                    </div>
+                    <div class="col-lg-3" style="text-align: center">
+                        Disetujui
+                    </div>
                 </div>
-                <div class="col-lg-3" style="text-align: center">
-                    Disetujui
+                <div class="row" style="text-align:center;">
+                    <div class="col-lg-3">
+                        <img class="gambar_tanda_tangan_kr" src="{{ public_path($data->ttd_karyawan) }}" alt="" id="gambar_tanda_tangan_kr" width="100"> <br  />
+                        <div class="over_text">
+                            <p  id="nama_ttd_karyawan">{{ Str::title($data->nama_karyawan) }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <img class="gambar_tanda_tangan_admin" src="{{ public_path($data->ttd_mengetahui)}}" alt="" id="gambar_tanda_tangan_admin" width="100"> <br  />
+                        <div class="over_text">
+                            <p  id="nama_ttd_karyawan" >Manager Divisi</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <img class="gambar_tanda_tangan_admin" src="{{ public_path($data->ttd_hrd)}}" alt="" id="gambar_tanda_tangan_admin" width="100"> <br  />
+                        <div class="over_text">
+                            <p  id="nama_ttd_karyawan" >Supervisor HRD</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <img class="gambar_tanda_tangan_admin" src="{{ public_path($data->ttd_direktur)}}" alt="" id="gambar_tanda_tangan_admin" width="100"> <br  />
+                        <div class="over_text">
+                            <p  id="nama_ttd_karyawan" >Direktur HRD</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @endif
 
 
-            <div class="row" style="text-align:center;">
-                <div class="col-lg-3">
-                    <img class="gambar_tanda_tangan_kr" src="{{ public_path($data->ttd_karyawan) }}" alt="" id="gambar_tanda_tangan_kr" width="100"> <br  />
-                    <div class="over_text">
-                        <p  id="nama_ttd_karyawan">{{ Str::title($data->nama_karyawan) }}</p>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <img class="gambar_tanda_tangan_admin" src="{{ public_path($data->ttd_mengetahui)}}" alt="" id="gambar_tanda_tangan_admin" width="100"> <br  />
-                    <div class="over_text">
-                        <p  id="nama_ttd_karyawan" >Manager Divisi</p>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <img class="gambar_tanda_tangan_admin" src="{{ public_path($data->ttd_hrd)}}" alt="" id="gambar_tanda_tangan_admin" width="100"> <br  />
-                    <div class="over_text">
-                        <p  id="nama_ttd_karyawan" >Supervisor HRD</p>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <img class="gambar_tanda_tangan_admin" src="{{ public_path($data->ttd_direktur)}}" alt="" id="gambar_tanda_tangan_admin" width="100"> <br  />
-                    <div class="over_text">
-                        <p  id="nama_ttd_karyawan" >Direktur HRD</p>
-                    </div>
-                </div>
-            </div>
+
     </div>
 </body>
 </html>

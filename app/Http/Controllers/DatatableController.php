@@ -623,14 +623,23 @@ class DatatableController extends Controller
                 $download = '<a href="'.route("izin-download",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm"  ><i class="bx bx-download"></i>Download</a>';
                 $view_file = '<a href="javascript:void(0)" onclick="view('.$row->id.')" class="btn btn-info btn-sm" id="view_'.$row->id.'"><i class="menu-icon tf-icons bx bx-folder-open"></i> Lihat File</a> &nbsp;';
                 if(Auth::user()->id_client != 3) {
-                    if($row->status == 0) {
-                        $btn = $edit;
+                    if(in_array(Auth::user()->roles, ['kr-project','kr-pusat'])){
+                        if($row->status == 4) {
+                            $btn = $download;
+                        }else {
+                            $btn = $edit;
+                        }
                     }else {
-                        $btn = '<a href="'.route("izin-download",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm"  ><i class="bx bx-download"></i>Download</a>';
+                        if($row->status == 0) {
+                            $btn = $edit;
+                        }else {
+                            $btn = '<a href="'.route("izin-download",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm"  ><i class="bx bx-download"></i>Download</a>';
+                        }
+
                     }
 
                 }else  {
-                    if(Auth::user()->roles == 'kr-project'){
+                    if(in_array(Auth::user()->roles, ['kr-project','kr-pusat'])){
                         if($row->status == 4) {
                             $btn = $download;
                         }else {
@@ -647,11 +656,28 @@ class DatatableController extends Controller
                 $wait =  "<span class='badge bg-warning'>Menuggu ditandatangani</span>";
                 $acc =  "<span class='badge bg-success'>Telah ditandatangani</span>";
                 if(Auth::user()->id_client != 3) {
-                    if($row->status == 0) {
-                        $st = $wait;
+                    if(in_array(Auth::user()->roles,['kr-project','kr-pusat'])) {
+                        if($row->status == 0 ) {
+                            $st = "<span class='badge bg-warning'> Menuggu ditangatangani  Manager Divisi</span>";
+                        }else if($row->status == 1) {
+                            $st = "<span class='badge bg-warning'> Menuggu ditangatangani  HRD</span>";
+                        }else if($row->status == 2 ){
+                            $st = "<span class='badge bg-warning'> Menuggu ditangatangani Direktur HRD</span>";
+                        }
+                        else if($row->status == 3) {
+                            $st = "<span class='badge bg-warning'> Menunggu persetujuan </span>";
+                        }else if($row->status  == 4){
+                            $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
+                        }
                     }else {
-                        $st = $acc;
+                        if($row->status == 0) {
+                            $st = $wait;
+                        }else {
+                            $st = $acc;
+                        }
                     }
+
 
                 }else {
                     if(in_array(Auth::user()->roles,['kr-project','kr-pusat'])) {

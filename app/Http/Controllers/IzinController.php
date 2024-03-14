@@ -94,25 +94,15 @@ class IzinController extends Controller
         $nama_divisi = Divisi::find($divisi)->nama_divisi;
 
         if($id_izin == null) {
+            $jabatan = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->with('jabatan')->first()->jabatan()->first()->nama_jabatan;
+            if($jabatan == 'Manager') {
+                $status = 2;
+            }else {
+                $stats = 0;
+            }
+
             if(Auth::user()->id_client != 3) {
-
-                $createData = [
-                    'karyawan_id'           => $request->id_karyawan,
-                    'nama_karyawan'         => $request->nama_karyawan,
-                    'divisi'                => $request->divisi,
-                    'jabatan'               => $request->jabatan,
-                    'detail'                => $request->detail,
-                    'alasan'                => $request->alasan,
-                    'tanggal_pembuatan'     => $request->tanggal,
-                    'jam_keluar'            => $request->waktu,
-                    'ttd_karyawan'          => $ttdCreate->path,
-                    'kembali'               => $request->kembali,
-                    'status'                => 0,
-                    'id_client'             => Auth::user()->id_client,
-                ];
-
-            }else  {
-                if(Auth::user()->roles == 'kr-project') {
+                if(in_array(Auth::user()->roles, ['kr-project','kr-pusat'])) {
                     $createData = [
                         'karyawan_id'           => $request->id_karyawan,
                         'nama_karyawan'         => $request->nama_karyawan,
@@ -124,7 +114,41 @@ class IzinController extends Controller
                         'tanggal_pembuatan'     => $request->tanggal,
                         'ttd_karyawan'          => $ttdCreate->path,
                         'kembali'               => $request->kembali,
+                        'status'                => $status,
+                        'id_client'             => 1,
+                    ];
+                }else {
+                    $createData = [
+                        'karyawan_id'           => $request->id_karyawan,
+                        'nama_karyawan'         => $request->nama_karyawan,
+                        'divisi'                => $request->divisi,
+                        'jabatan'               => $request->jabatan,
+                        'detail'                => $request->detail,
+                        'alasan'                => $request->alasan,
+                        'tanggal_pembuatan'     => $request->tanggal,
+                        'jam_keluar'            => $request->jam_keluar,
+                        'ttd_karyawan'          => $ttdCreate->path,
+                        'kembali'               => $request->kembali,
                         'status'                => 0,
+                        'id_client'             => Auth::user()->id_client,
+                    ];
+
+                }
+
+            }else  {
+                if(in_array(Auth::user()->roles , ['kr-project','kr-pusat'])) {
+                    $createData = [
+                        'karyawan_id'           => $request->id_karyawan,
+                        'nama_karyawan'         => $request->nama_karyawan,
+                        'divisi'                => $request->divisi,
+                        'jabatan'               => $request->jabatan,
+                        'alasan'                => $request->alasan,
+                        'jam_keluar'            => $request->jam_keluar,
+                        'jam_masuk'             => $request->jam_masuk,
+                        'tanggal_pembuatan'     => $request->tanggal,
+                        'ttd_karyawan'          => $ttdCreate->path,
+                        'kembali'               => $request->kembali,
+                        'status'                => $status,
                         'id_client'             => 1,
                     ];
                 }else {
@@ -219,32 +243,23 @@ class IzinController extends Controller
         $id = EncryprVariable($hash);
         $data = Izin::find($id);
 
+        if(in_array(Auth::user()->roles ,['direktur','hrd','manajer','kr-project','kr-pusat'])){
+            $jabatan        = Karyawan::where('id_karyawan',$data->karyawan_id)->with('jabatan')->first()->jabatan()->first()->nama_jabatan;
+            $filename       = 'Detail Izin Keluar '.$data->nama_karyawan;
+            $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinPFI",['data' => $data,'jabatan' => $jabatan]);
 
-        if(Auth::user()->id_client != 3) {
-            if(in_array(Auth::user()->roles,['direktur','hrd','manajer'])){
-                $filename       = 'Detail Izin Keluar '.$data->nama_karyawan;
-                $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinPFI",['data' => $data]);
-            }else {
+        }else {
+            if(Auth::user()->id_client != 3) {
                 $id_kr          = Filemanager::where('path',$data->ttd_karyawan)->where("slug",'signature')->first()->id_karyawan;
                 $id_admin       = Filemanager::where('path',$data->ttd_mengetahui)->where("slug",'signature')->first()->id_karyawan;
                 $filename       = 'Detail Izin Keluar '.$data->nama_karyawan;
                 $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinDefault",['data' => $data]);
-
-            }
-
-        }else if(Auth::user()->id_client == 1){
-            $filename       = 'Detail Izin Keluar '.$data->nama_karyawan;
-            $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinPFI",['data' => $data]);
-        }else {
-            if(Auth::user()->roles == 'kr-project'){
-                $filename       = 'Detail Izin Keluar '.$data->nama_karyawan;
-                $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinPFI",['data' => $data]);
             }else {
                 $filename       = 'Detail Pengajuan Izin  '.$data->nama_karyawan;
                 $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinAIO",['data' => $data,'filename' => $filename]);
-
             }
         }
+
 
         return $pdf->stream($filename.'.pdf');
         // dd($data);

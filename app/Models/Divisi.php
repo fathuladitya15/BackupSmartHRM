@@ -12,4 +12,8 @@ class Divisi extends Model
     protected $table = 'table_divisi';
 
     protected $fillable = ['nama_divisi','id_client'];
+
+    function karyawan() {
+        return $this->hasOne(Karyawan::class,'id','divisi');
+    }
 }

@@ -32,7 +32,7 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         },"files" : [
-            "app/http/helpers/helpers.php"
+            "app/Http/Helpers/helpers.php"
         ]
     },
     "autoload-dev": {

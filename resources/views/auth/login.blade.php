@@ -72,7 +72,7 @@
                             <button onclick="roles('admin')" class="btn btn-primary btn-sm">Direktur / Supervisor / Admin</button>
                             <button onclick="roles('karyawan')" class="btn btn-primary btn-sm">Karyawan</button>
                         </div>
-                        <form id="formAuthentication" class="mb-3"  >
+                        <form id="formAuthentication" class="mb-3" action="{{ route('login') }}" method="POST"  >
                             @csrf
                             <input type="hidden" class="form-control" id="roles" name="roles" value="" />
                             <div class="mb-3">

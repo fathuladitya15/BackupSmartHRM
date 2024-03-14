@@ -49,7 +49,6 @@ class CutiController extends Controller
             $karyawan = DB::table("users")->whereIn('roles',['kr-project','admin','korlap','spv-internal','kr-pusat','manajer'])->get();
             $cuti     = Cuti::all()->count();
             $wait_acc = Cuti::where('status',1)->count();
-            // dd($wait_acc);
             return view('layouts.hrd.vCuti',compact("karyawan",'kategori_cuti','wait_acc','cuti'));
         }
         else if($roles == 'direktur') {
@@ -139,9 +138,18 @@ class CutiController extends Controller
 
         $role = Auth::user()->roles;
         $ttd  = Filemanager::where("id_karyawan",Auth::user()->id_karyawan)->where("slug",'signature')->first();
+        $id_jabatan  = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->jabatan;
 
         if($request->ttd == 1){
             if(in_array($role,['kr-project','kr-pusat','manajer'])) {
+
+                $jabatan = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->with('jabatan')->first()->jabatan()->first()->nama_jabatan;
+                if($jabatan == 'Manager') {
+                    $status = 2;
+                }else {
+                    $stats = 0;
+                }
+
 
                 $cutiCreate = [
                     'id_karyawan'   => $request->id_karyawan,
@@ -155,7 +163,7 @@ class CutiController extends Controller
                     'ttd_karyawan'  => $ttd->path,
                     'start_date'    => $request->start_date,
                     'end_date'      => $request->end_date,
-                    'status'        => 0,
+                    'status'        => $status,
                 ];
 
                 Cuti::create($cutiCreate);
@@ -269,7 +277,8 @@ class CutiController extends Controller
     function dokumen_cuti($id) {
         $data       = Cuti::find($id);
         $filename   = 'Form Cuti '.$data->nama_karyawan;
-        $pdf        = PDF::loadview("layouts.pdf_view.pdfFormCuti",['data' => $data,'filename'=> $filename]);
+        $jabatan    = Karyawan::where('id_karyawan',$data->id_karyawan)->with('jabatan')->first()->jabatan()->first()->nama_jabatan;
+        $pdf        = PDF::loadview("layouts.pdf_view.pdfFormCuti",['data' => $data,'filename'=> $filename,'jabatan' => $jabatan]);
         $pdf->setPaper('A4', 'landscape');
         return $pdf->stream($filename.'.pdf');
     }

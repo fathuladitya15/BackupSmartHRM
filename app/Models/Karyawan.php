@@ -55,4 +55,16 @@ class Karyawan extends Model
         'no_kpj',
         'no_jkn',
     ];
+
+    function users() {
+        return $this->hasOne(User::class,'id_karyawan','id_karyawan');
+    }
+
+    function divisi() {
+        return $this->hasOne(Divisi::class,'id','divisi');
+    }
+
+    function jabatan() {
+        return $this->hasOne(Jabatan::class,'id','jabatan');
+    }
 }
