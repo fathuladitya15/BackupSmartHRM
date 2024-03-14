@@ -12,7 +12,9 @@ class ProdukController extends Controller
     }
 
     function index() {
-        return view("vError");
+
+        return view('layouts.admin_korlap.vListProduk');
+        // return view("vError");
         // dd(Auth::user()->id_client);
     }
 }

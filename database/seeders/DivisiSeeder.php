@@ -39,6 +39,15 @@ class DivisiSeeder extends Seeder
             'id_client'   => '1'
         ]);
 
+        $orbitin = Divisi::create([
+            'nama_divisi' => 'Orbitin',
+            'id_client'     => 1
+        ]);
+        $ddm = Divisi::create([
+            'nama_divisi' => 'Digital Development Manager',
+            'id_client'   => 1
+        ]);
+
         // DIVISI MEGASARI
         Divisi::create([
             'nama_divisi' => 'Produksi',

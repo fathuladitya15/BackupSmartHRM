@@ -50,42 +50,29 @@
 
 @section('content')
 
+
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Lembur /</span>Data Lembur</h4>
 
-{{-- <div class="row">
-    @php
-        $col = Auth::user()->id_client == '3' ? 6 : 4 ;
-    @endphp
-    <div class="col-md-{{ $col }}" style="">
+<div class="row">
+    <div class="col-md-6" style="">
         <div class="card bg-info">
             <div class="card-body">
                 <h5>Lembur Karyawan</h5>
-                <h3>{{ $kr_lembur }} Karyawan</h3>
+                <h3>{{ $lembur }} Karyawan</h3>
 
             </div>
         </div>
     </div>
-    @if (Auth::user()->id_client != '3')
-        <div class="col-md-4">
-            <div class="card bg-success">
-                <div class="card-body">
-                    <h5>Total Lembur</h5>
-                    <h3> {{ $total_jam == "null" ? 0 : $total_jam }} Jam</h3>
-                </div>
-            </div>
-        </div>
-    @endif
-    <div class="col-md-{{ $col }}">
+    <div class="col-md-6">
         <div class="card bg-warning">
             <div class="card-body">
                 <h5>Menunggu Persetujuan</h5>
-                <h3> {{ $wait_lembur }} Permintaan</h3>
+                <h3> {{ $wait_acc }} Permohonan</h3>
             </div>
         </div>
     </div>
 </div>
-<br><br> --}}
-
+<br><br>
 <div class="row">
     <div class="col-xxl">
         @if(session()->has('error'))

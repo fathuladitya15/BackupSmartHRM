@@ -123,7 +123,7 @@
                     @endif
 
                     {{-- ABSENSI --}}
-                    <li class="menu-item {{  menuOpen(['shift','absensi-data']) }} ">
+                    <li class="menu-item {{  menuOpen(['shift','absensi-data','absensi-search-one']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-calendar"></i>
                             <div data-i18n="">Absensi</div>
@@ -238,14 +238,14 @@
 
                     @if(in_array(Auth::user()->roles,['admin','korlap','spv-internal']))
                         @if (in_array(Auth::user()->id_client,[2,8]))
-                            <li class="menu-item {{  menuOpen(['produk']) }}">
+                            <li class="menu-item {{  menuOpen(['list-produk']) }}">
                                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                                 <i class="menu-icon tf-icons bx bx-cube"></i>
                                 <div data-i18n="Authentications">Produk</div>
                                 </a>
                                 <ul class="menu-sub">
-                                    <li class="menu-item {{ menuActive("produk-list") }}">
-                                        <a href="#" class="menu-link" >
+                                    <li class="menu-item {{ menuActive("list-produk") }}">
+                                        <a href="{{ route("list-produk") }}" class="menu-link" >
                                         <div data-i18n="Basic">List Produk</div>
                                         </a>
                                     </li>
@@ -260,7 +260,6 @@
                                             <div data-i18n="Basic">Buat Laporan Produksi</div>
                                             </a>
                                         </li>
-
                                     @endif
                                     @if (Auth::user()->id_client == 8)
 
@@ -375,9 +374,48 @@
 
 
                 @if (Auth::user()->roles == 'direktur')
-                    <hr>
+                    <li class="menu-header small text-uppercase">
+                        <span class="menu-header-text">Manajemen</span>
+                    </li>
+                    @php
+                        $data = App\Models\Clients::where("nama_client",'!=','PT Proven Force Indonesia')->get();
+                    @endphp
+                    <li class="menu-item {{  menuOpen(['direktur-packlaring-index']) }} ">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle" style="color: white">
+                            <i class="menu-icon tf-icons bx bx-file"></i>
+                            <div data-i18n="Authentications">Referensi Kerja </div>
+                        </a>
+
+                        <ul class="menu-sub">
+                            @foreach ($data as $item)
+                                <li class="menu-item  {{ ($item->nama_client == Request::segment(4)) && ( Request::segment(3) == "referensi-kerja") ? 'active' : ""  }}">
+                                    <a href="{{ route('direktur-rf-index',['nama_client' => $item->nama_client, 'id' => HashVariable($item->id)]) }}" class="menu-link " >
+                                        <div data-i18n="Basic">{{ $item->nama_client }} </div>
+                                    </a>
+                                </li>
+                            @endforeach
+
+                        </ul>
+                    </li>
+                    <li class="menu-item {{  menuOpen(['direktur-pre-order-index']) }} ">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle" style="color: white">
+                            <i class="menu-icon tf-icons bx bx-cart"></i>
+                            <div data-i18n="Authentications">Permintaan Pembelian</div>
+                        </a>
+
+                        <ul class="menu-sub">
+                            @foreach ($data as $item)
+                                <li class="menu-item  {{ ($item->nama_client == Request::segment(4)) && ( Request::segment(2) == "pre-order") ? 'active' : ""  }}">
+                                    <a href="{{ route('direktur-pre-order-index',['nama_client' => $item->nama_client,'id' => HashVariable($item->id)]) }}" class="menu-link " >
+                                        <div data-i18n="Basic">PT {{ $item->nama_client }} </div>
+                                    </a>
+                                </li>
+                            @endforeach
+
+                        </ul>
+                    </li>
                     {{-- SURAT --}}
-                    <li class="menu-item {{  menuOpen(['index-rf']) }} ">
+                    {{-- <li class="menu-item {{  menuOpen(['index-rf']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-file"></i>
                         <div data-i18n="Authentications">Surat</div>
@@ -389,7 +427,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
+                    </li> --}}
                     {{-- LEMBUR --}}
                     <li class="menu-item {{ menuOpen('lembur') }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">

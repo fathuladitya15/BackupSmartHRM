@@ -47,47 +47,53 @@
         <h4>{{ Str::upper($data_kr->nama_karyawan) }}</h4>
         <h5>{{ Str::upper($data_kr->id_karyawan) }}</h5>
     </div>
+    @foreach ($data as $tahun => $Databulan )
     <table class="table table-striped" border="1" width="100%">
-        <thead>
-            <tr>
-                <th style="text-align:center; font-size:80%" colspan="12"> <b>({{ \Carbon\Carbon::parse($from_date)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($to_date)->translatedFormat('d F Y') }})</b></th>
-            </tr>
-            <tr class="text-nowrap" style="font-size: 70%">
-                <th>No</th>
-                <th>Tanggal</th>
-                <th>Jabatan</th>
-                <th>Divisi</th>
-                <th>Absen Masuk</th>
-                <th>Lokasi Absen </th>
-                <th>Detail Lokasi</th>
-                <th>Absen Pulang</th>
-                <th>Lokasi Absen</th>
-                <th>Detail Lokasi</th>
-                <th>shift</th>
-                <th>Catatan</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $no = 1;
-            @endphp
-            @foreach ($data as $item)
-                <tr style="text-align: center;font-size:60%">
-                    <td>{{ $no++ }}</td>
-                    <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-y')  }}</td>
-                    <td>{{ $item->jabatan }}</td>
-                    <td>{{ $item->divisi }}</td>
-                    <td>{{ $item->jam_masuk }}</td>
-                    <td>{{ $item->lokasi_absen_masuk }}</td>
-                    <td>{{ $item->detail_lokasi_absen_masuk }}</td>
-                    <td>{{ $item->jam_keluar }}</td>
-                    <td>{{ $item->lokasi_absen_plg }}</td>
-                    <td>{{ $item->detail_lokasi_absen_plg }}</td>
-                    <td>Non Shift</td>
-                    <td>{{ $item->catatan }}</td>
+        @foreach ($Databulan as $bulan => $DataHari)
+            <thead>
+                <tr style="font-size: 60%;">
+                    <th style="text-align:center;" colspan="12"> <b>Riwayat Kehadiran Bulan {{ $bulan }} {{ $tahun }}</b></th>
                 </tr>
-            @endforeach
-        </tbody>
+                <tr class="text-nowrap" style="font-size: 50%;">
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Jabatan</th>
+                    <th>Divisi</th>
+                    <th>Absen Masuk</th>
+                    <th>Lokasi Absen </th>
+                    <th>Detail Lokasi</th>
+                    <th>Absen Pulang</th>
+                    <th>Lokasi Absen</th>
+                    <th>Detail Lokasi</th>
+                    <th>shift</th>
+                    <th>catatan</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $no = 1;
+                @endphp
+                @foreach ($DataHari as $hari => $value )
+                    <tr style="font-size: 60%;">
+                        <td>{{ $no++ }}</td>
+                        {{-- <td>{{ \Carbon\Carbon::parse($dt->tanggal)->translatedFormat('l, d F Y') }}</td> --}}
+                        <td>{{ $hari }}</td>
+                        <td>{{ $value[0]['jabatan'] }}</td>
+                        <td>{{ $value[0]['divisi'] }}</td>
+                        <td style="text-align:center;">{{ $value[0]['jam_masuk'] }}</td>
+                        <td style="text-align:center;">{{ $value[0]['lokasi_absen_masuk'] }}</td>
+                        <td>{{ $value[0]['detail_lokasi_absen_masuk'] }}</td>
+                        <td style="text-align:center;">{{ $value[0]['jam_keluar'] }}</td>
+                        <td style="text-align:center;">{{ $value[0]['lokasi_absen_pulang'] }}</td>
+                        <td>{{ $value[0]['detail_lokasi_absen_masuk'] }}</td>
+                        <td style="text-align:center;">Non Shift</td>
+                        <td>{{ $value[0]['catatan']  }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        @endforeach
     </table>
+    @endforeach
+
 </body>
 </html>

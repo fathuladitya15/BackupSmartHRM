@@ -42,6 +42,12 @@ class JabatanSeeder extends Seeder
             'id_client'    => '1'
         ]);
 
+        $head = Jabatan::create([
+            'nama_jabatan'  => 'Head',
+            'id_client'     => 1
+        ]);
+
+
         // JABATAN MEGASARI
         Jabatan::create([
             'nama_jabatan' => 'Packing',

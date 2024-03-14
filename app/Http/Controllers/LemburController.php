@@ -33,9 +33,9 @@ class LemburController extends Controller
                 ->selectRaw('SUM(CAST(total_jam as int)) as jam')
                 ->where('id_client',Auth::user()->id_client)
                 ->first()->jam;
-            $kr_lembur = DB::table('table_lembur')->distinct()->where('id_client',Auth::user()->id_client)->count('id_karyawan');
-            $wait_lembur = Lembur::where('id_client',Auth::user()->id_client)->where('status','0')->count();
-            return view('layouts.hrd.vLembur',compact('daftar_kr'));
+            $lembur = DB::table('table_lembur')->distinct()->where('id_client',Auth::user()->id_client)->count('id_karyawan');
+            $wait_acc = Lembur::where('id_client',Auth::user()->id_client)->where('status','0')->count();
+            return view('layouts.hrd.vLembur',compact('daftar_kr','lembur','wait_acc'));
         }else if(Auth::user()->roles == 'direktur') {
             if($name_divisi == 'MPO'){
                 return view('layouts.manajer.vLembur');
@@ -153,6 +153,7 @@ class LemburController extends Controller
                         'status'    => 3,
                         'ttd_direktur' => $ttd->path,
                     ];
+
                     return $this->update($request->id_lembur,$dataUpdate);
                 }
                 else {

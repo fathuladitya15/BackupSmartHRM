@@ -83,52 +83,53 @@
                     <h5 style="color: black; text-align:center;">{{ $data_karyawan->id_karyawan }}</h5>
                 </div>
                 <div class="table-responsive text-nowrap">
+                    @foreach ($data as $tahun => $Databulan )
                     <table class="table" id="myTable">
-                        <thead>
-                            <tr>
-                                <th style="text-align:center;" colspan="13"> <b>Riwayat Kehadiran ({{ \Carbon\Carbon::parse($from_date)->translatedFormat('d F Y') }} s/d {{ \Carbon\Carbon::parse($to_date)->translatedFormat('d F Y') }})</b></th>
-                            </tr>
-                            <tr class="text-nowrap">
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Jabatan</th>
-                                <th>Divisi</th>
-                                <th>Absen Masuk</th>
-                                <th>Lokasi Absen </th>
-                                <th>Detail Lokasi</th>
-                                <th>Absen Pulang</th>
-                                <th>Lokasi Absen</th>
-                                <th>Detail Lokasi</th>
-                                <th>shift</th>
-                                <th>lokasi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $no = 1;
-                            @endphp
-                            @foreach ($search as $dt)
-
-                            <tr>
-                                <td>{{ $no++ }}</td>
-                                <td>{{ \Carbon\Carbon::parse($dt->tanggal)->translatedFormat('l, d F Y') }}</td>
-                                <td>{{ $dt->jabatan }}</td>
-                                <td>{{ $dt->divisi }}</td>
-                                <td>{{ $dt->jam_masuk }}</td>
-                                <td>{{ $dt->lokasi_absen_masuk }}</td>
-                                <td>{{ $dt->detail_lokasi_absen_masuk }}</td>
-                                <td>{{ $dt->jam_keluar }}</td>
-                                <td>{{ $dt->lokasi_absen_pulang }}</td>
-                                <td>{{ $dt->detail_lokasi_absen_masuk }}</td>
-                                <td>Non Shift</td>
-                                <td>{{ $dt->catatan  }}</td>
-
-                            </tr>
-
-                            @endforeach
-
-                        </tbody>
+                        @foreach ($Databulan as $bulan => $DataHari)
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;" colspan="13"> <b>Riwayat Kehadiran Bulan {{ $bulan }} {{ $tahun }}</b></th>
+                                </tr>
+                                <tr class="text-nowrap">
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>Jabatan</th>
+                                    <th>Divisi</th>
+                                    <th>Absen Masuk</th>
+                                    <th>Lokasi Absen </th>
+                                    <th>Detail Lokasi</th>
+                                    <th>Absen Pulang</th>
+                                    <th>Lokasi Absen</th>
+                                    <th>Detail Lokasi</th>
+                                    <th>shift</th>
+                                    <th>Catatan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $no = 1;
+                                @endphp
+                                @foreach ($DataHari as $hari => $value )
+                                    <tr>
+                                        <td>{{ $no++ }}</td>
+                                        {{-- <td>{{ \Carbon\Carbon::parse($dt->tanggal)->translatedFormat('l, d F Y') }}</td> --}}
+                                        <td>{{ $hari }}</td>
+                                        <td>{{ $value[0]['jabatan'] }}</td>
+                                        <td>{{ $value[0]['divisi'] }}</td>
+                                        <td>{{ $value[0]['jam_masuk'] }}</td>
+                                        <td>{{ $value[0]['lokasi_absen_masuk'] }}</td>
+                                        <td>{{ $value[0]['detail_lokasi_absen_masuk'] }}</td>
+                                        <td>{{ $value[0]['jam_keluar'] }}</td>
+                                        <td>{{ $value[0]['lokasi_absen_pulang'] }}</td>
+                                        <td>{{ $value[0]['detail_lokasi_absen_masuk'] }}</td>
+                                        <td>Non Shift</td>
+                                        <td>{{ $value[0]['catatan']  }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        @endforeach
                     </table>
+                    @endforeach
                 </div>
 
             </div>
@@ -145,7 +146,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="Add" enctype="multipart/form-data" method="GET" action="{{ route('absensi-search-one',['id' => $j]) }}">
+            <form id="Add" enctype="multipart/form-data" method="GET" action="{{ route('absensi-search-one',['karyawan' => Request::segment(2),'id' => $j]) }}">
                 @csrf
                 <input type="hidden" value="{{ $j }}" name="kr">
                 <div class="modal-body">

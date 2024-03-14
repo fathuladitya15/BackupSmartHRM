@@ -63,7 +63,7 @@ Route::middleware('revalidate')->group(function() {
             Route::get('/Absensi/{karyawan}',[AbsensiController::class,'index'])->name('absensi-data');
             Route::get('/Absensi/korlap/{gol_karyawan}',[DatatableController::class,'absensi_korlap'])->name("absensi-korlap");
             Route::get('/Absensi/{karyawan}/data',[DatatableController::class,'absensi_hrd'])->name('absensi-data-ajax');
-            Route::get('/Absensi/data/search/{id}',[AbsensiController::class,'search_by_one'])->name('absensi-search-one');
+            Route::get('/Absensi/{karyawan}/search/{id}',[AbsensiController::class,'search_by_one'])->name('absensi-search-one');
             Route::post('/Absensi/data/search/dokumen',[AbsensiController::class,'dokumen_perorang'])->name('absensi-doc-perorang');
 
             Route::get('/karyawan',[ManageKaryawanController::class,'index'])->name('karyawan');
@@ -172,8 +172,11 @@ Route::middleware('revalidate')->group(function() {
             });
             Route::middleware(['role:admin:korlap'])->group(function() {
                 Route::post('/surat-peringatan/get-karyawan',[PeringatanController::class,'data_karyawan'])->name("peringatan-data-karyawan");
-
                 Route::get('/surat-peringatan/data-admin',[DatatableController::class,'data_peringatan_admin'])->name('peringatan-data-admin');
+
+                // LIST PRODUK
+
+                Route::get('/list-produk',[ProdukController::class,'index'])->name('list-produk');
             });
             Route::middleware(['role:superadmin'])->group(function(){
                 Route::get('/karyawan/data-superadmin',[DatatableController::class,'data_karyawan_superadmin'])->name('data-kr-superadmin');
@@ -197,6 +200,21 @@ Route::middleware('revalidate')->group(function() {
             Route::middleware(['role:korlap:admin:hrd'])->group(function() {
                 Route::get('/karyawan/data-admin',[DatatableController::class,'data_karyawan_admin'])->name('data-kr-admin');
             });
+
+            Route::middleware(['role:direktur'])->group(function() {
+                Route::get('/referensi-kerja-direktur/{nama_client}/{id}', function($c,$id) {
+                    // dd($c,$id);
+                    abort(500);
+                })->name('direktur-rf-index');
+
+                Route::get('/pre-order-direktur/{nama_client}/{id}', function($c,$id) {
+                    // dd($c,$id);
+                    abort(500);
+
+                })->name('direktur-pre-order-index');
+            });
+
+            // Route::get('/pre-order/{nama_client}/referensi-kerja/{id}',[ReferensiKerjaController::class,'index_direktur'])->name('direktur-rf-index');
             Route::post('/check-tanda-tangan',[HomeController::class,'checking_tanda_tangan'])->name('check-tanda-tangan');
             Route::post('/check-tanda-tangan/save',[HomeController::class,'save_tanda_tangan'])->name('save-tanda-tangan');
         });
