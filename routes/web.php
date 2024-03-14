@@ -54,6 +54,10 @@ Route::get('/times', function(Request $request) {
     return response()->json($now) ;
 })->name("times");
 
+Route::get('/camera-test', function() {
+    return view('layouts.test-camera');
+});
+
 Route::middleware('revalidate')->group(function() {
     Route::middleware('SingelSession')->group(function() {
         Route::middleware('auth')->group(function() {
