@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('table_produk', function (Blueprint $table) {
             $table->id();
-            $table->string('no_produk');
+            $table->string('no_produk')->nullable();
             $table->string('tipe_produk');
             $table->string('nama_produk');
             $table->string('satuan_produk');

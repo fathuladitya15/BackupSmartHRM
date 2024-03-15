@@ -122,7 +122,9 @@
                                         <td>{{ $value[0]['jam_keluar'] }}</td>
                                         <td>{{ $value[0]['lokasi_absen_pulang'] }}</td>
                                         <td>{{ $value[0]['detail_lokasi_absen_masuk'] }}</td>
-                                        <td>Non Shift</td>
+                                        <td>
+                                            {{ $value[0]['shift'] == null ? 'Non Shift' :  $value[0]['shift'] }}
+                                        </td>
                                         <td>{{ $value[0]['catatan']  }}</td>
                                     </tr>
                                 @endforeach

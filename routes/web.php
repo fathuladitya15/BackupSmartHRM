@@ -180,7 +180,8 @@ Route::middleware('revalidate')->group(function() {
 
                 // LIST PRODUK
 
-                Route::get('/list-produk',[ProdukController::class,'index'])->name('list-produk');
+                Route::get('/list-produk',[ProdukController::class,'list_produk'])->name('list-produk');
+                Route::post('/list-produk/upload',[ProdukController::class,'upload_list_produk'])->name('list-produk-upload');
             });
             Route::middleware(['role:superadmin'])->group(function(){
                 Route::get('/karyawan/data-superadmin',[DatatableController::class,'data_karyawan_superadmin'])->name('data-kr-superadmin');

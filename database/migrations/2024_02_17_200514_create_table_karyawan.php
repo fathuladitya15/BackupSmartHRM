@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('tempat_lahir');
             $table->string('jenis_kelamin');
             $table->string('nik');
-            $table->string('no_kk');
+            $table->string('no_kk')->nullable();
             $table->string('alamat');
             $table->string('alamat_domisili');
             $table->string('lokasi_kerja');

@@ -126,7 +126,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="Add" enctype="multipart/form-data" method="GET" action="{{ route('absensi-search-one',['id' => $kr]) }}">
+            <form id="Add" enctype="multipart/form-data" method="GET" action="{{ route('absensi-search-one',['karyawan' => Request::segment(2),'id' => $kr]) }}">
                 @csrf
                 <input type="hidden" value="{{ $kr }}" name="kr">
                 <div class="modal-body">

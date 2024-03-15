@@ -241,7 +241,7 @@
                         <div class="form-group col-md-6">
                             <label class=" col-form-label" for="basic-default-name">ID Karyawan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control"  placeholder="Masukan ID Card" name="karyawan_id" value="{{ @old('karyawan_id') }}"  type="text" id="karyawan_id">
+                            <input class="form-control"  placeholder="Masukan ID Card" name="karyawan_id" value="{{ @old('karyawan_id') }}"  type="text" id="karyawan_id" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label class=" col-form-label" for="">Kategori</label>

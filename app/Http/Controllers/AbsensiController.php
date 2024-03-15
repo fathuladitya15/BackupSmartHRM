@@ -49,7 +49,7 @@ class AbsensiController extends Controller
     function search_by_one(Request $request) {
         $role      = Auth::user()->roles;
         $j         = $request->kr;
-        $karyawan = Karyawan::where('kategori',$j)->get();
+
 
         $data_karyawan = Karyawan::where('id_karyawan',$request->id_karyawan)->first();
         $id_karyawan    = $request->id_karyawan;
@@ -86,7 +86,9 @@ class AbsensiController extends Controller
 
         if(in_array($role,['admin','korlap'])){
             $karyawan = User::where('id_client',Auth::user()->id_client)->where('roles','karyawan')->get();
-            return view('layouts.admin_korlap.vAbsensiSearchOne',compact('data_karyawan','from_date','to_date','search','j','karyawan'));
+            // return view('layouts.admin_korlap.vAbsensiSearchOne',compact('data_karyawan','from_date','to_date','search','j','karyawan'));
+        }else {
+            $karyawan = Karyawan::where('kategori',$j)->get();
         }
         return view('layouts.hrd.vAbsensiSearchOne',compact('search','karyawan','from_date','to_date','j','data_karyawan','data'));
     }
@@ -108,12 +110,12 @@ class AbsensiController extends Controller
                 $data[$tanggal->format('Y')][$tanggal->translatedFormat('F')][$key->tanggal] = [$key];
 
         }
-        if(in_array(Auth::user()->roles, ['admin','korlap'])) {
-            $pdf = PDF::loadview('layouts.pdf_view.pdfAbsensi2',['data' => $data,'from_date' => $from_date,'to_date' => $to_date,'data_kr' => $karyawan,'filename' => $filename]);
+        // if(in_array(Auth::user()->roles, ['admin','korlap'])) {
+        //     $pdf = PDF::loadview('layouts.pdf_view.pdfAbsensi2',['data' => $data,'from_date' => $from_date,'to_date' => $to_date,'data_kr' => $karyawan,'filename' => $filename]);
 
-        }else {
-            $pdf = PDF::loadview('layouts.pdf_view.pdfAbsensi',['data' => $data,'from_date' => $from_date,'to_date' => $to_date,'data_kr' => $karyawan,'filename' => $filename]);
-        }
+        // }else {
+        // }
+        $pdf = PDF::loadview('layouts.pdf_view.pdfAbsensi',['data' => $data,'from_date' => $from_date,'to_date' => $to_date,'data_kr' => $karyawan,'filename' => $filename]);
         $pdf->setPaper('A4', 'landscape');
         return $pdf->stream();
     }
