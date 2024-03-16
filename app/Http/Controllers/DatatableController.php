@@ -22,6 +22,9 @@ use App\Models\Filemanager;
 use Illuminate\Http\Request;
 use App\Models\KategoriCuti;
 use App\Models\ReferensiKerja;
+use App\Models\ListProduk;
+
+
 
 class DatatableController extends Controller
 {
@@ -1574,7 +1577,7 @@ class DatatableController extends Controller
         })
         ->rawColumns(['aksi','face_id'])
         ->make(true);
-return $dt;
+        return $dt;
     }
     // REFERENSI KERJA
     function data_referensi_kerja(Request $request) {
@@ -1670,6 +1673,33 @@ return $dt;
         ->make(true);
         return $dt;
 
+    }
+
+    // DATA LIST PRODUK
+
+    function data_list_produk(Request $request, $id_client) {
+
+        $data = ListProduk::where("id_client",$id_client)->get();
+
+
+        $dt  = DataTables::of($data)
+        ->addIndexColumn()
+        ->addColumn('aksi', function($row) {
+            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="edit('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Edit</a>';
+            $hapus   = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')"  ><i class="bx bx-trash"></i>Hapus</a>';
+            return $edit.'&nbsp;'.$hapus;
+        })
+        ->addColumn('harga_produk', function($row) {
+            if($row->harga_produk == 0) {
+                $s = 'Harga Belum disetting';
+            }else {
+                $s = 'Rp ' . number_format( $row->harga_produk,  2, ',', ',');
+            }
+            return $s;
+        })
+        ->rawColumns(['aksi','harga_produk'])
+        ->make(true);
+        return $dt;
     }
 
 

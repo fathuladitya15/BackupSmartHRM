@@ -3,6 +3,14 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Models\Bank;
+// App\Http\Controllers\Auth\
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ConfirmPassword;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\VerificationController;
+
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\IzinController;
 use App\Http\Controllers\HomeController;
@@ -36,7 +44,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+// Auth::routes();
+
+Route::get('/login',[LoginController::class,'showLoginForm'])->name('login');
+Route::post('/login',[LoginController::class,'login'])->name('login');
+Route::post('/logout',[LoginController::class,'logout'])->name('logout');
 
 Route::post('/search-bank',function(Request $request) {
     $search = Bank::where('nama_bank',$request->nama_bank)->first();
@@ -182,6 +194,10 @@ Route::middleware('revalidate')->group(function() {
 
                 Route::get('/list-produk',[ProdukController::class,'list_produk'])->name('list-produk');
                 Route::post('/list-produk/upload',[ProdukController::class,'upload_list_produk'])->name('list-produk-upload');
+                Route::get('/list-produk/data/{id_client}',[DataTableController::class,'data_list_produk'])->name('list-produk-data');
+                Route::post('/list-produk/get',[ProdukController::class,'get_list_produk'])->name('list-produk-get');
+                Route::post('/list-produk/update',[ProdukController::class,'update_list_produk'])->name('list-produk-update');
+                Route::post('/list-produk/add',[ProdukController::class,'add_list_produk'])->name('list-produk-add');
             });
             Route::middleware(['role:superadmin'])->group(function(){
                 Route::get('/karyawan/data-superadmin',[DatatableController::class,'data_karyawan_superadmin'])->name('data-kr-superadmin');

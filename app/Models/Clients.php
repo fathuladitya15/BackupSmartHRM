@@ -14,4 +14,9 @@ class Clients extends Model
     protected $fillable = [
         'nama_client','prov','kota','kec','kel','alamat_detail'
     ] ;
+
+
+    function users() {
+        return $this->hasOne(User::class,'id','id_client');
+    }
 }

@@ -48,6 +48,9 @@
 @section('content')
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Produk /</span>List Produk</h4>
 
+<div id="error">
+
+</div>
 <div class="row">
     <div class="col-xxl">
         <div class="card mb-4">
@@ -58,7 +61,7 @@
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalUpload" >
                     <i class='bx bx-upload'></i> Upload Data Produk
                 </button>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" style="float: right">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah" style="float: right">
                     <i class='bx bx-plus'></i> Tambah Data Produk
                 </button>
             </div>
@@ -70,8 +73,9 @@
                             <tr class="text-nowrap">
                               <th>#</th>
                               <th>Nomor Produk</th>
-                              <th>Produk Kategori</th>
                               <th>Nama Produk</th>
+                              <th>Harga Produk</th>
+                              <th>Aksi</th>
                             </tr>
                           </thead>
                         <tbody>
@@ -128,11 +132,145 @@
     </div>
 </div>
 
+{{-- modal edit produk --}}
+<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="modalEditTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title black" id="exampleModalLongTitle">Edit Data Produk</h5>
+                <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="edit_produk" method="POST" action="{{ route('list-produk-update') }}" >
+                @csrf
+                <input type="hidden" name="id" value="" id="id">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="nama_produk">Nama Produk</label>
+                            <span class="text-danger pl-1">*</span>
+                            <input class="form-control" required="required"  name="nama_produk" type="text" value="" id="nama_produk" >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="nomor_produk">Nomor Produk</label>
+                            <input class="form-control"   name="nomor_produk" type="text" value="" id="nomor_produk" >
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label class="col-form-label" for="harga_produk">Masukan Harga Produk</label>
+                            <span class="text-danger pl-1">*</span>
+                            <input class="form-control"   name="harga_produk" type="text" value="" id="harga_produk" required>
+
+                        </div>
+                    </div>
+                </div>
+                <div id="aksi">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalTambah" tabindex="-1" role="dialog" aria-labelledby="modalTambah" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title black" id="exampleModalLongTitle">Tambah Data Produk</h5>
+                <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="add_produk" method="POST" action="{{ route('list-produk-add') }}" >
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="nama_produk">Nama Produk</label>
+                            <span class="text-danger pl-1">*</span>
+                            <input class="form-control" required="required"  name="nama_produk" type="text" value="" id="nama_produk" >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="nomor_produk">Nomor Produk</label>
+                            <input class="form-control"   name="nomor_produk" type="text" value="" id="nomor_produk" >
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="harga_produk">Masukan Harga Produk</label>
+                            <span class="text-danger pl-1">*</span>
+                            <input class="form-control"   name="harga_produk" type="text" value="" id="harga_produk" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="tipe_produk">Pilih Ketegori Produk</label>
+                            <select name="tipe_produk" id="tipe_produk" class="form-control">
+                                <option value="">-- Pilih Kategori Produk --</option>
+                                <option value="primary">Primary</option>
+                                <option value="n_primary">Non Primary</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="satuan_produk">Satuan Produk</label>
+                            <select name="satuan_produk" id="satuan_produk" required class="form-control">
+                                <option value="">-- Pilih Satuan Produk --</option>
+                                <option value="pcs">Pieces (pcs)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="aksi">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('js')
 
 <script>
+    var url_data = "{{ route('list-produk-data',['id_client' => Auth::user()->id_client]) }}";
+    var table = $('#myTable').dataTable({
+        processing: true,
+        serverSide: true,
+        ajax: url_data,
+        columns: [{
+            data: 'DT_RowIndex',
+            orderable: false,
+            searchable: false
+        },  {
+            data: 'no_produk',
+            name: 'no_produk',
+        },{
+            data: 'nama_produk',
+            name: 'nama_produk',
+        },
+        {
+            data: 'harga_produk',
+            name: 'harga_produk',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'aksi',
+            name: 'aksi',
+            orderable: false,
+            searchable: false
+        },]
+    });
     $('#upload_produk').submit(function (e) {
         e.preventDefault()
         var formData = new FormData(this);
@@ -173,7 +311,131 @@
                 console.log(e);
             }
         })
+    });
+
+    var url_get = "{{ route('list-produk-get') }}";
+    function edit(id) {
+        const button = document.getElementById('edit_'+id);
+        const stoploading   = '<i class="bx bx-edit-alt"></i>Edit';
+        const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+
+
+        $.ajax({
+            url : url_get,
+            type: 'POST',
+            data: {id:id},
+            beforeSend: function() {
+                button.innerHTML = loading;
+                button.disabled = true;
+            },success : function(s) {
+                console.log(s);
+                $('#modalEdit').modal('show');
+                $('#id').val(s.id);
+                $('#nama_produk').val(s.nama_produk);
+                $('#nomor_produk').val(s.no_produk);
+                $('#harga_produk').val(s.harga_produk);
+            }, error : function(e) {
+                console.log(e);
+                Swal.fire({
+                    title: "Terjadi kesalahan",
+                    text: "Hubungi tim IT",
+                    icon: "error"
+                });
+            },complete: function() {
+                button.innerHTML  = stoploading;
+                button.disabled = false;
+
+            }
+        })
+    }
+
+
+    $("#edit_produk").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url : $(this).attr('action'),
+            data : $(this).serialize(),
+            type : "POST",
+            beforeSend :  function() {
+                Swal.fire({
+                    title: 'Loading...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+            }, success : function(s) {
+                Swal.fire({
+                    title: s.title,
+                    text: s.pesan,
+                    icon: "success"
+                });
+                $("#modalEdit").modal('hide');
+                $("#edit_produk").trigger('reset');
+            }, error : function(e) {
+                console.log(e);
+                var errors = '';
+                $.each(e.responseJSON.errors, function(key, value) {
+                    errors += value + '<br>'; // Membuat daftar pesan kesalahan
+                });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan!',
+                    html: errors
+                });
+            }, complete: function() {
+
+                table.DataTable().ajax.reload();
+                // Swal.close();
+
+            }
+        })
     })
+
+    $("#add_produk").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url : $(this).attr('action'),
+            data : $(this).serialize(),
+            type : "POST",
+            beforeSend :  function() {
+                Swal.fire({
+                    title: 'Loading...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+            }, success : function(s) {
+                Swal.fire({
+                    title: s.title,
+                    text: s.pesan,
+                    icon: "success"
+                });
+                $("#modalTambah").modal('hide');
+                $("#add_produk").trigger('reset');
+            }, error : function(e) {
+                console.log(e);
+                var errors = '';
+                $.each(e.responseJSON.errors, function(key, value) {
+                    errors += value + '<br>'; // Membuat daftar pesan kesalahan
+                });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan!',
+                    html: errors
+                });
+            }, complete: function() {
+
+                table.DataTable().ajax.reload();
+                // Swal.close();
+
+            }
+        })
+    })
+
 </script>
 
 @endpush

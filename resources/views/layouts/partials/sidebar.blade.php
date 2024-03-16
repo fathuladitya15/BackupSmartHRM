@@ -192,11 +192,18 @@
 
 
                     {{-- LEMBUR --}}
-                    @php
-                        $id_jabatan = App\Models\Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->jabatan;
-                        $jabatan = App\Models\Jabatan::find($id_jabatan)->nama_jabatan;
+                    @if(Auth::user()->roles != 'superadmin')
+                        @php
+                            $id_jabatan = App\Models\Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->jabatan;
+                            $jabatan = App\Models\Jabatan::find($id_jabatan)->nama_jabatan;
 
-                    @endphp
+                        @endphp
+                    @else
+                        @php
+                            $id_jabatan = "";
+                            $jabatan = "Superadmin";
+                        @endphp
+                    @endif
                     @if ($jabatan != 'Manager')
                     <li class="menu-item {{ menuOpen(['lembur','lembur-self']) }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
