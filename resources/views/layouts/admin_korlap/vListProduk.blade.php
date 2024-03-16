@@ -436,6 +436,63 @@
         })
     })
 
+
+    var url_delete = "{{ route('list-produk-delete') }}";
+    function hapus(id) {
+        const button = document.getElementById('hapus_'+id);
+        const stoploading   = '<i class="bx bx-trash"></i>Hapus';
+        const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+
+        Swal.fire({
+            title: "Konfirmasi",
+            text: "Apakah Anda yakin ingin menghapus data?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Hapus Produk!"
+            }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                        url : url_delete,
+                        type: 'DELETE',
+                        data: {id:id},
+                        beforeSend: function() {
+                            Swal.fire({
+                                title: 'Loading...',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                            });
+                        },success : function(s) {
+                            console.log(s);
+                            Swal.fire({
+                                title: s.title,
+                                text: s.pesan,
+                                icon: "success"
+                            });
+                        }, error : function(e) {
+                            console.log(e);
+                            Swal.fire({
+                                title: "Terjadi kesalahan",
+                                text: "Hubungi tim IT",
+                                icon: "error"
+                            });
+                        },complete: function() {
+                            button.innerHTML  = stoploading;
+                            button.disabled = false;
+                            table.DataTable().ajax.reload();
+
+
+                        }
+                    })
+            }
+        });
+
+    }
+
 </script>
 
 @endpush

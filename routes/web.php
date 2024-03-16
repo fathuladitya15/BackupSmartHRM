@@ -198,6 +198,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('/list-produk/get',[ProdukController::class,'get_list_produk'])->name('list-produk-get');
                 Route::post('/list-produk/update',[ProdukController::class,'update_list_produk'])->name('list-produk-update');
                 Route::post('/list-produk/add',[ProdukController::class,'add_list_produk'])->name('list-produk-add');
+                Route::delete('/list-produk/delete',[ProdukController::class,'delete_list_produk'])->name('list-produk-delete');
             });
             Route::middleware(['role:superadmin'])->group(function(){
                 Route::get('/karyawan/data-superadmin',[DatatableController::class,'data_karyawan_superadmin'])->name('data-kr-superadmin');

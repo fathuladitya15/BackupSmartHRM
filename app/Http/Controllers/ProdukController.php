@@ -23,7 +23,6 @@ class ProdukController extends Controller
         else {
             abort(404);
         }
-        // dd(Auth::user()->clients()->first()->id);
     }
 
     function upload_list_produk(Request $request) {
@@ -86,5 +85,14 @@ class ProdukController extends Controller
         $u->update();
 
         return response()->json(['status' => TRUE ,'title' => 'Sukses' ,'pesan' => 'Data berhasil diperbaharui']);
+    }
+
+    function delete_list_produk(Request $request) {
+        $id = $request->id;
+
+        $data = ListProduk::findOrFail($id);
+        $data->delete();
+
+        return response()->json(['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Produk Berhasil dihapus']);
     }
 }
