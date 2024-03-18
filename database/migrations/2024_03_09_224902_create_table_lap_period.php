@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('keterangan');
             $table->date('from_date');
             $table->date('to_date');
-            $table->string('total_produk');
-            $table->string('total_tagihan');
+            $table->string('total_produk')->nullable();
+            $table->string('total_tagihan')->nullable();
             $table->string('id_client');
-            $table->string('status');
+            $table->string('status')->default(0);
             $table->timestamps();
         });
     }

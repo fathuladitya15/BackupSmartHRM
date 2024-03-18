@@ -121,6 +121,7 @@ class AbsensiController extends Controller
     }
 
     function cek(Request $request) {
+        return view('layouts.karyawan.vAbsensiProject');
 
         $ip = \Request::getClientIp(true); // Get the user's IP address
         // dd($ip);

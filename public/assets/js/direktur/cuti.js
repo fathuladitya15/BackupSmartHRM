@@ -105,7 +105,7 @@ function detail(id) {
                 $("#start_date").val(data.start_date)
                 $("#end_date").val(data.end_date)
                 $("#sisa_cuti").val(data.jumlah_cuti)
-                $("#total_cuti").val(data.ambil_cuti)
+                $("#total_cuti").val(data.ambil_cuti - data.jumlah_cuti)
                 $("textarea#alasan_cuti").val(data.alasan);
                 $("#kategori_cuti").val(data.kategori_cuti);
                 if(data.status == 4) {

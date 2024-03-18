@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use DB;
 use Auth;
+use Str;
 use DataTables;
 use Carbon\Carbon;
 use App\Models\Role;
@@ -22,6 +23,8 @@ use App\Models\Filemanager;
 use Illuminate\Http\Request;
 use App\Models\KategoriCuti;
 use App\Models\ReferensiKerja;
+use App\Models\ListLaporanProduksi;
+use App\Models\DetailLaporanProduksi;
 use App\Models\ListProduk;
 
 
@@ -366,20 +369,27 @@ class DatatableController extends Controller
                 $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
                 $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
                 $acc   = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="acc_'.$row->id.'" onclick="acc('.$row->id.')"  ><i class="bx bx-check"></i>Setujui</a>';
-
+                $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
                 if(Auth::user()->id_client == 1) {
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
 
                     if(Auth::user()->roles == 'manajer' ) {
                         if($row->status != 0) {
                             return "";
-                        }else {
+                        }else if($row->status == 4){
+                            return $file;
+                        }
+                        else {
                             return $edit;
                         }
                     }else if(Auth::user()->roles == 'hrd') {
-                        if($row->status != 1) {
+                        if(in_array($row->status,[1,2])) {
                             return "";
-                        }else {
+                        }
+                        else if($row->status == 4){
+                            return $file;
+                        }
+                        else {
                             return $edit;
                         };
                     }else if($role == 'direktur') {
@@ -728,6 +738,8 @@ class DatatableController extends Controller
             return $this->data_izin_admin_hrd($request);
         }else if(Auth::user()->roles == 'direktur'){
             return $this->data_izin_admin_direktur($request);
+        }else if(Auth::user()->roles == 'manajer') {
+            return $this->data_izin_admin_manajer($request);
         }
         $dt = DataTables::of($data)
             ->addIndexColumn()
@@ -997,6 +1009,132 @@ class DatatableController extends Controller
 
                     }
                 }
+
+                return $btn;
+
+            })
+            ->addColumn('status', function($row) {
+                $wait =  "<span class='badge bg-warning'>Menuggu ditandatangani</span>";
+                $acc =  "<span class='badge bg-success'>Telah ditandatangani</span>";
+                $divisi = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->divisi;
+                $nama_divisi = Divisi::find($divisi)->nama_divisi;
+                if($nama_divisi == 'MPO') {
+                    if($row->status == 0 ) {
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani  Manager Divisi</span>";
+                    }else if($row->status == 1) {
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani  HRD</span>";
+                    }else if($row->status == 2 ){
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani Direktur HRD</span>";
+                    }
+                    else if($row->status == 3) {
+                        $st = "<span class='badge bg-warning'> Menunggu persetujuan </span>";
+                    }else if($row->status  == 4){
+                        $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
+                    }
+                }else {
+                    if($row->status == 0 ) {
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani  Manager Divisi</span>";
+                    }else if($row->status == 1) {
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani  HRD</span>";
+                    }else if($row->status == 2 ){
+                        $st = "<span class='badge bg-warning'> Menuggu ditandatangani Direktur HRD</span>";
+                    }
+                    else if($row->status == 3) {
+                        $st = "<span class='badge bg-warning'> Menunggu persetujuan </span>";
+                    }else if($row->status  == 4){
+                        $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
+                    }
+                }
+
+
+                return $st;
+            })
+            ->addColumn('approved',function($row){
+                if($row->status == 1) {
+                    return "<span class='badge bg-danger'>File belum diupload</span>";
+                }else {
+                    return "";
+                }
+            })
+            ->rawColumns(['no_surat','aksi','status','nama_karyawan','approved','tanggal_pembuatan'])
+            ->make(true);
+
+        return $dt;
+    }
+
+    // DATA IZIN DIREKTUR
+    function data_izin_admin_manajer($request) {
+        $divisi      = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->divisi;
+        $nama_divisi = Divisi::find($divisi)->nama_divisi;
+        $dataMasters = Izin::where('divisi',$nama_divisi);
+
+        $data = $dataMasters->where('status','>=','0')->get();
+        // dd($dataMasters);
+        $dt = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('tanggal_pembuatan',function($row){
+                return Carbon::parse($row->tanggal_pembuatan)->translatedFormat('d F Y');
+            })
+            ->addColumn("nama_karyawan", function($row) {
+                $nama = Karyawan::where('id_karyawan',$row->karyawan_id)->first()->nama_karyawan;
+                return $nama;
+            })
+            ->addColumn("divisi", function($row) {
+                $id_divisi = Karyawan::where('id_karyawan',$row->karyawan_id)->first()->divisi;
+                $nama = Divisi::find($id_divisi);
+                return $nama->nama_divisi;
+            })
+            ->addColumn("jabatan", function($row) {
+                $jabatan = Karyawan::where('id_karyawan',$row->karyawan_id)->first()->jabatan;
+                $nama = Jabatan::find($jabatan);
+                return $nama->nama_jabatan;
+            })
+            ->addColumn("no_surat", function($row) {
+                if($row->no_surat == null) {
+                    return "";
+                }else {
+                    return $row->no_surat;
+                }
+            })
+            ->addcolumn('aksi' ,function($row) {
+                $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+                $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+                $download = '<a href="'.route("izin-download",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm"  ><i class="bx bx-download"></i>Download</a>';
+                $acc   = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="acc_'.$row->id.'" onclick="acc('.$row->id.')"  ><i class="bx bx-check"></i>Setujui</a>';
+
+                $divisi = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->divisi;
+                $nama_divisi = Divisi::find($divisi)->nama_divisi;
+
+                if($row->status == 0) {
+                    $btn = $edit;
+                }else if($row->status == 4) {
+                    $btn = $download;
+                }
+                else{
+                    $btn = "";
+                }
+                // if($nama_divisi == 'MPO') {
+                //     if($row->status == 0) {
+                //         $btn = $edit;
+                //     }else if($row->status == 4) {
+                //         $btn = $download;
+                //     }else {
+                //         $btn = "";
+                //     }
+                // }else {
+                //     if($row->status == 2) {
+                //         $btn = $edit;
+                //     }else if($row->status == 3) {
+                //         $btn = $acc;
+                //     }else if($row->status == 4) {
+                //         $btn = $download;
+                //     }else {
+                //         $btn = "";
+
+                //     }
+                // }
 
                 return $btn;
 
@@ -1579,6 +1717,35 @@ class DatatableController extends Controller
         ->make(true);
         return $dt;
     }
+
+    // DATA ABSENSI KARYAWAN
+    function absensi_karyawan(Request $request) {
+        // dd("TES");
+        $data  = DB::table('table_absensi as kr') ->where('id_karyawan',Auth::user()->id_karyawan)
+        ->get();
+
+        $dt = DataTables::of($data)
+        ->addIndexColumn()
+        ->addColumn('face_id', function($row) {
+            return "";
+        })
+        ->addColumn('aksi', function($row) {
+            // $a = "<a href='javascript:void(0)')' class='btn btn-primary btn-sm'><i class='bx bxs-folder-open'></i>Lihat File</a>";
+            return "";
+        })
+        ->addColumn('detail_lokasi_absen_masuk', function($row) {
+            $p = Str::limit($row->detail_lokasi_absen_masuk,50,'...');
+            return $p;
+        })
+        ->addColumn('detail_lokasi_absen_plg', function($row) {
+            $p = Str::limit($row->detail_lokasi_absen_plg,50,'...');
+            return $p;
+        })
+        ->rawColumns(['aksi','face_id','detail_lokasi_absen_masuk','detail_lokasi_absen_plg'])
+        ->make(true);
+        return $dt;
+    }
+
     // REFERENSI KERJA
     function data_referensi_kerja(Request $request) {
         if(Auth::user()->roles == 'direktur') {
@@ -1702,5 +1869,67 @@ class DatatableController extends Controller
         return $dt;
     }
 
+    // DATA LIST LAPORAN PRODUKSI
+
+    function data_laporan_produksi() {
+        $data = ListLaporanProduksi::where('id_client',Auth::user()->id_client)->get();
+
+        $dt  = DataTables::of($data)
+        ->addIndexColumn()
+        ->addColumn('aksi', function($row) {
+            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="edit('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Edit</a>';
+            $hapus   = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')"  ><i class="bx bx-trash"></i>Hapus</a>';
+            $data   = '<a href="javascript:void(0)" class="btn btn-sm btn-warning" id="data_'.$row->id.'" onclick="data('.$row->id.')"><i class="menu-icon tf-icons bx bx-table"></i> Data </a>';
+             return $data.'&nbsp;'.$edit.'&nbsp;'.$hapus;
+        })
+        ->addColumn('periode', function($row) {
+            $from = Carbon::parse($row->from_date)->translatedFormat('d F Y');
+            $to   = Carbon::parse($row->to_date)->translatedFormat('d F Y');
+            // $month = Carbon::parse($row->from_date)->translatedFormat('Y');
+            return $from.'  s/d  '.$to;
+        })
+        ->addColumn('status', function($row) {
+            if($row->status == 0) {
+                $s = '<span class="badge badge bg-info badge-sm"> <i class="menu-icon tf-icons bx bx-timer"></i> Dalam pengerjaan </span>';
+            }else {
+                $s = "";
+            }
+            return $s;
+        })
+        ->rawColumns(['aksi','periode','status'])
+        ->make(true);
+        return $dt;
+
+    }
+
+    function detail_laporan_produksi_data(Request $request) {
+        $id_lap_period = $request->id;
+        $data   = DetailLaporanProduksi::where('id_table_lap_period',$id_lap_period)->orderBy('nama_produk','ASC')->get();
+        $totals = [];
+        for ($i=1; $i <= 31 ; $i++) {
+            $name = 'tanggal_'.$i;
+            $totals[$name] = DB::table('table_lap_produksi')->selectRaw('SUM(CAST('.$name.' AS INT)) AS total')->first();
+        };
+
+        // dd($totals);
+
+        $dt     = DataTables::of($data)
+        ->addIndexColumn()
+        ->addColumn('aksi', function($row) {
+            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="edit('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Edit</a>';
+            $hapus   = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')"  ><i class="bx bx-trash"></i>Hapus</a>';
+            return $hapus;
+        })
+        ->addColumn('harga_produk_satuan', function($row) {
+            return $row->harga_produk_satuan == null ? 'Belum ditentukan' : $row->harga_produk_satuan ;
+        })
+        ->addColumn('satuan_produk', function($row) {
+            return "";
+        })
+        ->rawColumns(['aksi','satuan_produk'])
+
+        ->make(true);
+        return $dt;
+    }
 
 }

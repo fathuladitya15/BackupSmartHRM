@@ -76,6 +76,7 @@ Route::middleware('revalidate')->group(function() {
             Route::get('/home', [HomeController::class, 'index'])->name('home');
 
             Route::get('/absen',[AbsensiController::class,'cek'])->name("absensi");
+            Route::get('/Absensi/data/',[DatatableController::class,'absensi_karyawan'])->name('absensi-data-karyawan');
             Route::get('/Absensi/{karyawan}',[AbsensiController::class,'index'])->name('absensi-data');
             Route::get('/Absensi/korlap/{gol_karyawan}',[DatatableController::class,'absensi_korlap'])->name("absensi-korlap");
             Route::get('/Absensi/{karyawan}/data',[DatatableController::class,'absensi_hrd'])->name('absensi-data-ajax');
@@ -199,6 +200,21 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('/list-produk/update',[ProdukController::class,'update_list_produk'])->name('list-produk-update');
                 Route::post('/list-produk/add',[ProdukController::class,'add_list_produk'])->name('list-produk-add');
                 Route::delete('/list-produk/delete',[ProdukController::class,'delete_list_produk'])->name('list-produk-delete');
+
+                Route::get('/laporan-produksi',[ProdukController::class,'laporan_produksi'])->name("laporan-produksi");
+                Route::get('/laporan-produksi/data',[DatatableController::class,'data_laporan_produksi'])->name("laporan-produksi-data");
+                Route::post('/laporan-produksi/add',[ProdukController::class,'add_laporan_produksi'])->name("laporan-produksi-add");
+                Route::post('/laporan-produksi/get',[ProdukController::class,'get_laporan_produksi'])->name("laporan-produksi-get");
+                Route::post('/laporan-produksi/update',[ProdukController::class,'update_laporan_produksi'])->name("laporan-produksi-update");
+                Route::delete('/laporan-produksi/delete',[ProdukController::class,'delete_laporan_produksi'])->name("laporan-produksi-delete");
+                Route::get('/laporan-produksi/datas',[ProdukController::class,'data_laporan_produksi'])->name("laporan-produksi-isi");
+
+                Route::get('/laporan-produksi/datas/{id}',[ProdukController::class,'detail_laporan_produksi'])->name('laporan-produksi-detail');
+                Route::post('/laporan-produksi/datas-detail',[DatatableController::class,'detail_laporan_produksi_data'])->name('laporan-produksi-detail-data');
+                Route::post('/laporan-produksi/data-details-lap',[ProdukController::Class,'get_detail_laporan_produksi'])->name('laporan-produksi-get-detail');
+                Route::post('/laporan-produksi/data-details-updated',[ProdukController::Class,'update_detail_laporan_produksi'])->name('laporan-produksi-update-detail');
+                Route::post('/laporan-produksi/data-get-totals',[ProdukController::class,'laporan_produksi_get_totals'])->name('lap-produk-totals');
+
             });
             Route::middleware(['role:superadmin'])->group(function(){
                 Route::get('/karyawan/data-superadmin',[DatatableController::class,'data_karyawan_superadmin'])->name('data-kr-superadmin');

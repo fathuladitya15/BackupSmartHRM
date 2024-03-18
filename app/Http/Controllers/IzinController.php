@@ -98,7 +98,7 @@ class IzinController extends Controller
             if($jabatan == 'Manager') {
                 $status = 2;
             }else {
-                $stats = 0;
+                $status = 0;
             }
 
             if(Auth::user()->id_client != 3) {
@@ -211,7 +211,16 @@ class IzinController extends Controller
                     $data->update();
                 }
                 $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah disetujui'];
-            }else if(Auth::user()->roles == 'hrd'){
+            }
+            else if(Auth::user()->roles == 'manajer'){
+                $data = Izin::find($id_izin);
+
+                $data->ttd_mengetahui = $ttdCreate->path;
+                $data->status =  1;
+                $data->update();
+                $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah disetujui'];
+            }
+            else if(Auth::user()->roles == 'hrd'){
                 $data = Izin::find($id_izin);
 
                 $data->ttd_hrd = $ttdCreate->path;

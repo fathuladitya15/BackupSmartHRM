@@ -1,5 +1,5 @@
 @extends('vBase')
-@section('title') {{ 'List Produk' }} @endsection
+@section('title') {{ 'List Laporan Produksi' }}@endsection
 
 @push('css')
 <style>
@@ -30,23 +30,14 @@
     .swal2-container {
         z-index: 999999;
     };
-    p#nama_karyawan {
-        margin-top: -50px !important;
-    }
-    p#nama_korlap {
-        margin-top: -50px !important;
-    }
-    .over_text {
-        margin-top: -50px !important;
-    }
-    #button_ttd{
-        width: 150px;
-    }
+
 </style>
 
 @endpush
+
 @section('content')
-<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Produk /</span>List Produk</h4>
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Produk /</span>Laporan Produksi</h4>
+
 <div class="row">
     <div class="col-xxl">
         <div class="card mb-4">
@@ -54,11 +45,8 @@
                 <h5 class="mb-0">List Produk </h5>
             </div>
             <div class="card-title">
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalUpload" >
-                    <i class='bx bx-upload'></i> Upload Data Produk
-                </button>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah" style="float: right">
-                    <i class='bx bx-plus'></i> Tambah Data Produk
+                    <i class='bx bx-plus'></i> Tambah Laporan Baru
                 </button>
             </div>
             <br>
@@ -67,10 +55,12 @@
                     <table class="table" id="myTable">
                         <thead>
                             <tr class="text-nowrap">
-                              <th>#</th>
-                              <th>Nomor Produk</th>
-                              <th>Nama Produk</th>
-                              <th>Harga Produk</th>
+                              <th>No</th>
+                              <th>Keterangan</th>
+                              <th>Periode</th>
+                              <th>Grand Total</th>
+                              <th>Total Tagihan</th>
+                              <th>status</th>
                               <th>Aksi</th>
                             </tr>
                           </thead>
@@ -85,34 +75,36 @@
     </div>
 </div>
 
-{{-- modal upload file excel --}}
-<div class="modal fade" id="modalUpload" tabindex="-1" role="dialog" aria-labelledby="modalUploadTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+{{-- modal tambah data --}}
+<div class="modal fade" id="modalTambah" tabindex="-1" role="dialog" aria-labelledby="modalTambahTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title black" id="exampleModalLongTitle">Upload Data Produk</h5>
+                <h5 class="modal-title black" id="modalTambahLongTitle">Tambah Laporan Produksi</h5>
                 <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="upload_produk" method="POST" action="{{ route('list-produk-upload') }}" enctype="multipart/form-data">
+            <form id="add_laporan" method="POST" action="{{ route('laporan-produksi-add') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
-                        <div class="form-group col-md-12">
-                            <label class="col-form-label" for="files">File Excel</label>
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="from_date">Mulai dari</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="files" type="file" value="" id="files" >
+                            <input class="form-control" required="required"  name="from_date" type="date" value=""  >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="col-form-label" for="to_date">Sampai Dengan</label>
+                            <span class="text-danger pl-1">*</span>
+                            <input class="form-control" required="required"  name="to_date" type="date" value=""  >
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-md-12">
-                            <label class="col-form-label" for="tipe_produk">Pilih Ketegori Produk</label>
-                            <select name="tipe_produk" id="tipe_produk" class="form-control">
-                                <option value="">-- Pilih Kategori Produk --</option>
-                                <option value="primary">Primary</option>
-                                <option value="n_primary">Non Primary</option>
-                            </select>
+                            <label class="col-form-label" for="keterangan">Keterangan</label>
+                            <span class="text-danger pl-1">*</span>
+                            <input class="form-control" required="required"  name="keterangan" type="text" value=""  >
                         </div>
                     </div>
                 </div>
@@ -128,42 +120,43 @@
     </div>
 </div>
 
-{{-- modal edit produk --}}
+{{-- modal edit data --}}
 <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="modalEditTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title black" id="exampleModalLongTitle">Edit Data Produk</h5>
+                <h5 class="modal-title black" id="modalEditLongTitle">Edit Laporan Produksi</h5>
                 <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="edit_produk" method="POST" action="{{ route('list-produk-update') }}" >
+            <form id="update_laporan" method="POST" action="{{ route('laporan-produksi-update') }}" enctype="multipart/form-data">
                 @csrf
-                <input type="hidden" name="id" value="" id="id">
+                <input type="hidden" id="id" name="id" value="">
                 <div class="modal-body">
                     <div class="row">
                         <div class="form-group col-md-6">
-                            <label class="col-form-label" for="nama_produk">Nama Produk</label>
+                            <label class="col-form-label" for="from_date">Mulai dari</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="nama_produk" type="text" value="" id="nama_produk" >
+                            <input class="form-control" required="required"  name="from_date" type="date" value="" id="from_date" >
                         </div>
                         <div class="form-group col-md-6">
-                            <label class="col-form-label" for="nomor_produk">Nomor Produk</label>
-                            <input class="form-control"   name="nomor_produk" type="text" value="" id="nomor_produk" >
+                            <label class="col-form-label" for="to_date">Sampai Dengan</label>
+                            <span class="text-danger pl-1">*</span>
+                            <input class="form-control" required="required"  name="to_date" type="date" value="" id="to_date" >
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-md-12">
-                            <label class="col-form-label" for="harga_produk">Masukan Harga Produk</label>
+                            <label class="col-form-label" for="keterangan">Keterangan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control"   name="harga_produk" type="text" value="" id="harga_produk" required>
-
+                            <input class="form-control" required="required"  name="keterangan" type="text" value="" id="keterangan" >
                         </div>
                     </div>
                 </div>
                 <div id="aksi">
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </div>
 
@@ -172,73 +165,11 @@
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="modalTambah" tabindex="-1" role="dialog" aria-labelledby="modalTambah" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title black" id="exampleModalLongTitle">Tambah Data Produk</h5>
-                <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="add_produk" method="POST" action="{{ route('list-produk-add') }}" >
-                @csrf
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label class="col-form-label" for="nama_produk">Nama Produk</label>
-                            <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="nama_produk" type="text" value="" id="nama_produk" >
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label class="col-form-label" for="nomor_produk">Nomor Produk</label>
-                            <input class="form-control"   name="nomor_produk" type="text" value="" id="nomor_produk" >
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label class="col-form-label" for="harga_produk">Masukan Harga Produk</label>
-                            <span class="text-danger pl-1">*</span>
-                            <input class="form-control"   name="harga_produk" type="text" value="" id="harga_produk" required>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label class="col-form-label" for="tipe_produk">Pilih Ketegori Produk</label>
-                            <select name="tipe_produk" id="tipe_produk" class="form-control">
-                                <option value="">-- Pilih Kategori Produk --</option>
-                                <option value="primary">Primary</option>
-                                <option value="n_primary">Non Primary</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label class="col-form-label" for="satuan_produk">Satuan Produk</label>
-                            <select name="satuan_produk" id="satuan_produk" required class="form-control">
-                                <option value="">-- Pilih Satuan Produk --</option>
-                                <option value="pcs">Pieces (pcs)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div id="aksi">
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 @endsection
-
 @push('js')
 
 <script>
-    var url_data = "{{ route('list-produk-data',['id_client' => Auth::user()->id_client]) }}";
+    var url_data = "{{ route('laporan-produksi-data') }}";
     var table = $('#myTable').dataTable({
         processing: true,
         serverSide: true,
@@ -248,15 +179,27 @@
             orderable: false,
             searchable: false
         },  {
-            data: 'no_produk',
-            name: 'no_produk',
+            data: 'keterangan',
+            name: 'keterangan',
         },{
-            data: 'nama_produk',
-            name: 'nama_produk',
+            data: 'periode',
+            name: 'periode',
         },
         {
-            data: 'harga_produk',
-            name: 'harga_produk',
+            data: 'total_produk',
+            name: 'total_produk',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'total_tagihan',
+            name: 'total_tagihan',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'status',
+            name: 'status',
             orderable: false,
             searchable: false
         },
@@ -267,49 +210,9 @@
             searchable: false
         },]
     });
-    $('#upload_produk').submit(function (e) {
-        e.preventDefault()
-        var formData = new FormData(this);
-        $.ajax({
-            url : $(this).attr('action'),
-            data:formData,
-            type: "POST",
-            cache: false,
-            contentType: false,
-            processData: false,
-            beforeSend: function() {
-                Swal.fire({
-                    title: "Mohon Tunggu ... !",
-                    html: "Jangan Tinggalkan Halaman ini <b></b> ",
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    },
-                });
-            },
-            success: function(s) {
-                if(s.status == true) {
-                    Swal.fire({
-                        title: s.title,
-                        text: s.pesan,
-                        icon: "success"
-                    });
 
-                }else {
-                    Swal.fire({
-                        title: s.title,
-                        text: s.pesan,
-                        icon: "warning"
-                    });
-                }
-            }, error : function(e) {
-                console.log(e);
-            }
-        })
-    });
 
-    var url_get = "{{ route('list-produk-get') }}";
+    var url_get = "{{ route('laporan-produksi-get') }}";
     function edit(id) {
         const button = document.getElementById('edit_'+id);
         const stoploading   = '<i class="bx bx-edit-alt"></i>Edit';
@@ -327,9 +230,9 @@
                 console.log(s);
                 $('#modalEdit').modal('show');
                 $('#id').val(s.id);
-                $('#nama_produk').val(s.nama_produk);
-                $('#nomor_produk').val(s.no_produk);
-                $('#harga_produk').val(s.harga_produk);
+                $('#from_date').val(s.from_date);
+                $('#to_date').val(s.to_date);
+                $('#keterangan').val(s.keterangan);
             }, error : function(e) {
                 console.log(e);
                 Swal.fire({
@@ -346,7 +249,7 @@
     }
 
 
-    $("#edit_produk").submit(function (e) {
+    $("#update_laporan").submit(function (e) {
         e.preventDefault();
         $.ajax({
             url : $(this).attr('action'),
@@ -368,7 +271,7 @@
                     icon: "success"
                 });
                 $("#modalEdit").modal('hide');
-                $("#edit_produk").trigger('reset');
+                $("#update_laporan").trigger('reset');
             }, error : function(e) {
                 console.log(e);
                 var errors = '';
@@ -389,7 +292,7 @@
         })
     })
 
-    $("#add_produk").submit(function (e) {
+    $("#add_laporan").submit(function (e) {
         e.preventDefault();
         $.ajax({
             url : $(this).attr('action'),
@@ -411,7 +314,7 @@
                     icon: "success"
                 });
                 $("#modalTambah").modal('hide');
-                $("#add_produk").trigger('reset');
+                $("#add_laporan").trigger('reset');
             }, error : function(e) {
                 console.log(e);
                 var errors = '';
@@ -433,7 +336,7 @@
     })
 
 
-    var url_delete = "{{ route('list-produk-delete') }}";
+    var url_delete = "{{ route('laporan-produksi-delete') }}";
     function hapus(id) {
         const button = document.getElementById('hapus_'+id);
         const stoploading   = '<i class="bx bx-trash"></i>Hapus';
@@ -488,6 +391,52 @@
         });
 
     }
+
+    var url_data_laporan = "{{ route('laporan-produksi-isi') }}";
+    function data(id) {
+        const button = document.getElementById('data_'+id);
+        const stoploading   = '<i class="menu-icon tf-icons bx bx-table"></i>Data';
+        const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+
+        $.ajax({
+            url : url_data_laporan,
+            type:"GET",
+            data: {id:id},
+            beforeSend: function() {
+                button.innerHTML = loading;
+                button.disabled = true;
+            },success: function(s) {
+                console.log(s);
+                if(s.link != null ) {
+                    Swal.fire({
+                        title: 'Mengalihkan',
+                        html: 'Mohon tunggu...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                    });
+
+                    // Setelah beberapa waktu (dalam milidetik), arahkan pengguna ke halaman yang diinginkan
+                    setTimeout(function() {
+                        window.location.href = s.link; // Ganti dengan halaman yang diinginkan
+                    }, 2000);
+                }else {
+                    Swal.fire({
+                        title: s.title,
+                        text: s.pesan,
+                        icon: "info"
+                    });
+                }
+            },error : function(e) {
+                console.log(e);
+            },complete: function(){
+                button.innerHTML = stoploading;
+                button.disabled = false;
+            }
+        })
+    }
+
 
 </script>
 

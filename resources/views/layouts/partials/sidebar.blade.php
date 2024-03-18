@@ -123,7 +123,7 @@
                     @endif
 
                     {{-- ABSENSI --}}
-                    <li class="menu-item {{  menuOpen(['shift','absensi-data','absensi-search-one']) }} ">
+                    <li class="menu-item {{  menuOpen(['shift','absensi-data','absensi-search-one','absensi']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-calendar"></i>
                             <div data-i18n="">Absensi</div>
@@ -204,49 +204,51 @@
                             $jabatan = "Superadmin";
                         @endphp
                     @endif
-                    @if ($jabatan != 'Manager')
-                    <li class="menu-item {{ menuOpen(['lembur','lembur-self']) }}">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-time"></i>
-                        <div data-i18n="Authentications">Lembur</div>
-                        </a>
-                        @if (in_array(Auth::user()->roles,['admin']))
+                    @if ($jabatan != 'Manager' && $jabatan != 'Head')
+                        <li class="menu-item {{ menuOpen(['lembur','lembur-self']) }}">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-time"></i>
+                            <div data-i18n="Authentications">Lembur </div>
+                            </a>
+                            @if (in_array(Auth::user()->roles,['admin']))
 
-                            <ul class="menu-sub">
-                                <li class="menu-item {{ menuActive('lembur') }}">
-                                    <a href="{{ route('lembur') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Data Lembur Karyawan</div>
-                                    </a>
-                                </li>
+                                <ul class="menu-sub">
+                                    <li class="menu-item {{ menuActive('lembur') }}">
+                                        <a href="{{ route('lembur') }}" class="menu-link" >
+                                        <div data-i18n="Basic">Data Lembur Karyawan</div>
+                                        </a>
+                                    </li>
 
-                            </ul>
-                        @elseif (in_array(Auth::user()->roles,['kr-pusat']))
-                            <ul class="menu-sub">
-                                <li class="menu-item {{ menuActive('lembur-self') }}">
-                                    <a href="{{ route('lembur-self') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Data Lembur Anda</div>
-                                    </a>
-                                </li>
-                            </ul>
-                        @else
-                        <ul class="menu-sub">
-                            <li class="menu-item {{ menuActive('lembur') }}">
-                                <a href="{{ route('lembur') }}" class="menu-link" >
-                                <div data-i18n="Basic">Data Lembur </div>
-                                </a>
-                            </li>
+                                </ul>
+                            @elseif (in_array(Auth::user()->roles,['kr-pusat']))
 
-                        </ul>
-                        @endif
+                                <ul class="menu-sub">
+                                    <li class="menu-item {{ menuActive('lembur-self') }}">
+                                        <a href="{{ route('lembur-self') }}" class="menu-link" >
+                                        <div data-i18n="Basic">Data Lembur Anda </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            @else
+                                <ul class="menu-sub">
+                                    <li class="menu-item {{ menuActive('lembur') }}">
+                                        <a href="{{ route('lembur') }}" class="menu-link" >
+                                        <div data-i18n="Basic">Data Lembur </div>
+                                        </a>
+                                    </li>
 
-                    </li>
+                                </ul>
+                            @endif
+
+                        </li>
+
                     @endif
 
 
                     {{-- PRODDUK --}}
                     @if(in_array(Auth::user()->roles,['admin','korlap','spv-internal']))
                         @if (in_array(Auth::user()->id_client,[2,8]))
-                            <li class="menu-item {{  menuOpen(['list-produk']) }}">
+                            <li class="menu-item {{  menuOpen(['list-produk','laporan-produksi','laporan-produksi-detail']) }}">
                                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                                 <i class="menu-icon tf-icons bx bx-cube"></i>
                                 <div data-i18n="Authentications">Produk</div>
@@ -263,8 +265,8 @@
                                         </a>
                                     </li>
                                     @if (Auth::user()->id_client == 2)
-                                        <li class="menu-item ">
-                                            <a href="{{ route('produk') }}" class="menu-link" >
+                                        <li class="menu-item  {{ menuActive("laporan-produksi-detail") }}">
+                                            <a href="{{ route('laporan-produksi') }}" class="menu-link" >
                                             <div data-i18n="Basic">Buat Laporan Produksi</div>
                                             </a>
                                         </li>
@@ -437,20 +439,28 @@
                         </ul>
                     </li> --}}
                     {{-- LEMBUR --}}
-                    <li class="menu-item {{ menuOpen('lembur') }}">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-time"></i>
-                        <div data-i18n="Authentications">Lembur</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item {{ menuActive('lembur') }}">
-                                <a href="{{ route('lembur') }}" class="menu-link" >
-                                <div data-i18n="Basic">Data Lembur</div>
-                                </a>
-                            </li>
+                    @php
+                        $data  = App\Models\Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first();
+                        $divisi = App\Models\Divisi::find($data->divisi);
+                        $nama_divisi = $divisi->nama_divisi;
+                    @endphp
+                    @if (Auth::user()->roles != 'head')
+                        <li class="menu-item {{ menuOpen('lembur') }}">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-time"></i>
+                            <div data-i18n="Authentications">Lembur</div>
+                            </a>
+                            <ul class="menu-sub">
+                                <li class="menu-item {{ menuActive('lembur') }}">
+                                    <a href="{{ route('lembur') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Data Lembur</div>
+                                    </a>
+                                </li>
 
-                        </ul>
-                    </li>
+                            </ul>
+                        </li>
+
+                    @endif
                     <li class="menu-item {{  menuOpen(['izin']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons bx bx-calendar-event"></i>

@@ -33,7 +33,10 @@ class LemburController extends Controller
                 ->selectRaw('SUM(CAST(total_jam as int)) as jam')
                 ->where('id_client',Auth::user()->id_client)
                 ->first()->jam;
-            $lembur = DB::table('table_lembur')->distinct()->where('id_client',Auth::user()->id_client)->count('id_karyawan');
+            $lembur = DB::table('table_lembur as al')
+                ->join('users as us','us.id_karyawan','=','al.id_karyawan')
+                ->where('us.roles','!=','karyawan')
+                ->count();
             $wait_acc = Lembur::where('id_client',Auth::user()->id_client)->where('status','0')->count();
             return view('layouts.hrd.vLembur',compact('daftar_kr','lembur','wait_acc'));
         }else if(Auth::user()->roles == 'direktur') {
