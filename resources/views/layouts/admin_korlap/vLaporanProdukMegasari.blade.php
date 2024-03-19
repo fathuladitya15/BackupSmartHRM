@@ -308,13 +308,21 @@
                     },
                 });
             }, success : function(s) {
-                Swal.fire({
-                    title: s.title,
-                    text: s.pesan,
-                    icon: "success"
-                });
-                $("#modalTambah").modal('hide');
-                $("#add_laporan").trigger('reset');
+                if(s.status == true) {
+                    Swal.fire({
+                        title: s.title,
+                        text: s.pesan,
+                        icon: "success"
+                    });
+                    $("#modalTambah").modal('hide');
+                    $("#add_laporan").trigger('reset');
+                }else {
+                    Swal.fire({
+                        title: s.title,
+                        text: s.pesan,
+                        icon: "info"
+                    });
+                }
             }, error : function(e) {
                 console.log(e);
                 var errors = '';

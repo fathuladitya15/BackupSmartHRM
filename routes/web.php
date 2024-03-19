@@ -214,6 +214,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('/laporan-produksi/data-details-lap',[ProdukController::Class,'get_detail_laporan_produksi'])->name('laporan-produksi-get-detail');
                 Route::post('/laporan-produksi/data-details-updated',[ProdukController::Class,'update_detail_laporan_produksi'])->name('laporan-produksi-update-detail');
                 Route::post('/laporan-produksi/data-get-totals',[ProdukController::class,'laporan_produksi_get_totals'])->name('lap-produk-totals');
+                Route::post('/laporan-produksi/data-get-calculate',[ProdukController::class,'laporan_produksi_get_calculate'])->name('lap-produk-calculate');
 
             });
             Route::middleware(['role:superadmin'])->group(function(){

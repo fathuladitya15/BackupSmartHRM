@@ -13,6 +13,7 @@ class DetailLaporanProduksi extends Model
 
     protected $fillable  = [
            'no_produk',
+           'tipe_produk',
            'nama_produk',
            'id_table_lap_period',
            'tanggal_1',

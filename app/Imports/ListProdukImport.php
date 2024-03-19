@@ -21,7 +21,7 @@ class ListProdukImport implements ToModel
             'nama_produk' => $row[1],
             'tipe_produk' => $tipe_produk,
             'satuan_produk' => 'pcs',
-            'harga_produk' => '0',
+            'harga_produk' => $row[2],
             'id_client' => Auth::user()->id_client,
         ]);
     }

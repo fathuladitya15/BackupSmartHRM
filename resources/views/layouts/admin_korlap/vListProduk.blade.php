@@ -295,6 +295,8 @@
                         text: s.pesan,
                         icon: "success"
                     });
+                    $("#modalUpload").modal("hide");
+                    $("#upload_produk").trigger("reset");
 
                 }else {
                     Swal.fire({
@@ -304,7 +306,11 @@
                     });
                 }
             }, error : function(e) {
+
                 console.log(e);
+            },beforeSend: function() {
+                Swal.close();
+                table.DataTable().ajax.reload();
             }
         })
     });

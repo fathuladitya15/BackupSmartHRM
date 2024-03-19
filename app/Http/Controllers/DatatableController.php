@@ -1285,7 +1285,6 @@ class DatatableController extends Controller
             return $dt;
     }
 
-
     // DATA SURAT PERINGATAN
 
     function data_peringatan_karyawan() {
@@ -1643,8 +1642,6 @@ class DatatableController extends Controller
         return $dt;
     }
 
-
-
     // FILEMANAGER USER
 
     function file_manager(Request $request) {
@@ -1896,6 +1893,12 @@ class DatatableController extends Controller
             }
             return $s;
         })
+        ->addColumn('total_produk',function ($row) {
+            return number_format($row->total_produk,0,',','.');
+        })
+        ->addColumn('total_tagihan',function ($row) {
+            return "Rp. ". number_format($row->total_tagihan,2,',','.');
+        })
         ->rawColumns(['aksi','periode','status'])
         ->make(true);
         return $dt;
@@ -1904,14 +1907,8 @@ class DatatableController extends Controller
 
     function detail_laporan_produksi_data(Request $request) {
         $id_lap_period = $request->id;
-        $data   = DetailLaporanProduksi::where('id_table_lap_period',$id_lap_period)->orderBy('nama_produk','ASC')->get();
-        $totals = [];
-        for ($i=1; $i <= 31 ; $i++) {
-            $name = 'tanggal_'.$i;
-            $totals[$name] = DB::table('table_lap_produksi')->selectRaw('SUM(CAST('.$name.' AS INT)) AS total')->first();
-        };
 
-        // dd($totals);
+        $data   = DetailLaporanProduksi::where('id_table_lap_period',$id_lap_period)->where('tipe_produk',$request->tipe_produk)->orderBy('nama_produk','ASC')->get();
 
         $dt     = DataTables::of($data)
         ->addIndexColumn()
@@ -1921,10 +1918,14 @@ class DatatableController extends Controller
             return $hapus;
         })
         ->addColumn('harga_produk_satuan', function($row) {
-            return $row->harga_produk_satuan == null ? 'Belum ditentukan' : $row->harga_produk_satuan ;
+            return $row->harga_produk_satuan == null ? 'Belum ditentukan' : "Rp ". number_format($row->harga_produk_satuan,2,',','.') ;
         })
         ->addColumn('satuan_produk', function($row) {
             return "";
+        })
+        ->addColumn('total_harga_produk', function($row) {
+            return $row->total_harga_produk == null ? '' : "Rp ". number_format($row->total_harga_produk,2,',','.') ;
+            // DetailLaporanProduksi::where('id',$row->id)->update(['total_harga_produk',''])
         })
         ->rawColumns(['aksi','satuan_produk'])
 

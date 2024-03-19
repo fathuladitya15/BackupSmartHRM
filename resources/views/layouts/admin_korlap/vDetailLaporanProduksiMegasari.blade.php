@@ -42,15 +42,55 @@
             <div class="card-header d-flex align-items-center justify-content-between" >
                 <h5 class="mb-0">Laporan Produksi {{ $data->keterangan }}  </h5>
             </div>
-            {{-- <div class="card-title">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah" style="float: right">
-                    <i class='bx bx-plus'></i> Tambah Produk
-                </button>
-            </div> --}}
             <br>
             <div class="card-body">
-                <div class="table-responsive text-nowrap">
-                    <table class="table" id="myTable">
+                <div class="row">
+                    <div class="table-responsive text-nowrap">
+                        {{-- TABLE PRIMARY --}}
+                        <table class="table" id="myTable">
+                            <thead>
+                                <tr class="text-nowrap">
+                                    <th>No</th>
+                                    <th>Nomor Produk</th>
+                                    <th>Nama Produk</th>
+                                    <th>Satuan</th>
+                                    @for ($i = 0; $i < $totalDays; $i++)
+                                        @php
+                                            $currentDate = $startDate->copy()->addDays($i);
+                                        @endphp
+                                        <th style="text-align: center;">{{ $currentDate->translatedFormat('d-M') }}</th> {{-- Menampilkan hari dalam teks (nama hari) --}}
+                                    @endfor
+                                    <th>Total Produk</th>
+                                    <th>Harga Produk/pcs</th>
+                                    <th>Total</th>
+                                    <th>Aksi</th>
+                                </tr>
+                              </thead>
+                            <tbody>
+
+                            </tbody>
+                            <tfoot style="background-color: #47b4f5; ">
+                                <tr style="">
+                                    <th colspan="4" style="text-align: center; color:white">Total</th>
+                                    @for ($i = 1; $i <= $totalDays; $i++)
+                                        <th style="color: white;" id="total_tanggal_{{ $i }}"></th> {{-- Menampilkan hari dalam teks (nama hari) --}}
+                                    @endfor
+                                    <th id="totalProduk" style="color: white;">Total Produk</th>
+                                    <th id="totalHargaProduk" colspan="2" style="text-align: right; color: white;">Total Tagihan</th>
+                                    <th></th>
+
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="table-responsive text-nowrap">
+                    <hr>
+                    <h3 style="color:black">Produk Lainnya</h3>
+                    <hr>
+                    {{-- TABLE NON PRIMARY --}}
+                    <table class="table" id="myTableS" style="width:100%" >
                         <thead>
                             <tr class="text-nowrap">
                                 <th>No</th>
@@ -61,8 +101,7 @@
                                     @php
                                         $currentDate = $startDate->copy()->addDays($i);
                                     @endphp
-                                    {{-- <th>{{ $currentDate->toDateString() }}</th> --}}
-                                    <th>{{ $currentDate->translatedFormat('d-M') }}</th> {{-- Menampilkan hari dalam teks (nama hari) --}}
+                                    <th style="text-align: center;">{{ $currentDate->translatedFormat('d-M') }}</th> {{-- Menampilkan hari dalam teks (nama hari) --}}
                                 @endfor
                                 <th>Total Produk</th>
                                 <th>Harga Produk/pcs</th>
@@ -73,24 +112,78 @@
                         <tbody>
 
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="4" style="text-align: right;">Total</th>
+                        <tfoot style="background-color: #47b4f5;">
+                            <tr style="">
+                                <th colspan="4" style="text-align: center; color:white">Total</th>
                                 @for ($i = 1; $i <= $totalDays; $i++)
-                                    {{-- <th>{{ $currentDate->toDateString() }}</th> --}}
-                                    <th id="total_tanggal_{{ $i }}"></th> {{-- Menampilkan hari dalam teks (nama hari) --}}
+                                    <th style="color: white;" id="n_total_tanggal_{{ $i }}"></th> {{-- Menampilkan hari dalam teks (nama hari) --}}
                                 @endfor
-                                <th id="totalProduk">Total Produk</th>
-                                <th id="totalHargaProduk" colspan="2" style="text-align: right;">Total Tagihan</th>
+                                <th id="totalProduk_n" style="color: white;">Total Produk</th>
+                                <th id="totalHargaProduk_n" colspan="2" style="text-align: right; color: white;">Total Tagihan</th>
                                 <th></th>
 
-                                <!-- Tambahkan kolom lain jika diperlukan -->
                             </tr>
                         </tfoot>
-                      </table>
-                      <br><br>
+                    </table>
+                    </div>
                 </div>
-
+                <div class="row">
+                    <div class="table-responsive text-nowrap">
+                        <br>
+                        <hr>
+                            <h3 style="color:black">Rekapitulasi Laporan </h3>
+                        <hr>
+                        <table class="table" id="tableRekap">
+                            <thead>
+                                <tr class="text-nowrap">
+                                    @for ($i = 0; $i < $totalDays; $i++)
+                                        @php
+                                            $currentDate = $startDate->copy()->addDays($i);
+                                        @endphp
+                                        <th style="text-align: center;">{{ $currentDate->translatedFormat('d-M') }}</th> {{-- Menampilkan hari dalam teks (nama hari) --}}
+                                    @endfor
+                                    <th>Total Produk</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="text-nowrap">
+                                    @foreach ($dataRekap as $item => $value)
+                                        <td>{{ $value == null ? "0" : $value }}</td>
+                                    @endforeach
+                                    <td>{{ $totalProduk->total }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <br>
+                    <hr>
+                        <h3 style="color:black">Perhitungan Laporan </h3>
+                    <hr>
+                    <form action="#" >
+                        <div class="row">
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label" for="fee">Management Fee %</label>
+                                <span class="text-danger pl-1">*</span>
+                                <input class="form-control" required="required"  name="fee" type="number" value="" id="fee" >
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label" for="tagihan">Total Tagihan </label>
+                                <input class="form-control" required="required"  name="tagihan" type="text" value="{{ $totalHargaProdukRP }}" id="tagihan" readonly >
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label" for="hasil"> Hasil </label>
+                                <input class="form-control" required="required"  name="hasil" type="text" value="" id="hasil" readonly >
+                            </div>
+                            <div class="form-group col-md-3" style="margin-top: 8px">
+                                <label class="col-form-label" for="hasil">   </label>
+                                <button type="submit" class="btn btn-primary form-control"> <i class="menu-icon tf-icons bx bx-chevrons-right"></i>Kirim Laporan</button>
+                                {{-- <input class="form-control" required="required"  name="hasil" type="text" value="" id="hasil" readonly > --}}
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -134,8 +227,14 @@
 
 @push('js')
 <script>
+
     $(document).ready(function () {
-        var columns = "{{ $totalDays }}";
+        var columns         = "{{ $totalDays }}";
+        var url_data        = "{{ route('laporan-produksi-detail-data') }}";
+        var id              = "{{ Request::segment(3) }}";
+        var url_get_detail  = "{{ route('laporan-produksi-get-detail') }}";
+
+
         // Columns Default
         var table_columns = [
             {
@@ -175,16 +274,15 @@
             {data: 'aksi',name : 'aksi'},
         );
 
-        var url_data    = "{{ route('laporan-produksi-detail-data') }}";
-        var id          = "{{ Request::segment(3) }}";
 
+        // TABLE PRIMARY
         var table       = $('#myTable').dataTable({
             processing: true,
             serverSide: true,
             ajax: {
                 url : url_data,
                 type : "POST",
-                data: {id : id},
+                data: {id : id ,tipe_produk : 'primary'},
             },
             columns: table_columns,
             drawCallback: function(settings) {
@@ -194,31 +292,73 @@
                     var node = this.node();
                     $(node).attr('data-id', data.id); // Menambahkan atribut data-id
                 });
-            },footerCallback:function() {
+            },
+            footerCallback:function() {
                 $.ajax({
                     url: "{{ route('lap-produk-totals') }}",
                     type: "POST",
-                    data: {id : id},
+                    data: {id : id, tipe_produk: 'primary'},
                     dataType: "json",
                     success: function(s) {
                         var response = s.totals;
                         for (let index = 0; index < response.length; index++) {
                             const element = response[index];
                             $.each(element, function(index, value) {
-                                // console.log("Elemen array1 ke-" + index + ": " + value);
                                 $('#'+index).text(value);
                             });
                         }
                         $('#totalProduk').text(s.totalProduk);
-                        $('#totalHargaProduk').text(s.totalHargaProduk);
+                        $('#totalHargaProduk').text(s.totalHargaProduk)
                     }
                 });
             }
         });
 
+        // TABLE NON PRIMARY
+        var table_2     = $("#myTableS").dataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url : url_data,
+                type : "POST",
+                data: {id : id ,tipe_produk : 'n_primary'},
+            },
+            columns: table_columns,
+            drawCallback: function(settings) {
+                var api = this.api();
+                api.rows().every(function() {
+                    var data = this.data();
+                    var node = this.node();
+                    $(node).attr('data-id', data.id); // Menambahkan atribut data-id
+                });
+            },
+            footerCallback:function() {
+                $.ajax({
+                    url: "{{ route('lap-produk-totals') }}",
+                    type: "POST",
+                    data: {id : id, tipe_produk : 'n_primary'},
+                    dataType: "json",
+                    success: function(s) {
+                        var response = s.totals;
+                        for (let index = 0; index < response.length; index++) {
+                            const element = response[index];
+                            $.each(element, function(index, value) {
+                                $('#n_'+index).text(value);
+                            });
+                        }
+                        $('#totalProduk_n').text(s.totalProduk);
+                        $('#totalHargaProduk_n').text(s.totalHargaProduk)
+                    }
+                });
+            }
+        })
+
+        // TABLE REKAP
+        var tableRekap  = $("#tableRekap").dataTable();
 
 
-        var url_get_detail = "{{ route('laporan-produksi-get-detail') }}";
+
+        // CLICK TABLE PRIMARY
         $('#myTable tbody').on('click', 'td', function() {
             var id = $(this).closest('tr').data('id');
             var className = $(this).attr('class');
@@ -228,7 +368,6 @@
                 data: {id : id,table: className},
                 type: 'POST',
                 success : function(ss) {
-                    // console.log(ss);
                     var s = ss.data;
                     document.getElementById('modalInputLongTitle').innerHTML = 'Total Produk ' + newText;
                     $("#modalInput").modal('show');
@@ -236,11 +375,35 @@
                     $("#table_name").val(className);
                     $("#total_produk").val(ss.name);
                 },error: function(xhr, status, error) {
-                    // console.log(e);
                     console.error('Error:', error);
                 }
             });
         });
+        // CLICK TABLE NON PRIMARY
+
+        $('#myTableS tbody').on('click', 'td', function() {
+            var id = $(this).closest('tr').data('id');
+            var className = $(this).attr('class');
+            var newText = className.replace('_', ' '); // Mengganti underscore dengan spasi
+            $.ajax({
+                url: url_get_detail,
+                data: {id : id,table: className},
+                type: 'POST',
+                success : function(ss) {
+                    var s = ss.data;
+                    document.getElementById('modalInputLongTitle').innerHTML = 'Total Produk ' + newText;
+                    $("#modalInput").modal('show');
+                    $("#id").val(id);
+                    $("#table_name").val(className);
+                    $("#total_produk").val(ss.name);
+                },error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+
+        var totalHargaProdukInt = "{{ $totalHargaProdukInt }}";
 
         $("#update_laporan").submit(function (e) {
             e.preventDefault();
@@ -259,7 +422,6 @@
                     });
                 },
                 success: function(s) {
-                    // console.log(s);
                     Swal.fire({
                         title: s.title,
                         text: s.pesan,
@@ -267,6 +429,8 @@
                     });
                     $("#modalInput").modal('hide');
                     $("#update_laporan").trigger('reset');
+                    $("#tagihan").val(s.hargaTotal);
+                    totalHargaProdukInt = s.totalHargaProdukInt
                 },error: function(e) {
                     var errors = '';
                     $.each(e.responseJSON.errors, function(key, value) {
@@ -279,12 +443,34 @@
                     });
                 },complete: function() {
                     table.DataTable().ajax.reload();
+                    table_2.DataTable().ajax.reload();
                     // Swal.close();
 
                 }
 
             })
-        })
+        });
+
+        var url_calculate = "{{ route('lap-produk-calculate') }}";
+
+        $("#fee").on('input', function () {
+            var harga  =  totalHargaProdukInt;
+            var fee = parseFloat($('#fee').val());
+
+
+            $.ajax({
+                url : url_calculate,
+                data: {harga :  harga, fee : fee },
+                type: "POST",
+                success: function(s) {
+                    // console.log(s);
+                    $('#hasil').val(s.rp);
+                },error : function(e) {
+                    // console.log(e);
+                }
+            })
+
+        });
 
     });
 
@@ -303,6 +489,9 @@
         rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
         return prefix == undefined ? rupiah : (rupiah ?  rupiah : '0');
     }
+
+
+
 
 </script>
 

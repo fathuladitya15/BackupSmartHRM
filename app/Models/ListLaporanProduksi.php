@@ -20,4 +20,5 @@ class ListLaporanProduksi extends Model
         'id_client',
         'status'
     ];
+
 }

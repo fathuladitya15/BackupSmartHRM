@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('table_lap_produksi', function (Blueprint $table) {
             $table->id();
-            $table->string('no_produk');
+            $table->string('no_produk')->nullable();
+            $table->string('tipe_produk');
             $table->string('nama_produk');
             $table->string('id_table_lap_period');
             $table->string('tanggal_1')->nullable();
