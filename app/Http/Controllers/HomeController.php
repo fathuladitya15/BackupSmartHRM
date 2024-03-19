@@ -7,6 +7,7 @@ use App\Models\Karyawan;
 use App\Models\Divisi;
 use Carbon\Carbon;
 use App\Models\Filemanager;
+use App\Models\Pengumuman;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -30,6 +31,10 @@ class HomeController extends Controller
     {
 
         $roles = Auth::user()->roles;
+        // $pengumuman = Pengumuman::k
+
+
+
         // dd($roles);
 
         // if($roles == 'admin') {

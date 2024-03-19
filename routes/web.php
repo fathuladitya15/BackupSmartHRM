@@ -25,6 +25,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\DatatableController;
 use App\Http\Controllers\SuperadminController;
+use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\PeringatanController;
 use App\Http\Controllers\ReferensiKerjaController;
 use App\Http\Controllers\ManageKaryawanController;
@@ -215,6 +216,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('/laporan-produksi/data-details-updated',[ProdukController::Class,'update_detail_laporan_produksi'])->name('laporan-produksi-update-detail');
                 Route::post('/laporan-produksi/data-get-totals',[ProdukController::class,'laporan_produksi_get_totals'])->name('lap-produk-totals');
                 Route::post('/laporan-produksi/data-get-calculate',[ProdukController::class,'laporan_produksi_get_calculate'])->name('lap-produk-calculate');
+                Route::post('/laporan-produksi/kirimm',[ProdukController::class,'laporan_produksi_kirim'])->name('lap-produk-kirim');
 
             });
             Route::middleware(['role:superadmin'])->group(function(){
@@ -264,6 +266,10 @@ Route::middleware('revalidate')->group(function() {
         Route::post("/profile/upload-files",[ProfileController::class,'upload_files'])->name('files-uploads');
         Route::get('/profile/tes/filemanager',[DatatableController::class,'file_manager'])->name('profile-filemanager');
         Route::post('/profile/update-da',[ProfileController::class,'update'])->name('profile-update');
+
+        Route::get('/pengumuman',[PengumumanController::class,'index'])->name('pengumuman');
+        Route::post('/pengumuman-add',[PengumumanController::class,'add'])->name('pengumuman-add');
+        Route::get('/pengumuman-data',[PengumumanController::class,'data'])->name('pengumuman-data');
 
     });
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('pembuat');
             $table->text('keterangan');
             $table->string('views');
-            $table->string('id_filemanager');
+            $table->longText('lampiran')->nullable();
             $table->timestamps();
         });
     }

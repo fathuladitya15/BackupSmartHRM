@@ -265,11 +265,19 @@
                     },
                 });
             }, success : function(s) {
-                Swal.fire({
-                    title: s.title,
-                    text: s.pesan,
-                    icon: "success"
-                });
+                if(s.status == true) {
+                    Swal.fire({
+                        title: s.title,
+                        text: s.pesan,
+                        icon: "success"
+                    });
+                }else {
+                    Swal.fire({
+                        title: s.title,
+                        text: s.pesan,
+                        icon: "warning"
+                    });
+                }
                 $("#modalEdit").modal('hide');
                 $("#update_laporan").trigger('reset');
             }, error : function(e) {
@@ -375,11 +383,20 @@
                             });
                         },success : function(s) {
                             console.log(s);
-                            Swal.fire({
+                            if(s.status == true) {
+                                Swal.fire({
                                 title: s.title,
                                 text: s.pesan,
                                 icon: "success"
                             });
+                            }else {
+                                Swal.fire({
+                                    title: s.title,
+                                    text: s.pesan,
+                                    icon: "warning"
+                                });
+
+                            }
                         }, error : function(e) {
                             console.log(e);
                             Swal.fire({
@@ -433,7 +450,7 @@
                     Swal.fire({
                         title: s.title,
                         text: s.pesan,
-                        icon: "info"
+                        icon: "warning"
                     });
                 }
             },error : function(e) {

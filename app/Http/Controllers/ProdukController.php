@@ -6,6 +6,7 @@ use DB;
 use Auth;
 use Carbon\Carbon;
 use App\Models\ListProduk;
+use App\Models\LaporanSPV;
 use Illuminate\Http\Request;
 use App\Imports\ListProdukImport;
 use App\Models\ListLaporanProduksi;
@@ -147,22 +148,34 @@ class ProdukController extends Controller
 
     function update_laporan_produksi(Request $request) {
         $u = ListLaporanProduksi::find($request->id) ;
-        $u->from_date = $request->from_date;
-        $u->to_date = $request->to_date;
-        $u->keterangan = $request->keterangan;
-        $u->update();
 
-        return response()->json(['status' => TRUE ,'pesan' => 'Laporan telah diperbarui','title' => 'Sukses']);
+        if($u->status != 0) {
+            $pesan = ['status' => FALSE,'pesan' => 'Data ini belum bisa perbaharui karena masih dalam proses' ,'title' => 'Mohon Maaf ...'];
+        }else {
+            $u->from_date = $request->from_date;
+            $u->to_date = $request->to_date;
+            $u->keterangan = $request->keterangan;
+            $u->update();
+            $pesan = ['status' => TRUE ,'pesan' => 'Laporan telah diperbarui','title' => 'Sukses'];
+        }
+
+        return response()->json($pesan);
     }
 
     function delete_laporan_produksi(Request $request) {
         $id = $request->id;
 
         $data = ListLaporanProduksi::findOrFail($id);
-        $data->delete();
-        DetailLaporanProduksi::where('id_table_lap_period',$id)->delete();
+        if($data->status != 0){
+            $pesan = ['status' => FALSE,'pesan' => 'Data ini belum bisa dihapus karena masih dalam proses' ,'title' => 'Mohon Maaf ...'];
+        }else {
+            $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Laporan PRoduksi Berhasil dihapus','data' => $data->status];
 
-        return response()->json(['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Laporan PRoduksi Berhasil dihapus']);
+            $data->delete();
+            DetailLaporanProduksi::where('id_table_lap_period',$id)->delete();
+        }
+
+        return response()->json($pesan);
 
     }
 
@@ -171,7 +184,7 @@ class ProdukController extends Controller
         $status = $cek->status;
         if($status != 0) {
             $link = null;
-            $pesan = ['status' => TRUE,'title' => 'Mohon Maaf','pesan' => 'Laporan sedang ditinjau' ,'link' => $link];
+            $pesan = ['status' => TRUE,'title' => 'Mohon Maaf ...','pesan' => 'Laporan ini sedang diriview supervisor' ,'link' => $link];
         }else {
             $cekProduk = ListProduk::where('id_client',Auth::user()->id_client)->count();
 
@@ -336,15 +349,37 @@ class ProdukController extends Controller
         $total          = $request->harga;
         $percentage     = $request->fee;
         if($percentage == 'NaN'){
-            $toRp           =  "Rp. " .number_format(round(0,2),2,',','.');
+            $toRp           =  "Rp. " .number_format(round(0,1),2,',','.');
             return response()->json(['rp' => $toRp]);
 
         }else{
             $result         = $total * ($percentage / 100);
             $totalF         = $total + $result;
-            $toRp           =  "Rp. " .number_format(round($totalF,2),2,',','.');
+            $toRp           =  "Rp. " .number_format(round($totalF,1),2,',','.');
             return response()->json(['rp' => $toRp]);
         }
 
+    }
+
+    function laporan_produksi_kirim(Request $request) {
+        $result          = $request->mentahan_harga * ($request->fee / 100);
+        $hasilPersentase = number_format($result,2,',','.');
+
+        $UpdateList = ListLaporanProduksi::find($request->id_list_laporan);
+        $UpdateList->status = 1;
+        $UpdateList->update();
+
+        $insert = [
+            'id_table_lap_period' => $request->id_list_laporan,
+            'total_tagihan' => $request->tagihan,
+            'persentase' => $request->fee,
+            'hasil_persentase' => $hasilPersentase,
+            'status' => 0
+        ];
+
+        LaporanSPV::create($insert);
+
+        $lins = route('laporan-produksi');
+        return response()->json(['status' => TRUE,'title' => 'Data Terkirim' ,'pesan' => 'Data berhasil dikirim ke supervisor. Halaman anda dialihkan ','link' => $lins]);
     }
 }

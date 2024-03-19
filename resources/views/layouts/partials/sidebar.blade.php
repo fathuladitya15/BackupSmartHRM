@@ -492,6 +492,19 @@
                     </li>
                 @endif
 
+
+                @if(Auth::user()->roles == 'spv-internal')
+                <li class="menu-header small text-uppercase">
+                    <span class="menu-header-text">Informasi</span>
+                </li>
+                <li class="menu-item {{ menuActive('pengumuman') }}">
+                    <a href="{{ route("pengumuman") }}" class="menu-link">
+                        <i class='menu-icon tf-icons bx bx-user-voice'></i>
+                    <div data-i18n="Analytics">Pengumuman</div>
+                    </a>
+                </li>
+
+                @endif
             </ul>
           </aside>
           <!-- / Menu -->

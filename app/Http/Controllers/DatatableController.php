@@ -1888,8 +1888,8 @@ class DatatableController extends Controller
         ->addColumn('status', function($row) {
             if($row->status == 0) {
                 $s = '<span class="badge badge bg-info badge-sm"> <i class="menu-icon tf-icons bx bx-timer"></i> Dalam pengerjaan </span>';
-            }else {
-                $s = "";
+            }else if($row->status == 1) {
+                $s = '<span class="badge badge bg-warning badge-sm"> <i class="menu-icon tf-icons bx bxs-time"></i> Sedang direview ... </span>';
             }
             return $s;
         })

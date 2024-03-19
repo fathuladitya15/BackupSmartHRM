@@ -161,16 +161,18 @@
                     <hr>
                         <h3 style="color:black">Perhitungan Laporan </h3>
                     <hr>
-                    <form action="#" >
+                    <form action="#" id="kirimLaporan" >
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label class="col-form-label" for="fee">Management Fee %</label>
                                 <span class="text-danger pl-1">*</span>
                                 <input class="form-control" required="required"  name="fee" type="number" value="" id="fee" >
+                                <input type="hidden" id="" name="id_list_laporan" value="{{ Request::segment(3)  }}">
                             </div>
                             <div class="form-group col-md-3">
                                 <label class="col-form-label" for="tagihan">Total Tagihan </label>
                                 <input class="form-control" required="required"  name="tagihan" type="text" value="{{ $totalHargaProdukRP }}" id="tagihan" readonly >
+                                <input type="hidden" name="mentahan_harga" value="{{ $totalHargaProdukInt }}">
                             </div>
                             <div class="form-group col-md-3">
                                 <label class="col-form-label" for="hasil"> Hasil </label>
@@ -490,8 +492,61 @@
         return prefix == undefined ? rupiah : (rupiah ?  rupiah : '0');
     }
 
+    $("#kirimLaporan").submit(function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: "Konfirmasi",
+                text: "Apakah data yang anda kirim kan sudah sesuai ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Kirim !"
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                            url : "{{ route('lap-produk-kirim') }}",
+                            type: 'POST',
+                            data: $(this).serialize(),
+                            beforeSend: function() {
+                                Swal.fire({
+                                    title: 'Loading...',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    },
+                                });
+                            },success : function(s) {
+                                // console.log(s);
+                                Swal.fire({
+                                    title: s.title,
+                                    text: s.pesan,
+                                    icon: "success",
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    },
+                                });
+                                setTimeout(function() {
+                                    window.location.href = s.link; // Ganti dengan halaman yang diinginkan
+                                }, 2000);
+                            }, error : function(e) {
+                                console.log(e);
+                                Swal.fire({
+                                    title: "Terjadi kesalahan",
+                                    text: "Hubungi tim IT",
+                                    icon: "error"
+                                });
+                            },complete: function() {
 
 
+                            }
+                        })
+                }
+            });
+        })
 
 </script>
 
