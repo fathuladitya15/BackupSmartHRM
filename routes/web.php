@@ -188,6 +188,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('/surat-peringatan/data-spv',[DatatableController::class,'data_peringatan_spv'])->name('peringatan-data-spv');
 
             });
+
             Route::middleware(['role:admin:korlap'])->group(function() {
                 Route::post('/surat-peringatan/get-karyawan',[PeringatanController::class,'data_karyawan'])->name("peringatan-data-karyawan");
                 Route::get('/surat-peringatan/data-admin',[DatatableController::class,'data_peringatan_admin'])->name('peringatan-data-admin');
@@ -219,6 +220,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('/laporan-produksi/kirimm',[ProdukController::class,'laporan_produksi_kirim'])->name('lap-produk-kirim');
 
             });
+
             Route::middleware(['role:superadmin'])->group(function(){
                 Route::get('/karyawan/data-superadmin',[DatatableController::class,'data_karyawan_superadmin'])->name('data-kr-superadmin');
 
@@ -258,18 +260,28 @@ Route::middleware('revalidate')->group(function() {
             // Route::get('/pre-order/{nama_client}/referensi-kerja/{id}',[ReferensiKerjaController::class,'index_direktur'])->name('direktur-rf-index');
             Route::post('/check-tanda-tangan',[HomeController::class,'checking_tanda_tangan'])->name('check-tanda-tangan');
             Route::post('/check-tanda-tangan/save',[HomeController::class,'save_tanda_tangan'])->name('save-tanda-tangan');
+
+            Route::get("/profile/{menu}",[ProfileController::class,'index'])->name('profile');
+            Route::get("/profile/data-pribadi",[ProfileController::class,'index_dataPribadi'])->name('profile-datadiri');
+            Route::post("/profile/update-password",[ProfileController::class,'update_password'])->name('update_password');
+            Route::post("/profile/upload-files",[ProfileController::class,'upload_files'])->name('files-uploads');
+            Route::get('/profile/tes/filemanager',[DatatableController::class,'file_manager'])->name('profile-filemanager');
+            Route::post('/profile/update-da',[ProfileController::class,'update'])->name('profile-update');
+
+            Route::prefix('pengumuman')->group(function(){
+                Route::get('index',[PengumumanController::class,'index'])->name('pengumuman');
+                Route::post('add',[PengumumanController::class,'add'])->name('pengumuman-add');
+                Route::get('data',[PengumumanController::class,'data'])->name('pengumuman-data');
+                Route::delete('delete',[PengumumanController::class,'delete_pengumuman'])->name('pengumuman-delete');
+                Route::get('download/{filename}/{ext}', [PengumumanController::class,'download'])->name('pengumuman-download');
+                Route::get('detail/{var}',[PengumumanController::class,'details'])->name('pengumuman-details');
+                Route::post('get',[PengumumanController::class,'get_data'])->name('pengumuman-get');
+                Route::post('get/files',[PengumumanController::class,'get_files'])->name('pengumuman-get-files');
+                Route::delete('get/delete',[PengumumanController::class,'delete_files'])->name('pengumuman-delete-files');
+                Route::delete('get/delete',[PengumumanController::class,'delete_files'])->name('pengumuman-delete-files');
+            });
         });
 
-        Route::get("/profile/{menu}",[ProfileController::class,'index'])->name('profile');
-        Route::get("/profile/data-pribadi",[ProfileController::class,'index_dataPribadi'])->name('profile-datadiri');
-        Route::post("/profile/update-password",[ProfileController::class,'update_password'])->name('update_password');
-        Route::post("/profile/upload-files",[ProfileController::class,'upload_files'])->name('files-uploads');
-        Route::get('/profile/tes/filemanager',[DatatableController::class,'file_manager'])->name('profile-filemanager');
-        Route::post('/profile/update-da',[ProfileController::class,'update'])->name('profile-update');
-
-        Route::get('/pengumuman',[PengumumanController::class,'index'])->name('pengumuman');
-        Route::post('/pengumuman-add',[PengumumanController::class,'add'])->name('pengumuman-add');
-        Route::get('/pengumuman-data',[PengumumanController::class,'data'])->name('pengumuman-data');
 
     });
 

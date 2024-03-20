@@ -6,8 +6,10 @@ use Auth;
 use DataTables;
 use App\Models\Pengumuman;
 use App\Models\Filemanager;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
 class PengumumanController extends Controller
@@ -37,6 +39,8 @@ class PengumumanController extends Controller
             'keterangan'    => $request->keterangan,
             'views'         => $request->views,
             'pembuat'       => Auth::user()->id_karyawan,
+            'arsip'         => 0,
+            'id_client'     => Auth::user()->id_client,
         ];
         $create = Pengumuman::create($insert);
 
@@ -55,7 +59,7 @@ class PengumumanController extends Controller
                     'extension' => $file->getClientOriginalExtension(),
                     'id_karyawan' => $create->id, // ID KARYAWAN DI SINI DIRUBAH FUNGSI MENJADI ID PENGUMUMAN
                     'slug'      => 'lampiran',
-                    'keterangan' => 'Lampiran dari Pengumuman '.$create->keterangan,
+                    'keterangan' => 'Lampiran dari Pengumuman '.$create->judul,
                 ]);
             }
         }
@@ -70,16 +74,16 @@ class PengumumanController extends Controller
         $dt =   DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn("aksi",function($r) {
-                    return "";
+
+                    $detail = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="detail_'.$r->id.'" onclick="detail('.$r->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+                    $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$r->id.'" onclick="hapus('.$r->id.')"  ><i class="bx bx-trash"></i>Hapus</a>';
+                    $arsip  = '<a href="javascript:void(0)" class="btn btn-info btn-sm" id="arsip_'.$r->id.'" onclick="arsip('.$r->id.')"  ><i class="bx bxs-box"></i>Arsip</a>';
+                    return $detail.'&nbsp;'.$hapus.'&nbsp;'.$arsip;
                 })
                 ->addColumn("lampiran", function($r) {
-                    $data = Filemanager::where('id_karyawan',"LIKE","%".$r->id."%")->get();
-                    $tombol = "";
-                    foreach ($data as $key ) {
-                        $tombol .= '<button class="btn btn-primary btn-sm">file</button>&nbsp;';
-                    }
+                    $data = Filemanager::where('id_karyawan',$r->id)->where('slug','lampiran')->count();
 
-                    return $tombol;
+                    return $data == 0 ? 'tidak ada lampiran' : $data.' Files';
                 })
                 ->addColumn('views', function ($r) {
                     if($r->views == 1) {
@@ -93,9 +97,98 @@ class PengumumanController extends Controller
                     }
                     return $t;
                 })
-                ->rawColumns(['aksi','lampiran','views'])
+                ->addColumn('keterangan', function($r) {
+                    if (strpos($r->keterangan, '<p>') !== false) {
+                        $rs =  '"Klik detail untuk lihat lebih lanjut"';
+                    } else {
+                        $rs = $r->keterangan;
+                    }
+                    return $rs;
+
+                })
+                ->rawColumns(['aksi','lampiran','views','keterangan'])
                 ->make(true);
 
         return $dt;
+    }
+
+    function details($var) {
+        $id     = EncryprVariable($var);
+        $detail = Pengumuman::find($id);
+        // if($files)
+        $files  = Filemanager::where('id_karyawan',$id)->get();
+        // dd($files);
+        return view('layouts.vDetailsPengumuman',compact('detail','files'));
+    }
+
+    function download($ency,$ext) {
+        $filename   = EncryprVariable($ency);
+        $file       = public_path().'/filemanager/lampiran_att/'.$filename ;
+
+        // // Periksa apakah file tersebut ada
+        if (file_exists($file)) {
+            // Tentukan tipe konten gambar
+
+            $contentType = mime_content_type($file);
+            header("Content-type: $contentType");
+            return response()->download($file);
+            // readfile($file);
+        } else {
+        //     // Jika tidak ada, tampilkan pesan error
+            abort(404);
+        }
+    }
+
+    function get_data(Request $request) {
+        $id     = $request->id;
+        $detail = Pengumuman::find($id);
+        $files  = Filemanager::where('id_karyawan',$id)->get();
+
+        return response()->json(['data' => $detail,'lampiran' => $files]);
+    }
+
+    function get_files(Request $request) {
+        $id     = $request->id;
+        $files  = Filemanager::find($id);
+        return response()->json($files);
+    }
+
+    function delete_files(Request $request) {
+        $id = $request->id;
+        $data  = Filemanager::findOrfail($id);
+
+        $filePath  = public_path($data->path);
+
+        $filename = public_path("/filemanager/lampiran_att/lampiran_1_202403191544_ opy.jpeg"); // test link hapus
+        if(file_exists($filePath)) {
+            unlink($filePath);
+            $data->delete();
+            $r = ['status' => TRUE,'pesan' => 'File berhasil dihapus','title' => 'sukses'];
+        }else {
+            $r = ['status' => FALSE,'pesan' => 'File gagal dihapus','title' => 'Peringatan'];
+        }
+        return response()->json($r);
+    }
+
+    function delete_pengumuman(Request $request) {
+        $id     = $request->id;
+        $data   = Pengumuman::findOrFail($id);
+
+
+        $files = Filemanager::where('id_karyawan',$id)->get();
+
+        if($files) {
+            foreach ($files as $key ) {
+                $filePath = public_path($key->path);
+                unlink($filePath);
+                $hapus = Filemanager::findOrFail($key->id);
+                $hapus->delete();
+            }
+
+        }
+
+        $data->delete();
+
+        return response()->json(['status' => TRUE,'pesan' => 'Pengumuman berhasil dihapus','title' => 'Sukses']);
     }
 }

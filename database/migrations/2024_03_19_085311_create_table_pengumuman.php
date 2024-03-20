@@ -1,5 +1,6 @@
 <?php
 
+use Auth;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,6 +19,8 @@ return new class extends Migration
             $table->text('keterangan');
             $table->string('views');
             $table->longText('lampiran')->nullable();
+            $table->string('arsip')->default(0);
+            $table->string('id_client')->default(Auth::user()->id_client);
             $table->timestamps();
         });
     }

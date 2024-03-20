@@ -16,5 +16,7 @@ class Pengumuman extends Model
         'keterangan',
         'views',
         'lampiran',
+        'id_client',
+        'arsip'
     ];
 }

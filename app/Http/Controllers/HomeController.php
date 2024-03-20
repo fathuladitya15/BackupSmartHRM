@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use Auth;
 use App\Models\Karyawan;
 use App\Models\Divisi;
@@ -31,7 +32,26 @@ class HomeController extends Controller
     {
 
         $roles = Auth::user()->roles;
-        // $pengumuman = Pengumuman::k
+        $query =DB::table('table_pengumuman')
+                    ->where([
+                        'id_client' => Auth::user()->id_client,
+                        'arsip'     => 0
+                    ])
+                    // ->where('arsip',0)
+                    ->orderBy('created_at', 'desc');
+
+        if($roles == 'karyawan') {
+            $queryWhere = $query->where('views',1)->orWhere('views',2);
+            $pengumuman = $queryWhere->take(4)->get();
+        }
+        else if($roles != 'karyawan'){
+            $queryWhere = $query->where('views',1)->orWhere('views',3);
+            $pengumuman = $queryWhere->take(4)->get();
+        }
+        else {
+            $pengumuman = "";
+        }
+
 
 
 
@@ -51,7 +71,7 @@ class HomeController extends Controller
 
         }else {
 
-            return view('layouts.Dashboard.vHome');
+            return view('layouts.Dashboard.vHome',compact('pengumuman'));
         }
     }
 

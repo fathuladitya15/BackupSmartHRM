@@ -187,16 +187,29 @@
                 </div>
                 <div class="card-body" style="padding-top: 18px;">
                     <div class="row">
-                        <h4>Jududl</h4>
-                        <p>ISIS</p>
-                    </div>
-                    <div class="row">
-                        <h4>Jududl</h4>
-                        <p>ISIS</p>
-                    </div>
-                    <div class="row">
-                        <h4>Jududl</h4>
-                        <p>ISIS</p>
+                        <ul class="p-0 m-0">
+                            @if ($pengumuman)
+                                @foreach ($pengumuman as $item)
+                                    <li class="d-flex mb-4 pb-1">
+                                        <div class="avatar flex-shrink-0 me-3">
+                                            <img src="{{ asset('assets/img/illustrations/toa.png') }}" alt="User" class="rounded" />
+                                        </div>
+                                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                            <div class="me-2">
+                                                <small class="text-muted d-block mb-1">{{ \Carbon\Carbon::parse($item->created_at)->translatedFormat('d M Y, H:i' ) }}</small>
+                                                <h6 class="mb-0">{{ $item->judul }} </h6>
+                                            </div>
+                                            <div class="user-progress d-flex align-items-center gap-2">
+                                                <a href="{{ route('pengumuman-details',['var' => HashVariable($item->id)]) }}"><small class="mb-0">Selengkapnya... </small></a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            @else
+                                 <small>Tidak ada pengumuman</small>
+                            @endif
+                        </ul>
+
                     </div>
                 </div>
             </div>
