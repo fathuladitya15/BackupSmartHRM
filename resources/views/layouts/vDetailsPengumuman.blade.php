@@ -61,7 +61,8 @@
                             <tr>
                                 <td>{{ $item->filename }}</td>
                                 <td>
-                                    <a href="{{ route("pengumuman-download",['filename'=>  hashVariable($item->filename),'ext' => $item->extension ]) }}" class="btn btn-sm btn-primary "> <i class='bx bx-cloud-download'></i> Download File </a>
+                                    {{-- <a href="{{ route("pengumuman-download",['filename'=>  hashVariable($item->filename),'ext' => $item->extension ]) }}" class="btn btn-sm btn-primary "> <i class='bx bx-cloud-download'></i> Download File </a> --}}
+                                    <a href="#" class="btn btn-sm btn-primary "> <i class='bx bx-cloud-download'></i> Download File </a>
                                 </td>
                             </tr>
                         @endforeach
@@ -73,3 +74,9 @@
     </div>
 </div>
 @endsection
+@push('js')
+<script>
+
+</script>
+
+@endpush

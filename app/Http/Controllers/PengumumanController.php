@@ -130,9 +130,12 @@ class PengumumanController extends Controller
             // Tentukan tipe konten gambar
 
             $contentType = mime_content_type($file);
-            header("Content-type: $contentType");
-            return response()->download($file);
+            $headers = array('Content-type : '.$contentType);
+
+            // return Response::download($file, $filename, $headers);
             // readfile($file);
+
+            return response()->json(['file_url' => asset($file)]);
         } else {
         //     // Jika tidak ada, tampilkan pesan error
             abort(404);

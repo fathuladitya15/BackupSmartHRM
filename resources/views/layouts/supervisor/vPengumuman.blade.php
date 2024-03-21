@@ -62,7 +62,7 @@
                           <tr class="text-nowrap">
                             <th>No</th>
                             <th>Judul</th>
-                            <th>Keterangan</th>
+                            {{-- <th>Keterangan</th> --}}
                             <th>Dikirim Ke</th>
                             <th>Lampiran</th>
                             <th>Aksi</th>
@@ -252,9 +252,6 @@
         },{
             data: 'judul',
             name: 'judul',
-        },{
-            data: 'keterangan',
-            name: 'keterangan',
         },{
             data: 'views',
             name: 'views',

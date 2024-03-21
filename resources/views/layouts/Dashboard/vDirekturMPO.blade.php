@@ -69,7 +69,7 @@
                             <h5  style="color: white; margin-right:100px;">Total Karyawan Pusat</h5>
                         </div>
                         <div >
-                            <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
+                            <h1 class="count" style="color: white; display: inline-block; width: auto;float: left;" data-count="1000"> 0 </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                             <h5  style="color: white; margin-right:100px;">Total Karyawan Project</h5><br>
                         </div>
                         <div  >
-                            <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
+                            <h1 class="count" style="color: white; display: inline-block; width: auto;float: left;" data-count="5000"> 0 </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
                             </h5>
                         </div>
                         <div style="padding-top:16px; float: right;" >
-                            <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
+                            <h1  style="color: white; display: inline-block; width: auto;float: left;" data-count="1000"> 0</h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Permintaan Persetujuan</p>
                         </div>
                     </div>
@@ -159,24 +159,29 @@
 </div>
 <!-- END FIRST COLUMN -->
 <div class="row">
-    <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
+    <div class="col-lg-12 mb-4 order-0">
         <div class="row">
-            <div class="col-lg-4 col-md-12 col-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-
+            @foreach ($total_karyawan as $cl  )
+                <div class="col-lg-4 col-md-12 col-6 mb-4">
+                    <div class="card">
+                        <di class="row row-bordered g-0">
+                            <h5 class="card-header m-0 me-2 pb-3">{{ $cl['nama_client'] }}</h5>
+                            <div class="card-body">
+                                <h1  style=" display: inline-block; width: auto;float: left;" data-count="{{ $cl['total'] }}">0</h1>
+                                <p style="display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
+                            </div>
+                        </di>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-12 col-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
 
-                    </div>
-                </div>
-            </div>
+            @endforeach
+
         </div>
     </div>
 </div>
 
 @endsection
+
+@push('js')
+
+@endpush

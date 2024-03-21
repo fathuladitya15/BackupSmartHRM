@@ -66,7 +66,7 @@
                             <div class="avatar flex-shrink-0">
                                 <img src="{{ asset("assets/img/icons/unicons/icons-user-76.png") }}" alt="Credit Card" class="rounded" />
                             </div>
-                            <h5  style="color: white; margin-right:100px;">Total Karyawan Pusat</h5>
+                            <h5  style="color: white; margin-right:100px;">Total Lembur anda dibulan ini</h5>
                         </div>
                         <div >
                             <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
@@ -82,7 +82,7 @@
                             <div class="avatar flex-shrink-0">
                                 <img src="{{ asset("assets/img/icons/unicons/icons-user-76.png") }}" alt="Credit Card" class="rounded" />
                             </div>
-                            <h5  style="color: white; margin-right:100px;">Total Karyawan Project</h5><br>
+                            <h5  style="color: white; margin-right:100px;">Total Izin Anda dibulan ini</h5><br>
                         </div>
                         <div  >
                             <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
@@ -93,27 +93,6 @@
             </div>
         </div>
         <!-- END INFORMASI TOTAL KARYAWAN PROJECT & INTERNAL -->
-        <!-- REQUEST APPROVAL -->
-        <div class="row">
-            <div class="col-lg-12 col-md-12 col-12 mb-4">
-                <div class="card bg-success">
-                    <div class="card-body">
-                        <div class="card-title d-flex align-items-start justify-content-between">
-                            <div class="avatar flex-shrink-0">
-                                <img src="{{ asset("assets/img/icons/unicons/icons-sign-76.png") }}" alt="chart success" class="rounded"/>
-                            </div>
-                            <h5  style="color: white; margin-left:12px;">
-                                Permintaan untuk persetujuan
-                            </h5>
-                        </div>
-                        <div style="padding-top:16px; float: right;" >
-                            <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
-                            <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Permintaan Persetujuan</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
     <!--/ Total Revenue -->
 
@@ -155,28 +134,8 @@
             </div>
         </div>
     </div>
-
 </div>
+
+
 <!-- END FIRST COLUMN -->
-<div class="row">
-    <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
-        <div class="row">
-            <div class="col-lg-4 col-md-12 col-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-12 col-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 @endsection

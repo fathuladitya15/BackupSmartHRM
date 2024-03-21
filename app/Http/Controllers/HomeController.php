@@ -6,8 +6,10 @@ use DB;
 use Auth;
 use App\Models\Karyawan;
 use App\Models\Divisi;
+use App\Models\User;
 use Carbon\Carbon;
 use App\Models\Filemanager;
+use App\Models\Clients;
 use App\Models\Pengumuman;
 use Illuminate\Http\Request;
 
@@ -53,26 +55,46 @@ class HomeController extends Controller
         }
 
 
-
-
-        // dd($roles);
-
-        // if($roles == 'admin') {
-        //     return view('layouts.vSelect');
-        // }
-        // dd(Carbon::now()->translatedFormat('d F Y'));
-        // dd(Auth::user()->roles);
         $table_kr   = Karyawan::where('id_karyawan','like','%'.Auth::user()->id_karyawan.'')->first();
-        // dd($table_kr);
+
+        $data = [
+            'pengumuman'
+        ];
         if(Auth::user()->roles == 'superadmin'){
-            // dd("TES");
             $dataKr = Karyawan::count();
             return view('layouts.Dashboard.vSuperadmin',compact('dataKr'));
 
-        }else {
-
-            return view('layouts.Dashboard.vHome',compact('pengumuman'));
         }
+        elseif (Auth::user()->roles == 'spv-internal') {
+            $view = 'layouts.Dashboard.vSupervisorInternal';
+
+
+        }
+        elseif (Auth::user()->roles == 'karyawan') {
+            $view = 'layouts.Dashboard.vKaryawanProject';
+
+        }
+        else if(Auth::user()->roles == 'direktur'){
+            $divisi = Divisi::find(Auth::user()->karyawan->divisi)->nama_divisi;
+            if($divisi == 'MPO') {
+                $view = 'layouts.Dashboard.vDirekturMPO';
+                $client = Clients::where('id','!=',1)->get();
+                $AddData = ['client' => $client ];
+                $total_karyawan = [];
+                foreach ($client as $key ) {
+                    $total_karyawan[] = [
+                        'nama_client' => $key->nama_client,
+                        'total'   => User::where('id_client',$key->id)->count()
+                    ];
+                }
+                // dd($total_karyawan);
+               array_push($data,'total_karyawan');
+            }
+        }
+        else {
+            $view = 'layouts.Dashboard.vHome';
+        }
+        return view($view,compact($data));
     }
 
     function checking_tanda_tangan(Request $request) {
