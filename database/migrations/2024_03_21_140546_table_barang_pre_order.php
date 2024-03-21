@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('table_pengumuman', function (Blueprint $table) {
+        Schema::create('table_barang_po', function (Blueprint $table) {
             $table->id();
-            $table->string('judul');
-            $table->string('pembuat');
-            $table->text('keterangan');
-            $table->string('views');
-            $table->longText('lampiran')->nullable();
-            $table->string('arsip')->default(0);
-            $table->string('id_client');
+            $table->string('id_pre_order');
+            $table->string('nama_barang');
+            $table->string('unit');
+            $table->string('satuan');
+            $table->string('biaya');
+            $table->string('jumlah');
+            $table->string('keterangan')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('table_pengumuman');
+        Schema::dropIfExists('table_barang_po');
     }
 };

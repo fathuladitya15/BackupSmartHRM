@@ -23,6 +23,7 @@ use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientsController;
+use App\Http\Controllers\PreorderController;
 use App\Http\Controllers\DatatableController;
 use App\Http\Controllers\SuperadminController;
 use App\Http\Controllers\PengumumanController;
@@ -279,6 +280,13 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('get/files',[PengumumanController::class,'get_files'])->name('pengumuman-get-files');
                 Route::delete('get/delete',[PengumumanController::class,'delete_files'])->name('pengumuman-delete-files');
                 Route::delete('get/delete',[PengumumanController::class,'delete_files'])->name('pengumuman-delete-files');
+            });
+
+            Route::prefix('pre-order')->group(function() {
+                Route::get('index',[PreorderController::class,'index'])->name('pre-order');
+                Route::post('create',[PreorderController::class,'create'])->name('pre-order-create');
+                Route::get('data',[PreorderController::class,'data'])->name('pre-order-data');
+                Route::post('get-data',[PreorderController::class,'get_data'])->name('pre-order-get-data');
             });
         });
 

@@ -379,6 +379,15 @@
                         </li>
                     @endif
 
+                    @if (in_array(Auth::user()->roles,['spv-internal','admin','korlap']))
+                        <li class="menu-item {{  menuOpen(['pre-order']) }}">
+                            <a href="{{ route('pre-order') }}" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-cart"></i>
+                            <div>Permintaan Pembelian</div>
+                            </a>
+                        </li>
+                    @endif
+
                 @endif
 
 
@@ -492,6 +501,7 @@
                     </li>
                 @endif
 
+                {{-- PENGUMUMAN --}}
 
                 @if(Auth::user()->roles == 'spv-internal')
                 <li class="menu-header small text-uppercase">
