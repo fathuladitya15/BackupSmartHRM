@@ -252,9 +252,9 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form enctype="multipart/form-data" id="detail" >
+        <form enctype="multipart/form-data" id="detail" action="{{ route('pre-order-update') }}" >
             <input type="hidden" name="id" id="id_detail" value="">
-            <input type="hidden" name="status_detail" id="" value="0">
+            <input type="hidden" name="status" id="status" value="">
             @csrf
             <div class="modal-body">
                 <div class="row">
@@ -351,12 +351,12 @@
                     </div>
                     <input type="hidden" value="0" id="total_semua_barang_detail" name="total_semua_barang">
                 </div>
-                <div class="row">
+                <div class="row" id="tombol_tambah_barang">
+                    <button type="button" onclick="tambah_barang('detail')" class=" btn btn-primary btn-sm" style="width:150px;">Tambah Barang</button>
+                    <button type="button" onclick="delete_div('detail')" class=" btn btn-danger btn-sm" style="width:150px;">Hapus</button>
                     <div class="col-lg-3" style="text-align: center">
-                        <button type="button" onclick="tambah_barang('detail')" class=" btn btn-primary btn-sm">Tambah Barang</button>
                     </div>
                     <div class="col-lg-3">
-                        <button type="button" onclick="delete_div('detail')" class=" btn btn-danger btn-sm">Hapus</button>
                     </div>
                 </div>
                 <br>
@@ -384,6 +384,8 @@
       </div>
     </div>
 </div>
+
+
 @endsection
 
 @push('js')
@@ -494,6 +496,8 @@
                 detail.disabled = true;
             }, success : function (s) {
                 var data = s.data_po;
+
+                //MENAMPILKAN DATA
                 const div = document.getElementById("form_input_barang");
                 const newDiv = document.createElement("div");
                 newDiv.setAttribute("id","barang_input_detail");
@@ -507,7 +511,23 @@
                 $('#barang_input_detail').append(s.barang_po);
                 $("#total_semua_barang_detail").val(s.total_barang);
                 $("#id_detail").val(data.id);
+                $("#status").val(data.status);
                 document.getElementById('image_ttd_detail').src = asset + data.ttd_pembuat;
+
+                // STATUS
+                if(data.status == 0 && data.status == 5) {
+                    $('#barang_input_detail input').prop('disabled', true);
+                    document.getElementById('tombol_tambah_barang').style.display = 'none';
+                    $("#detail input").prop('disabled',true);
+                    $("#bulan_detail").prop('disabled',true);
+                    document.getElementById("btn_save_detail").style.display = 'none';
+                }else {
+                    document.getElementById("btn_save_detail").style.display = 'block';
+                    $("#detail input").prop('disabled',false);
+                    $('#barang_input_detail input').prop('disabled', false);
+                    $("#bulan_detail").prop('disabled',false);
+                    document.getElementById('tombol_tambah_barang').style.display = 'block';
+                }
 
             }, error: function(e) {
                 Swal.fire({
@@ -526,6 +546,53 @@
         delete_div("create");
     });
 
+    $("#detail").submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+            url     : $(this).attr('action'),
+            data    : $(this).serialize(),
+            type    : "POST",
+            beforeSend: function() {
+                $("#modalCreate").modal('hide');
+                Swal.fire({
+                    title: 'Loading...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+            }, success : function(s) {
+                console.log(s);
+                if(s.status == true) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: s.title,
+                        text: s.pesan
+                    });
+                }else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: s.title,
+                        text: s.pesan
+                    });
+                }
+                $("#modalDetail").modal('hide');
+            }, error : function (e) {
+                var errors = '';
+                $.each(e.responseJSON.errors, function(key, value) {
+                    errors += value + '<br>'; // Membuat daftar pesan kesalahan
+                });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan!',
+                    html: errors
+                });
+            },complete: function() {
+                table.DataTable().ajax.reload();
+            }
+        })
+    });
     function delete_div(tipe){
 
         if(tipe == "create"){

@@ -23,7 +23,8 @@ class PreOrder extends Model
        'ttd_direktur',
        'nama_direktur',
         'nama_direktur',
-        'id_user'
+        'id_user',
+        'id_client'
     ];
 
     function barang() {

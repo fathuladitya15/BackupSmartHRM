@@ -44,6 +44,16 @@ class UserSeeder extends Seeder
             'id_karyawan' => '1999123'
         ]);
 
+        $spv_megasari     = User::create([
+            'username' => 'agung',
+            'name' => 'Agung Priatmojo',
+            'email' => 'agung12@gmail.com',
+            'password' => Hash::make('password'),
+            'roles' => 'spv-internal',
+            'id_client' => 2,
+            'id_karyawan' => 'SPVM001'
+        ]);
+
         $admin_AIO_sukabumi     =   User::create([
             'username' => 'rehan',
             'name' => 'REHAN ERLANGGA',

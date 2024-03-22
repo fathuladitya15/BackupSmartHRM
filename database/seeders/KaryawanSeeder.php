@@ -39,6 +39,7 @@ class KaryawanSeeder extends Seeder
             'norek_bank'    =>112233,
             'status'        => 0,
         ]);
+
         Karyawan::create([
             'nama_karyawan' => 'Rasya Bayu Pamungkas',
             'id_karyawan'   => 1999123,
@@ -59,6 +60,32 @@ class KaryawanSeeder extends Seeder
             'marital'       => "TK",
             'nama_bank'     => "BANK SYARIAH INDONESIA (Eks BNI SYARIAH)",
             'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 427,
+            'norek_bank'    => 77987321,
+            'status'        => 0,
+            'kategori'      => 'pusat'
+        ]);
+
+        Karyawan::create([
+            'nama_karyawan' => 'Agung Priatmojo',
+            'id_karyawan'   => 'SPVM001',
+            'no_hp'         => "088922543991",
+            'tanggal_lahir' => "1993-10-10",
+            'tempat_lahir'  => "Bogor",
+            'jenis_kelamin' => "L",
+            'nik'           => 3201301502010199,
+            'no_kk'         => 0,
+            'alamat'        =>"Bogor",
+            'alamat_domisili' => 'Bogor',
+            'lokasi_kerja'  => 2,
+            'divisi'        => 1,
+            'jabatan'       => 2,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK SYARIAH INDONESIA (Eks BNI SYARIAH)",
+            'cabang_bank'   => "Bogor",
             'kd_bank'       => 427,
             'norek_bank'    => 77987321,
             'status'        => 0,
@@ -92,6 +119,7 @@ class KaryawanSeeder extends Seeder
             'status'        => 0,
             'kategori'      => 'project'
         ]);
+
         Karyawan::create([
             'nama_karyawan' => 'Achmad Siswanto',
             'id_karyawan'   => 'B0483',
@@ -206,7 +234,6 @@ class KaryawanSeeder extends Seeder
             'kategori'      => 'pusat',
 
         ]);
-
         Karyawan::create([
             'nama_karyawan' => 'MANAGER FINANCE',
             'id_karyawan'   => 'PFI18723111',

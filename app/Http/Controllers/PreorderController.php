@@ -39,6 +39,7 @@ class PreorderController extends Controller
             return view('layouts.pre_order.vAdmin',compact('nama_bulan'));
         }
         elseif ($roles == 'spv-internal') {
+            return view('layouts.pre_order.vSpv');
 
         }
         else {
@@ -81,6 +82,7 @@ class PreorderController extends Controller
             'dibuat_oleh'       => $request->diajukan_oleh,
             'ttd_pembuat'       => $ttd->path,
             'id_user'           => Auth::user()->id,
+            'id_client'           => Auth::user()->id_client,
         ];
 
         $create_po = PreOrder::create($dataCreate);
@@ -105,21 +107,24 @@ class PreorderController extends Controller
         if (in_array(Auth::user()->roles ,['admin','korlap']) ) {
             $data = PreOrder::where('id_user',Auth::user()->id)->get();
         }else {
-            $data = PreOrder::all();
+            $data = PreOrder::where('id_client',Auth::user()->id_client)->get();
         }
 
         $dt     = DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('aksi', function($row) {
-            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="edit('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Edit</a>';
+            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="edit('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
             $hapus   = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')"  ><i class="bx bx-trash"></i>Hapus</a>';
+
             if(in_array(Auth::user()->roles,['admin','korlap'])) {
                 return $edit. '&nbsp;' .$hapus;
 
             }else {
+                $check   = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="check_'.$row->id.'" onclick="check('.$row->id.')"  ><i class="menu-icon tf-icons bx bx-check-circle"></i>Setujui</a>';
+                $reject  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="reject_'.$row->id.'" onclick="reject('.$row->id.')"  ><i class="menu-icon tf-icons bx bx-x-circle"></i>Tolak</a>';
                 if(Auth::user()->roles == 'spv-internal') {
-                    if($row->status == 1) {
-                        return $edit;
+                    if($row->status == 0) {
+                        return $edit.'&nbsp;'.$check.'&nbsp;'.$reject;
                     }else {
                         return "";
                     }
@@ -129,19 +134,32 @@ class PreorderController extends Controller
         ->addColumn('status', function($row) {
             if($row->status == 0) {
                 $p = '<span class="badge badge bg-warning"> Menunggu Disetujui  </span>';
-            }else if($row->status == 1) {
-                $p = '<span class="badge badge bg-warning"> Disetujui ( Menunggu Tandatangan Direktur )  </span>';
-            }else if($row->status == 2){
-                $p = '<span class="badge badge bg-danger"> Ditolak ( Direview Ulang )  </span>';
-            }else if($row->status == 3){
+            }
+            else if($row->status == 1) {
+                $p = '<span class="badge badge bg-warning">  Menunggu tanda tangan direktur  </span>';
+            }
+            else if($row->status == 2){
+                $p = '<span class="badge badge bg-danger"> Selesai ditandatangan  </span>';
+            }
+            else if($row->status == 3){
                 $p = '<span class="badge badge bg-success"> Sudah Ditandatangani  </span>';
-            }else {
+            }else if($row->status == 5) {
+                $p = '<span class="badge badge bg-danger"> Ditolak ( Direview Ulang )  </span>';
+            }
+            else {
                 $p = '<span class="badge badge bg-info"> Tidak Ada Status  </span>';
             }
             return $p;
         })
+        ->addColumn('jumlah', function($row) {
+            $jumlah = DB::table('table_barang_po')
+                ->selectRaw('SUM(CAST(jumlah as int)) AS Total')
+                ->where('id_pre_order',$row->id)
+                ->first();
+            return 'Rp. '.number_format($jumlah->Total,0,'.',',') ;
+        })
 
-        ->rawColumns(['aksi','status'])
+        ->rawColumns(['aksi','status','jumlah'])
 
         ->make(true);
         return $dt;
@@ -158,5 +176,32 @@ class PreorderController extends Controller
             'barang_po' => view('layouts.pre_order.vBarang_PO',compact('data_barang_po'))->render(),
         ];
         return response()->json($data);
+    }
+
+    function update(Request $request) {
+
+        if(in_array(Auth::user()->roles,['admin','korlap'])) {
+            $data = PreOrder::find($request->id);
+            $data->status = 0;
+            $data->update();
+            $pesan = ['status' => TRUE, 'title' => 'Berhasil perbarui data', 'pesan' => 'Data akan dikemablikan ke supervisor'];
+
+        }else {
+            $data = PreOrder::find($request->id);
+            $data->status = $request->status;
+            $data->update();
+            if($request->status == 1) {
+                $pesan = ['status' => TRUE, 'title' => 'Berhasil disetujui', 'pesan' => 'Data akan dilanjutkan ke direktur'];
+            }
+            elseif($request->status == 5 ) {
+                $pesan = ['status' => TRUE, 'title' => 'Berhasil ditolak', 'pesan' => 'Data akan dikemablikan ke GA'];
+
+            }else {
+                $pesan = ['status' => FALSE, 'title' => 'Error', 'pesan' => 'Something Wrong'];
+
+            }
+        }
+
+        return response()->json($pesan);
     }
 }

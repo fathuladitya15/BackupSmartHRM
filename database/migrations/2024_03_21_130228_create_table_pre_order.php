@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('nama_direktur')->nullable();
             $table->string('status')->default(0);
             $table->string('id_user');
+            $table->string('id_client');
             $table->timestamps();
         });
     }

@@ -287,6 +287,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('create',[PreorderController::class,'create'])->name('pre-order-create');
                 Route::get('data',[PreorderController::class,'data'])->name('pre-order-data');
                 Route::post('get-data',[PreorderController::class,'get_data'])->name('pre-order-get-data');
+                Route::post('update',[PreorderController::class,'update'])->name('pre-order-update');
             });
         });
 
