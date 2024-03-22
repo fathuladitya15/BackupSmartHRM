@@ -48,9 +48,7 @@ Route::get('/', function () {
 
 // Auth::routes();
 
-Route::get('/login',[LoginController::class,'showLoginForm'])->name('login');
-Route::post('/login',[LoginController::class,'login'])->name('login');
-Route::post('/logout',[LoginController::class,'logout'])->name('logout');
+
 
 Route::post('/search-bank',function(Request $request) {
     $search = Bank::where('nama_bank',$request->nama_bank)->first();
@@ -72,7 +70,11 @@ Route::get('/camera-test', function() {
     return view('layouts.test-camera');
 });
 
+Route::get('/export-karyawan',[ManageKaryawanController::class,'export'])->name("karyawan-export");
 Route::middleware('revalidate')->group(function() {
+    Route::get('/login',[LoginController::class,'showLoginForm'])->name('login');
+    Route::post('/login',[LoginController::class,'login'])->name('login');
+    Route::post('/logout',[LoginController::class,'logout'])->name('logout');
     Route::middleware('SingelSession')->group(function() {
         Route::middleware('auth')->group(function() {
             Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -85,16 +87,21 @@ Route::middleware('revalidate')->group(function() {
             Route::get('/Absensi/{karyawan}/search/{id}',[AbsensiController::class,'search_by_one'])->name('absensi-search-one');
             Route::post('/Absensi/data/search/dokumen',[AbsensiController::class,'dokumen_perorang'])->name('absensi-doc-perorang');
 
-            Route::get('/karyawan',[ManageKaryawanController::class,'index'])->name('karyawan');
-            Route::get('/karyawan/add',[ManageKaryawanController::class,'create'])->name('karyawan-add');
-            Route::post('/karyawan/process',[ManageKaryawanController::class,'store'])->name('karyawan-saving');
-            Route::get('/karyawan/detail/{hash}',[ManageKaryawanController::class,'edit'])->name('karyawan-edit');
-            Route::get('/karyawan/detail/{hash}/data-pribadi',[ManageKaryawanController::class,'pribadi'])->name('karyawan-pribadi');
-            Route::get('/karyawan/detail/{hash}/data-perusahaan',[ManageKaryawanController::class,'client'])->name('karyawan-client');
-            Route::get('/karyawan/detail/{hash}/data-dokumen',[ManageKaryawanController::class,'dokumen'])->name('karyawan-dokumen');
-            Route::get('/karyawan/detail/{hash}/data-bank',[ManageKaryawanController::class,'bank'])->name('karyawan-bank');
-            Route::post('/karyawan/detail/{hash}/update',[ManageKaryawanController::class,'update_data'])->name("karyawan-update");
-            Route::post('/karyawan/detail/{hash}/view_file',[ManageKaryawanController::class,'view_file'])->name("karyawan-view-file");
+
+            Route::prefix('karyawan')->group(function() {
+                Route::get('index',[ManageKaryawanController::class,'index'])->name('karyawan');
+                Route::get('add',[ManageKaryawanController::class,'create'])->name('karyawan-add');
+                Route::post('process',[ManageKaryawanController::class,'store'])->name('karyawan-saving');
+                Route::get('detail/{hash}',[ManageKaryawanController::class,'edit'])->name('karyawan-edit');
+                Route::get('detail/{hash}/data-pribadi',[ManageKaryawanController::class,'pribadi'])->name('karyawan-pribadi');
+                Route::get('detail/{hash}/data-perusahaan',[ManageKaryawanController::class,'client'])->name('karyawan-client');
+                Route::get('detail/{hash}/data-dokumen',[ManageKaryawanController::class,'dokumen'])->name('karyawan-dokumen');
+                Route::get('detail/{hash}/data-bank',[ManageKaryawanController::class,'bank'])->name('karyawan-bank');
+                Route::post('detail/{hash}/update',[ManageKaryawanController::class,'update_data'])->name("karyawan-update");
+                Route::post('detail/{hash}/view_file',[ManageKaryawanController::class,'view_file'])->name("karyawan-view-file");
+                Route::get('export-karyawan',[ManageKaryawanController::class,'export'])->name("karyawan-export");
+                Route::post('upload-karyawan',[ManageKaryawanController::class,'import'])->name('karyawan-upload');
+            });
 
             Route::get('/Jabatan',[JabatanController::class,'index'])->name('jabatan');
             Route::get('/Jabatan/data',[JabatanController::class,'data'])->name('jabatan-data');

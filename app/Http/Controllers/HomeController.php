@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use DB;
 use Auth;
-use App\Models\Karyawan;
-use App\Models\Divisi;
-use App\Models\User;
 use Carbon\Carbon;
-use App\Models\Filemanager;
+use App\Models\User;
+use App\Models\Izin;
+use App\Models\Divisi;
+use App\Models\Lembur;
 use App\Models\Clients;
+use App\Models\Karyawan;
 use App\Models\Pengumuman;
+use App\Models\Filemanager;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -25,21 +27,16 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
 
         $roles = Auth::user()->roles;
+
         $query =DB::table('table_pengumuman')
                     ->where([
                         'id_client' => Auth::user()->id_client,
                         'arsip'     => 0
                     ])
-                    // ->where('arsip',0)
                     ->orderBy('created_at', 'desc');
 
         if($roles == 'karyawan') {
@@ -53,26 +50,34 @@ class HomeController extends Controller
         else {
             $pengumuman = "";
         }
-
-
         $table_kr   = Karyawan::where('id_karyawan','like','%'.Auth::user()->id_karyawan.'')->first();
 
         $data = [
             'pengumuman'
         ];
+
         if(Auth::user()->roles == 'superadmin'){
             $dataKr = Karyawan::count();
             return view('layouts.Dashboard.vSuperadmin',compact('dataKr'));
 
         }
         elseif (Auth::user()->roles == 'spv-internal') {
-            $view = 'layouts.Dashboard.vSupervisorInternal';
-
-
+            $kr_project     = User::where('id_client',Auth::user()->id_client)->where('roles','karyawan')->count();
+            $kr_internal    = Karyawan::where('lokasi_kerja',Auth::user()->id_client)->where('kategori','project')->count();
+            $view   = 'layouts.Dashboard.vSupervisorInternal';
+            array_push($data,'kr_project','kr_internal');
         }
         elseif (Auth::user()->roles == 'karyawan') {
+            $firstDate  = Carbon::now()->startOfMonth();
+            $EndDate    = Carbon::now()->startOfMonth();
+            $lembur     = Lembur::where("id_karyawan",Auth::user()->id_karyawan)
+                        ->whereBetween('tanggal_lembur', [$firstDate, $EndDate])->count();
+            $izin       = Izin::where("karyawan_id",Auth::user()->id_karyawan)
+                        ->whereBetween('tanggal_pembuatan', [$firstDate, $EndDate])->count();
+
             $view = 'layouts.Dashboard.vKaryawanProject';
 
+            array_push($data,'lembur','izin');
         }
         else if(Auth::user()->roles == 'direktur'){
             $divisi = Divisi::find(Auth::user()->karyawan->divisi)->nama_divisi;
@@ -84,12 +89,29 @@ class HomeController extends Controller
                 foreach ($client as $key ) {
                     $total_karyawan[] = [
                         'nama_client' => $key->nama_client,
-                        'total'   => User::where('id_client',$key->id)->count()
+                        'total'   => User::where('id_client',$key->id)->where('roles','karyawan')->count()
                     ];
                 }
-                // dd($total_karyawan);
-               array_push($data,'total_karyawan');
+                $kr_project = Karyawan::where('kategori','project')->count();
+                $kr_pusat = Karyawan::where('kategori','pusat')->count();
+               array_push($data,'total_karyawan','kr_project','kr_pusat');
             }
+        }
+        elseif (in_array(Auth::user()->roles ,['admin','korlap'])) {
+            $izin       = DB::table("table_izin as ti")
+                            ->join('table_karyawan as us','us.id_karyawan','=','ti.karyawan_id')
+                            ->where('ti.status','0')
+                            ->where('ti.id_client','LIKE','%'.Auth::user()->id_client.'%')
+                            ->count();
+            $lembur      = DB::table("table_lembur as ti")
+                            ->join('table_karyawan as us','us.id_karyawan','=','ti.id_karyawan')
+                            ->where('ti.status','0')
+                            ->where('ti.id_client','LIKE','%'.Auth::user()->id_client.'%')
+                            ->count();
+            $totalkr    = User::where('id_client',Auth::user()->id_client)->where('roles','karyawan')->count();
+            $total      = $izin + $lembur;
+            $view       = 'layouts.Dashboard.vAdminKorlap';
+            array_push($data,'total','totalkr');
         }
         else {
             $view = 'layouts.Dashboard.vHome';

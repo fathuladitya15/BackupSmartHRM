@@ -64,35 +64,36 @@
                     <div class="card-body">
                         <div class="card-title d-flex align-items-start justify-content-between">
                             <div class="avatar flex-shrink-0">
-                                <img src="{{ asset("assets/img/icons/unicons/overtime.png") }}" alt="Credit Card" class="rounded" />
+                                <img src="{{ asset("assets/img/icons/unicons/icons-user-76.png") }}" alt="Credit Card" class="rounded" />
                             </div>
-                            <h5  style="color: white; margin-right:30px;">Total Lembur anda dibulan ini</h5>
+                            <h5  style="color: white; margin-right:100px;">Total Karyawan Project</h5>
                         </div>
                         <div >
-                            <h1 style="color: white; display: inline-block; width: auto;float: left;">{{ $lembur }} </h1>
-                            <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Lembur</p>
+                            <h1 style="color: white; display: inline-block; width: auto;">{{ $totalkr }} </h1>
+                            <p style="color: white;display: inline-block; width: auto; ">Karyawan</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 col-md-12 col-6 mb-4">
-                <div class="card ">
+                <div class="card bg-success">
                     <div class="card-body">
                         <div class="card-title d-flex align-items-start justify-content-between">
                             <div class="avatar flex-shrink-0">
-                                <img src="{{ asset("assets/img/icons/unicons/absence.png") }}" alt="Credit Card" class="rounded" />
+                                <img src="{{ asset("assets/img/icons/unicons/icons-sign-76.png") }}" alt="chart success" class="rounded"/>
                             </div>
-                            <h5  style="color: black; margin-right:50px;">Total Izin Anda dibulan ini</h5><br>
+                            <h5  style="color: white; margin-right:30px;">
+                                Permintaan untuk persetujuan
+                            </h5>
                         </div>
-                        <div  >
-                            <h1 style="color: black; display: inline-block; width: auto;float: left;">{{ $izin }} </h1>
-                            <p style="color: black;display: inline-block; width: auto; float: left;margin-left: 10px;">Izin</p>
+                        <div>
+                            <h1 style="color: white; display: inline-block; width: auto;">{{ $total }} </h1>
+                            <p style="color: white;display: inline-block; width: auto;">Permintaan Persetujuan</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- END INFORMASI TOTAL KARYAWAN PROJECT & INTERNAL -->
     </div>
     <!--/ Total Revenue -->
 
@@ -134,8 +135,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
-
-<!-- END FIRST COLUMN -->
 @endsection

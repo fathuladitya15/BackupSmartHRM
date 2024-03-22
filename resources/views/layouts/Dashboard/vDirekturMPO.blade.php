@@ -69,7 +69,7 @@
                             <h5  style="color: white; margin-right:100px;">Total Karyawan Pusat</h5>
                         </div>
                         <div >
-                            <h1 class="count" style="color: white; display: inline-block; width: auto;float: left;" data-count="1000"> 0 </h1>
+                            <h1 class="count" style="color: white; display: inline-block; width: auto;float: left;" data-count="1000"> {{ $kr_pusat }} </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                             <h5  style="color: white; margin-right:100px;">Total Karyawan Project</h5><br>
                         </div>
                         <div  >
-                            <h1 class="count" style="color: white; display: inline-block; width: auto;float: left;" data-count="5000"> 0 </h1>
+                            <h1 class="count" style="color: white; display: inline-block; width: auto;float: left;" data-count="5000"> {{ $kr_project }} </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
                         </div>
                     </div>
@@ -167,7 +167,7 @@
                         <di class="row row-bordered g-0">
                             <h5 class="card-header m-0 me-2 pb-3">{{ $cl['nama_client'] }}</h5>
                             <div class="card-body">
-                                <h1  style=" display: inline-block; width: auto;float: left;" data-count="{{ $cl['total'] }}">0</h1>
+                                <h1  style=" display: inline-block; width: auto;float: left;" data-count="{{ $cl['total'] }}">{{ $cl['total'] }}</h1>
                                 <p style="display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
                             </div>
                         </di>

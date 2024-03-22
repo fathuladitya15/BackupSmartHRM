@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('no_hp');
             $table->string('tanggal_lahir');
             $table->string('tempat_lahir');
-            $table->string('jenis_kelamin');
+            $table->string('jenis_kelamin')->default('L');
             $table->string('nik');
             $table->string('no_kk')->nullable();
             $table->string('alamat');
@@ -34,8 +34,8 @@ return new class extends Migration
             $table->string('tJabatan')->nullable();
             $table->string('tTransport')->nullable();
             $table->string('nama_bank');
-            $table->string('cabang_bank');
-            $table->string('kd_bank');
+            $table->string('cabang_bank')->nullable();
+            $table->string('kd_bank')->nullable();
             $table->string('norek_bank');
             $table->string('status');
             $table->string('status_karyawan')->nullable();

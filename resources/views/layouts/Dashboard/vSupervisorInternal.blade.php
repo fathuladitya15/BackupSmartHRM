@@ -69,7 +69,7 @@
                             <h5  style="color: white; margin-left:12px;">Total Karyawan Internal Pusat - Project</h5>
                         </div>
                         <div >
-                            <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
+                            <h1 style="color: white; display: inline-block; width: auto;float: left;">{{ $kr_internal }} </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                             <h5  style="color: white; margin-right:100px;">Total Karyawan Project</h5><br>
                         </div>
                         <div style="padding-top:16px" >
-                            <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
+                            <h1 style="color: white; display: inline-block; width: auto;float: left;">{{ $kr_project }} </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
                         </div>
                     </div>

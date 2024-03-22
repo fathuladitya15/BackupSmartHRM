@@ -347,7 +347,8 @@ class DatatableController extends Controller
 
         if($role == 'manajer'){
             $data = $dataMaster->where('status','>=','0')->where('divisi',$divisi)->get();
-        }else if($role == 'hrd') {
+        }
+        else if($role == 'hrd') {
             $data = $dataMaster->orWhere('divisi',['MPO'])->where('status','>=','1')->get();
         }
         else if($role == 'direktur') {
@@ -356,7 +357,8 @@ class DatatableController extends Controller
             }else {
                 $data = Lembur::where('status','>=','2')->get();
             }
-        }else {
+        }
+        else {
             $data = $dataMaster->where('id_karyawan','!=',Auth::user()->id_karyawan)->get();
         }
 

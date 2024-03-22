@@ -16,6 +16,10 @@ use App\Models\Karyawan;
 use App\Models\Filemanager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Exports\KaryawanExport;
+use App\Imports\KaryawanImport;
+use App\Imports\UserImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ManageKaryawanController extends Controller
 {
@@ -50,21 +54,25 @@ class ManageKaryawanController extends Controller
 
     function index() {
         $tipe_akun  = Auth::user()->roles;
-        // dd($tipe_akun);
 
         if($tipe_akun == 'superadmin'){
             $link_data = route('data-kr-superadmin');
             return view('layouts.superadmin.vKaryawan',compact('link_data'));
-        }else if($tipe_akun == 'hrd') {
+        }
+        else if($tipe_akun == 'hrd') {
             $link_data = route('data-kr-hrd');
             return view('layouts.hrd.vKaryawan',compact('link_data'));
-        }else if(in_array($tipe_akun,['admin','korlap'])) {
+        }
+        else if(in_array($tipe_akun,['admin','korlap'])) {
             $link_data = route('data-kr-admin');
             return view('layouts.admin_korlap.vKaryawan',compact('link_data'));
-        }else if(in_array($tipe_akun,['spv-internal'])) {
+        }
+        else if(in_array($tipe_akun,['spv-internal'])) {
             // return view('layouts.supervisor.vLembur');
             // dd($tipe_akun);
 
+        }else {
+            abort(403,'Akun anda tidak mempunyai akses');
         }
     }
 
@@ -747,6 +755,46 @@ class ManageKaryawanController extends Controller
             $res = ['status' => FALSE, 'title' => 'File tidak tersedia' , 'pesan' => 'Upload file '.$request->tipe_file.' terlebih dahulu'];
         }
         return response()->json($res);
+    }
+
+    function export(Request $request)
+    {
+
+        $file =  Excel::download(new KaryawanExport, 'ContohFileExcel.xlsx');
+        $get =  DB::table('users as us')
+                ->select('us.id_karyawan','us.name','kr.no_hp','kr.tanggal_lahir','kr.tempat_lahir','kr.nik','kr.alamat','kr.alamat_domisili','kr.no_npwp','kr.no_sio','kr.marital','tj.nama_jabatan','td.nama_divisi','kr.norek_bank','kr.nama_bank','kr.no_kpj','kr.no_jkn','kr.cuti','kr.join_date','kr.end_date')
+                ->join('table_karyawan as kr','kr.id_karyawan','=','us.id_karyawan')
+                ->join('table_divisi as td','td.id','=','kr.divisi')
+                ->join('table_jabatan as tj','tj.id','=','kr.jabatan')
+                ->where('us.id_client',Auth::user()->id_client)
+                ->first();
+        // dd($get);
+        return $file;
+        // dd($request->header(),$file);
+        // return $file->withHeaders([
+        //     'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        // ]);
+    }
+
+    function import(Request $request) {
+        ini_set('max_execution_time', 600);
+        $validator = Validator::make($request->all(),[
+            'file_excel' => 'required|max:50000|mimes:csv,xls,xlsx,',
+        ],[
+            'file_excel.required' => 'Form Tidak boleh Kosong',
+            'file_excel.max'      => 'File Tidak Boleh lebih dari 50 Mb',
+            'file_excel.mimes'      => 'File harus berupa format CSV, XCL, XLSX',
+        ]);
+
+        if($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()], 422);
+        }
+
+        $file       = $request->file_excel;
+        $fileName   = 'File_excel'.date('YmdHi').'.'.$file->extension();
+        // $save_file  = $file->storeAs('public/excel/',$fileName);
+        $import_u    = Excel::import(new UserImport(), $request->file_excel);
+        $import_k    = Excel::import(new KaryawanImport(), $request->file_excel);
     }
 
 }

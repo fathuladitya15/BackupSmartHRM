@@ -67,11 +67,13 @@
             <div class="card-header d-flex align-items-center justify-content-between" >
                 <h5 class="mb-0">Data Karyawan</h5>
             </div>
-            <div class="card-title">
-
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" style="float: right">
-                    <i class='bx bx-plus'></i> Tambah Karyawan
-                  </button>
+            <div class="card-title" style="float: right;">
+                <a href="{{ route('karyawan-add') }}" class="btn btn-primary" style="display: inline-block; width: auto;">
+                    <i class='bx bx-plus'></i>Tambah
+                </a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalUpload" style="display: inline-block; width: auto;">
+                    <i class='bx bx-upload'></i> Upload
+                </button>
             </div>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">
@@ -105,6 +107,32 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalUpload" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <form class="modal-content" action="{{ route('karyawan-upload') }}" enctype="multipart/form-data" method="POST">
+            @csrf
+            <div class="modal-header">
+                <h5 style="color: black" class="modal-title" id="modalUploadTitle">Upload Karyawan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col mb-3">
+                    <label for="nameBackdrop" class="form-label">Upload file Excel</label>
+                    <input type="file" id="file" name="file_excel" class="form-control"  />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Tutup
+                </button>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+        </form>
+    </div>
+  </div>
 
 @push('js')
 

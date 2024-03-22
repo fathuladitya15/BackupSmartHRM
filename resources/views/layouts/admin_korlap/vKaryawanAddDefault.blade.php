@@ -32,7 +32,6 @@
 @section('content')
 
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Karyawan/</span> Tambah Karyawan</h4>
-<button style="float: right;" class="btn btn-success" id="upload_excel"> <i class="fa-solid fa-plus"></i> Upload Data Karyawan</button>
 <br><br>
 @if ($errors->any())
 @foreach ($errors->all() as $item)
