@@ -33,7 +33,7 @@ $('#formAuthentication').submit(function(e) {
                 button_login.disabled - true
             },
             success : function(e) {
-                // console.log(e)
+                console.log(e)
                 if(e.status == false) {
                     Swal.fire({
                         title: "Opps ! ",

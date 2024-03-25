@@ -193,7 +193,7 @@
 
                         </div>
                         <div class="form-group col-md-4">
-                            <input class="form-control" required="required"  name="waktu" id="waktu" type="time" >
+                            <input class="form-control" required="required"  name="jam_keluar" id="jam_keluar" type="time" >
                         </div>
                         <div class="form-group col-md-5">
                             <div class="d-flex radio-check">

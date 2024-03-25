@@ -16,10 +16,16 @@ class UserImport implements ToModel
     */
     public function model(array $row)
     {
+
+
+        $cek = User::where('id_karyawan',$row[0])->count();
+        if($cek > 1) {
+            return response()->json(['status' => TRUE,]);
+        }
         return new User([
             'name' => $row[1],
             'username' => str_replace('-', '_', $row[0]),
-            'email' => 'default'.rand(10,999). $row[9].'@gmail.com',
+            'email' => 'default'.str_replace('-', '_', $row[0]).rand(10,999). $row[9].'@gmail.com',
             'password' => Hash::make('password'),
             'id_karyawan' => $row[0],
             'roles' => 'karyawan',

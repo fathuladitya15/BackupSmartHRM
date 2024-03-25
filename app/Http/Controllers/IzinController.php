@@ -170,6 +170,7 @@ class IzinController extends Controller
                 }
             }
             $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Berhasil membuat izin keluar'];
+            Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) Membuat izin ");
 
             $create = Izin::create($createData);
 
@@ -183,6 +184,7 @@ class IzinController extends Controller
                     $data->user_id_mengetahui = Auth::user()->name;
                     $data->update();
                     $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah disetujui'];
+                    Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) Menyetujui izin karyawan nama : ".$data->nama_karyawan."-".$data->id_karyawan);
 
                 }else {
                     if(in_array(Auth::user()->roles,['admin','karyawan'])){
@@ -192,6 +194,7 @@ class IzinController extends Controller
                         $data->ttd_mengetahui = $ttdCreate->path;
                         $data->update();
                         $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah ditandatangani'];
+                        Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) Menandatangani izin karyawan nama : ".$data->nama_karyawan."-".$data->id_karyawan);
 
                     }
                 }
@@ -212,6 +215,7 @@ class IzinController extends Controller
                     $data->update();
                 }
                 $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah disetujui'];
+                Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) Menyetujui permintaan izin karyawan nama : ".$data->nama_karyawan."-".$data->id_karyawan);
             }
             else if(Auth::user()->roles == 'manajer'){
                 $data = Izin::find($id_izin);
@@ -220,6 +224,7 @@ class IzinController extends Controller
                 $data->status =  1;
                 $data->update();
                 $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah disetujui'];
+                Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) Meyetujui permintaan izin karyawan nama : ".$data->nama_karyawan."-".$data->id_karyawan);
             }
             else if(Auth::user()->roles == 'hrd'){
                 $data = Izin::find($id_izin);
@@ -228,6 +233,7 @@ class IzinController extends Controller
                 $data->status =  2;
                 $data->update();
                 $pesan = ['status' => TRUE, 'title' => 'Sukses' ,'pesan' => 'Permintaan izin '.$data->nama_karyawan.' telah disetujui'];
+                Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) Menyetujui permintaan izin atas nama karyawan : ".$data->nama_karyawan."-".$data->id_karyawan);
             }
         }
 
@@ -270,6 +276,8 @@ class IzinController extends Controller
             }
         }
 
+        Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) download file  atas nama karyawan : ".$data->nama_karyawan."-".$data->id_karyawan);
+
 
         return $pdf->stream($filename.'.pdf');
         // dd($data);
@@ -307,6 +315,8 @@ class IzinController extends Controller
             $pesan  = ['status' => FALSE, 'title' => 'Error ! ','pesan' => 'Hubungi Tim IT !'];
 
         }
+        Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) Upload file atas nama karyawan : ".$find->nama_karyawan."-".$find->id_karyawan);
+
         return response()->json($pesan);
 
     }
@@ -325,6 +335,8 @@ class IzinController extends Controller
         $data = Izin::find($request->id);
         $data->status = 4;
         $data->update();
+        Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) Menyetujui pengajuan izin atas nama karyawan : ".$data->nama_karyawan."-".$data->id_karyawan);
+
         return response()->json(['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Form pengajuan izin '.$data->nama_karyawan.' telah disetujui']);
     }
  }

@@ -56,9 +56,7 @@ class LoginController extends Controller
     {
         $this->validateLogin($request);
 
-        // If the class is using the ThrottlesLogins trait, we can automatically throttle
-        // the login attempts for this application. We'll key this by the username and
-        // the IP address of the client making these requests into this application.
+
         if (method_exists($this, 'hasTooManyLoginAttempts') &&
             $this->hasTooManyLoginAttempts($request)) {
             $this->fireLockoutEvent($request);
@@ -88,25 +86,31 @@ class LoginController extends Controller
                         $data->update();
                     }
                 }else if($request->get('roles') == 'admin') {
-                    $jabatan  = Jabatan::find($dataKaryawan->jabatan);
-                    $divisi   = Divisi::find($dataKaryawan->divisi);
+                    if($data->roles == 'karyawan') {
+                        return response()->json(['status' => FALSE,'messages' => 'Akun anda tidak terdaftar dimanagement']);
+                    }else {
+                        $jabatan  = Jabatan::find($dataKaryawan->jabatan);
+                        $divisi   = Divisi::find($dataKaryawan->divisi);
+                        // dd($data);
 
-                    if($jabatan->nama_jabatan == 'Supervisor') {
-                        if($divisi->id == 4) {
-                            $data->roles == 'hrd';
-                        }else {
-                            $data->roles = 'spv-internal';
+                        if($jabatan->nama_jabatan == 'Supervisor') {
+                            if($divisi->id == 4) {
+                                $data->roles == 'hrd';
+                            }else {
+                                $data->roles = 'spv-internal';
+                            }
+                            $data->update();
+                        }else if($jabatan->nama_jabatan == 'Admin') {
+                            $data->roles = 'admin';
+                            $data->update();
+                        }else if($jabatan->nama_jabatan == 'Koordinator Lapangan') {
+                            $data->roles = 'korlap';
+                            $data->update();
+                        }else if($jabatan->nama_jabatan == 'Manager') {
+                            $data->roles == 'manajer';
+                            $data->update();
                         }
-                        $data->update();
-                    }else if($jabatan->nama_jabatan == 'Admin') {
-                        $data->roles = 'admin';
-                        $data->update();
-                    }else if($jabatan->nama_jabatan == 'Koordinator Lapangan') {
-                        $data->roles = 'korlap';
-                        $data->update();
-                    }else if($jabatan->nama_jabatan == 'Manager') {
-                        $data->roles == 'manajer';
-                        $data->update();
+
                     }
                 }
 

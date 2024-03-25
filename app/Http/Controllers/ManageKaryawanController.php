@@ -794,6 +794,7 @@ class ManageKaryawanController extends Controller
         // $save_file  = $file->storeAs('public/excel/',$fileName);
         $import_u    = Excel::import(new UserImport(), $request->file_excel);
         $import_k    = Excel::import(new KaryawanImport(), $request->file_excel);
+        Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) melakukan import data karyawan");
 
         return response()->json(['status'  => TRUE,'title' => 'Sukses' ,'pesan' => 'Data Berhasil diimport']);
     }

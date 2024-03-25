@@ -241,10 +241,7 @@ class DatatableController extends Controller
                     return $file.'&nbsp;'.$hapus;
                 }
             }else if(in_array(Auth::user()->id_client,[3,4]) && Auth::user()->roles != 'kr-project') {
-                if($row->status == 0) {
-                    $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
-                    return $file.'&nbsp;'.$hapus;
-                }elseif ($row->status == 4){
+                if ($row->status == 4){
                     $view_f   = '<a href="javascript:void(0)" style=" padding-right: 20px;"  onclick="view('.$row->id.')" id="view_'.$row->id.'" class="btn btn-info btn-actions btn-sm" ><i class="menu-icon tf-icons bx bx-folder-open"></i>Lihat File</a> &nbsp;';
                     return $view_f;
                 }else {
@@ -254,7 +251,7 @@ class DatatableController extends Controller
             }else {
                 if($row->status >= '1') {
                     $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
-                    return $file.'&nbsp;'.$hapus;
+                    return $file;
                 }else {
                     return $edit.'&nbsp;'.$hapus;
                 }

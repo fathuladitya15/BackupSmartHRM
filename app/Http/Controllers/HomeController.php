@@ -71,14 +71,14 @@ class HomeController extends Controller
         }
         elseif (Auth::user()->roles == 'karyawan') {
             $firstDate  = Carbon::now()->startOfMonth();
-            $EndDate    = Carbon::now()->startOfMonth();
+            $EndDate    = Carbon::now()->endOfMonth();
             $lembur     = Lembur::where("id_karyawan",Auth::user()->id_karyawan)
-                        ->whereBetween('tanggal_lembur', [$firstDate, $EndDate])->count();
+                        ->whereBetween('tanggal_lembur', [$firstDate->format('Y-m-d'), $EndDate->format('Y-m-d')])->count();
             $izin       = Izin::where("karyawan_id",Auth::user()->id_karyawan)
-                        ->whereBetween('tanggal_pembuatan', [$firstDate, $EndDate])->count();
+                        ->whereBetween('tanggal_pembuatan', [$firstDate->format('Y-m-d'), $EndDate->format('Y-m-d')])->count();
 
             $view = 'layouts.Dashboard.vKaryawanProject';
-
+            // dd($izin);
             array_push($data,'lembur','izin');
         }
         else if(Auth::user()->roles == 'direktur'){

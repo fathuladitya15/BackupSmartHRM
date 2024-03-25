@@ -176,20 +176,20 @@
                     <label class=" col-form-label" for="">Rencana Lembur</label>
                     <div class="form-group col-md-2">
                         <label class=" col-form-label" for="">Mulai Jam</label>
-                        <span class="text-danger pl-1">*</span>
+                        {{-- <span class="text-danger pl-1">*</span> --}}
                     </div>
                     <div class="form-group col-md-3">
-                        <input class="form-control" required="required" name="jam_mulai_rl" id="jam_mulai_rl" type="time" value="" >
+                        <input class="form-control"  name="jam_mulai_rl" id="jam_mulai_rl" type="time" value="" >
                     </div>
                     <div class="form-group col-md-2" style="padding-top: 10px;">
                         <p style="text-align: center;">s / d</p>
                     </div>
                     <div class="form-group col-md-2">
                         <label class=" col-form-label" for=""> Jam</label>
-                        <span class="text-danger pl-1">*</span>
+                        {{-- <span class="text-danger pl-1">*</span> --}}
                     </div>
                     <div class="form-group col-md-3">
-                        <input class="form-control" required="required" name="jam_selesai_rl" id="jam_selesai_rl" type="time" value="" >
+                        <input class="form-control"  name="jam_selesai_rl" id="jam_selesai_rl" type="time" value="" >
                     </div>
                 </div>
                 <br>

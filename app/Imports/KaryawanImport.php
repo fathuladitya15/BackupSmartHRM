@@ -7,6 +7,7 @@ use App\Models\Karyawan;
 use App\Models\Jabatan;
 use App\Models\Divisi;
 use Maatwebsite\Excel\Concerns\ToModel;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class KaryawanImport implements ToModel
 {
@@ -27,7 +28,7 @@ class KaryawanImport implements ToModel
             'id_karyawan'           => $row[0],
             'nama_karyawan'         => $row[1],
             'no_hp'                 => $row[2],
-            'tanggal_lahir'         => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[3])->format('Y-m-d'),
+            'tanggal_lahir'         => $row[3],
             'tempat_lahir'          => $row[4],
             'nik'                   => $row[5],
             'alamat'                => $row[6],
@@ -43,8 +44,8 @@ class KaryawanImport implements ToModel
             'no_kpj'                => $row[16],
             'no_jkn'                => $row[17],
             'cuti'                  => $row[18],
-            'join_date'             => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[19])->format('Y-m-d'),
-            'end_date'              => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[20])->format('Y-m-d'),
+            'join_date'             => $row[19],
+            'end_date'              => $row[20],
             'lokasi_kerja'          => Auth::user()->id_client,
             'status'                => 0,
         ];
