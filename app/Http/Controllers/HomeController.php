@@ -13,6 +13,7 @@ use App\Models\Clients;
 use App\Models\Karyawan;
 use App\Models\Pengumuman;
 use App\Models\Filemanager;
+use App\Models\Aktifitas;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -64,8 +65,9 @@ class HomeController extends Controller
         elseif (Auth::user()->roles == 'spv-internal') {
             $kr_project     = User::where('id_client',Auth::user()->id_client)->where('roles','karyawan')->count();
             $kr_internal    = Karyawan::where('lokasi_kerja',Auth::user()->id_client)->where('kategori','project')->count();
-            $view   = 'layouts.Dashboard.vSupervisorInternal';
-            array_push($data,'kr_project','kr_internal');
+            $view           = 'layouts.Dashboard.vSupervisorInternal';
+            $riwayat        = Aktifitas::where("id_client",Auth::user()->id_client)->get();
+            array_push($data,'kr_project','kr_internal','riwayat');
         }
         elseif (Auth::user()->roles == 'karyawan') {
             $firstDate  = Carbon::now()->startOfMonth();

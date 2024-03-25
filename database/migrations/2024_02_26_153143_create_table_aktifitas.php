@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('id_user');
             $table->text('aktivitas');
+            $table->string('id_client')->nullable();
             $table->timestamps();
         });
     }

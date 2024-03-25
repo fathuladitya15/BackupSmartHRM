@@ -12,6 +12,6 @@ class Aktifitas extends Model
     protected $table = 'table_aktivitas';
 
     protected $fillable = [
-        'id_user','aktivitas'
+        'id_user','aktivitas','id_client'
     ];
 }

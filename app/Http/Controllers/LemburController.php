@@ -15,6 +15,7 @@ use App\Models\Clients;
 use App\Models\Jabatan;
 use App\Models\Karyawan;
 use App\Models\Filemanager;
+use App\Models\Aktfitas;
 use Illuminate\Http\Request;
 
 class LemburController extends Controller
@@ -24,6 +25,8 @@ class LemburController extends Controller
     }
 
     function index() {
+        // dd(Auth::user()->roles);
+
         $cek_divisi = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first()->divisi;
         $name_divisi = Divisi::find($cek_divisi)->nama_divisi;
 
@@ -67,6 +70,7 @@ class LemburController extends Controller
             }else {
                 $view = 'layouts.lembur.vAIOSukabumi';
             }
+
 
             return view($view,compact('divisi','jabatan','lokasi_kerja','data_karyawan','shift'));
         }
@@ -179,8 +183,9 @@ class LemburController extends Controller
             }
             else if($role == 'karyawan') {
                 if(in_array(Auth::user()->id_client,[1,2])){
+                    $ttd        = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
                     $data = [
-                        'id_karyawan'           => $request->id_karyawan,
+                        'id_karyawan'           => Auth::user()->id_karyawan,
                         'nama_karyawan'         => $request->nama_karyawan,
                         'jabatan'               => $request->jabatan,
                         'divisi'                => $request->divisi,
@@ -434,6 +439,7 @@ class LemburController extends Controller
         $update = Lembur::where('id',$id)->update($data);
         $data   = Lembur::find($id);
         $pesan = ['status' => TRUE ,'title' => 'sukses'  ,'pesan' => 'Lembur '.$data->nama_karyawan.' telah tandatangani' ];
+        Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) Menandatangani lembur karyawan nama : ".$data->nama_karyawan."-".$data->id_karyawan);
         return response()->json($pesan);
 
     }

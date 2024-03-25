@@ -212,6 +212,8 @@
                             $jabatan = "Superadmin";
                         @endphp
                     @endif
+
+
                     @if ($jabatan != 'Manager' && $jabatan != 'Head')
                         <li class="menu-item {{ menuOpen(['lembur','lembur-self']) }}">
                             <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -256,7 +258,7 @@
                     {{-- PRODDUK --}}
                     @if(in_array(Auth::user()->roles,['admin','korlap','spv-internal']))
                         @if (in_array(Auth::user()->id_client,[2,8]))
-                            <li class="menu-item {{  menuOpen(['list-produk','laporan-produksi','laporan-produksi-detail']) }}">
+                            <li class="menu-item {{  menuOpen(['list-produk','laporan-produksi','laporan-produksi-detail','laporan-produksi-yp']) }}">
                                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                                 <i class="menu-icon tf-icons bx bx-cube"></i>
                                 <div data-i18n="Authentications">Produk</div>
@@ -274,7 +276,7 @@
                                             </a>
                                         </li>
                                         @if (Auth::user()->id_client == 2)
-                                            <li class="menu-item  {{ menuActive("laporan-produksi-detail") }}">
+                                            <li class="menu-item  {{ menuActive(['laporan-produksi-detail','laporan-produksi']) }}">
                                                 <a href="{{ route('laporan-produksi') }}" class="menu-link" >
                                                 <div data-i18n="Basic">Buat Laporan Produksi</div>
                                                 </a>
@@ -282,13 +284,13 @@
                                         @endif
                                         @if (Auth::user()->id_client == 8)
 
-                                            <li class="menu-item ">
-                                                <a href="{{ route('produk') }}" class="menu-link" >
+                                            <li class="menu-item  {{ Request::segment(2) == 'Y3' ? 'active' : ''  }}">
+                                                <a href="{{ route('laporan-produksi-yp',['kategori' => "Y3"]) }}" class="menu-link" >
                                                 <div data-i18n="Basic">Rekap FG Y3</div>
                                                 </a>
                                             </li>
-                                            <li class="menu-item ">
-                                                <a href="" class="menu-link" >
+                                            <li class="menu-item {{ Request::segment(2) == 'Y4' ? 'active' : ''  }}">
+                                                <a href="{{ route('laporan-produksi-yp',['kategori' => 'Y4']) }}" class="menu-link" >
                                                 <div data-i18n="Basic">Rekap FG Y4</div>
                                                 </a>
                                             </li>

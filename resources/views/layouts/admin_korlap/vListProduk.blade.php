@@ -70,6 +70,9 @@
                               <th>#</th>
                               <th>Nomor Produk</th>
                               <th>Nama Produk</th>
+                              @if (Auth::user()->id_client == 8)
+                                  <th>Tipe Produk</th>
+                              @endif
                               <th>Harga Produk</th>
                               <th>Aksi</th>
                             </tr>
@@ -85,48 +88,97 @@
     </div>
 </div>
 
-{{-- modal upload file excel --}}
-<div class="modal fade" id="modalUpload" tabindex="-1" role="dialog" aria-labelledby="modalUploadTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title black" id="exampleModalLongTitle">Upload Data Produk</h5>
-                <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="upload_produk" method="POST" action="{{ route('list-produk-upload') }}" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="form-group col-md-12">
-                            <label class="col-form-label" for="files">File Excel</label>
-                            <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="files" type="file" value="" id="files" >
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-md-12">
-                            <label class="col-form-label" for="tipe_produk">Pilih Ketegori Produk</label>
-                            <select name="tipe_produk" id="tipe_produk" class="form-control">
-                                <option value="">-- Pilih Kategori Produk --</option>
-                                <option value="primary">Primary</option>
-                                <option value="n_primary">Non Primary</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div id="aksi">
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
 
+@if (Auth::user()->id_client == 2)
+    {{-- modal upload file excel --}}
+    <div class="modal fade" id="modalUpload" tabindex="-1" role="dialog" aria-labelledby="modalUploadTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title black" id="exampleModalLongTitle">Upload Data Produk</h5>
+                    <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-            </form>
+                <form id="upload_produk" method="POST" action="{{ route('list-produk-upload') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-form-label" for="files">File Excel</label>
+                                <span class="text-danger pl-1">*</span>
+                                <input class="form-control" required="required"  name="files" type="file" value="" id="files" >
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-form-label" for="tipe_produk">Pilih Ketegori Produk</label>
+                                <select name="tipe_produk" id="tipe_produk" class="form-control">
+                                    <option value="">-- Pilih Kategori Produk --</option>
+                                    <option value="primary">Primary</option>
+                                    <option value="n_primary">Non Primary</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="aksi">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+@elseif (Auth::user()->id_client == 8)
+
+    {{-- modal upload file excel --}}
+    <div class="modal fade" id="modalUpload" tabindex="-1" role="dialog" aria-labelledby="modalUploadTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title black" id="exampleModalLongTitle">Upload Data Produk</h5>
+                    <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="upload_produk" method="POST" action="{{ route('list-produk-upload') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-form-label" for="files">File Excel</label>
+                                <span class="text-danger pl-1">*</span>
+                                <input class="form-control" required="required"  name="files" type="file" value="" id="files" >
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label class="col-form-label" for="tipe_produk">Pilih Ketegori Produk</label>
+                                <select name="tipe_produk" id="tipe_produk" class="form-control">
+                                    <option value="">-- Pilih Kategori Produk --</option>
+                                    <option value="Y3">Y3</option>
+                                    <option value="Y4">Y4</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="aksi">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+@endif
+
 
 {{-- modal edit produk --}}
 <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="modalEditTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -237,6 +289,7 @@
 
 @push('js')
 
+@if (Auth::user()->id_client  == 2)
 <script>
     var url_data = "{{ route('list-produk-data',['id_client' => Auth::user()->id_client]) }}";
     var table = $('#myTable').dataTable({
@@ -267,6 +320,46 @@
             searchable: false
         },]
     });
+</script>
+@else
+<script>
+    var url_data = "{{ route('list-produk-data',['id_client' => Auth::user()->id_client]) }}";
+    var table = $('#myTable').dataTable({
+        processing: true,
+        serverSide: true,
+        ajax: url_data,
+        columns: [{
+            data: 'DT_RowIndex',
+            orderable: false,
+            searchable: false
+        },  {
+            data: 'no_produk',
+            name: 'no_produk',
+        },{
+            data: 'nama_produk',
+            name: 'nama_produk',
+        },{
+            data : 'tipe_produk',
+            name : 'tipe_produk'
+        },
+        {
+            data: 'harga_produk',
+            name: 'harga_produk',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'aksi',
+            name: 'aksi',
+            orderable: false,
+            searchable: false
+        },]
+    });
+</script>
+@endif
+
+
+<script>
     $('#upload_produk').submit(function (e) {
         e.preventDefault()
         var formData = new FormData(this);
@@ -289,6 +382,7 @@
                 });
             },
             success: function(s) {
+                console.log(s);
                 if(s.status == true) {
                     Swal.fire({
                         title: s.title,
@@ -306,9 +400,13 @@
                     });
                 }
             }, error : function(e) {
-
                 console.log(e);
-            },beforeSend: function() {
+                Swal.fire({
+                    title: 'Upload Produk Gagal',
+                    text: 'Periksa kembali Excel anda',
+                    icon: "warning"
+                });
+            },complete: function() {
                 Swal.close();
                 table.DataTable().ajax.reload();
             }
@@ -494,7 +592,6 @@
         });
 
     }
-
 </script>
 
 @endpush

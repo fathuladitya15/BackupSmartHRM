@@ -197,6 +197,8 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('data-get-totals',[ProdukController::class,'laporan_produksi_get_totals'])->name('lap-produk-totals');
                 Route::post('update',[ProdukController::class,'update_laporan_produksi'])->name("laporan-produksi-update");
 
+                Route::get('{kategori}',[ProdukController::class,'laporan_produksi_yp'])->name("laporan-produksi-yp");
+
 
 
             });

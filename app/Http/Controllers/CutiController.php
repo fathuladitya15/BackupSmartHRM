@@ -38,6 +38,7 @@ class CutiController extends Controller
                                 ->selectRaw('SUM(convert(int,cuti_get)) as cuti_yang_diambil')->first();
             $sisa_cuti     = 12 - (int) $total_semua_cuti->cuti_yang_diambil;
             // dd($sisa_cuti);
+            // dd($sisa_cuti);
             return view('layouts.karyawan.vCuti',compact('kategori_cuti','divisi','jabatan','periode_cuti','sisa_cuti'));
 
         }
@@ -144,13 +145,14 @@ class CutiController extends Controller
             if(in_array($role,['kr-project','kr-pusat','manajer'])) {
 
                 $jabatan = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->with('jabatan')->first()->jabatan()->first()->nama_jabatan;
-                if($jabatan == 'Manager') {
-                    $status = 2;
-                }else {
-                    $stats = 0;
-                }
+                // if($jabatan == 'Manager') {
+                //     $status = 2;
+                // }else {
+                //     $stats = 0;
+                // }
 
 
+                $ttd  = Filemanager::where("id_karyawan",Auth::user()->id_karyawan)->where("slug",'signature')->first();
                 $cutiCreate = [
                     'id_karyawan'   => $request->id_karyawan,
                     'nama_karyawan' => $request->nama_karyawan,
@@ -163,7 +165,7 @@ class CutiController extends Controller
                     'ttd_karyawan'  => $ttd->path,
                     'start_date'    => $request->start_date,
                     'end_date'      => $request->end_date,
-                    'status'        => $status,
+                    'status'        => $jabatan == 'Manager' ? 2 : 0,
                 ];
 
                 Cuti::create($cutiCreate);

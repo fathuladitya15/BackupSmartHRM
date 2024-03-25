@@ -95,9 +95,12 @@
                 <h5 class="mb-0">Data Izin </h5>
             </div>
             <div class="card-title">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" style="float: right">
-                    <i class='bx bx-plus'></i> Tambah Izin
-                </button>
+                @if (in_array(Auth::user()->roles,['kr-pusat','kr-project']))
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" style="float: right">
+                        <i class='bx bx-plus'></i> Tambah Izin
+                    </button>
+
+                @endif
             </div>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">

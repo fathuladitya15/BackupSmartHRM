@@ -66,7 +66,7 @@
                             <div class="avatar flex-shrink-0">
                                 <img src="{{ asset("assets/img/icons/unicons/icons-user-76.png") }}" alt="Credit Card" class="rounded" />
                             </div>
-                            <h5  style="color: white; margin-right:100px;">Total Karyawan Pusat</h5>
+                            <h5  style="color: white; margin-right:170px;">Total Karyawan Pusat</h5>
                         </div>
                         <div >
                             <h1 class="count" style="color: white; display: inline-block; width: auto;float: left;" data-count="1000"> {{ $kr_pusat }} </h1>
@@ -82,7 +82,7 @@
                             <div class="avatar flex-shrink-0">
                                 <img src="{{ asset("assets/img/icons/unicons/icons-user-76.png") }}" alt="Credit Card" class="rounded" />
                             </div>
-                            <h5  style="color: white; margin-right:100px;">Total Karyawan Project</h5><br>
+                            <h5  style="color: white; margin-right:17px;">Total Karyawan Internal (Pusat - Project) </h5><br>
                         </div>
                         <div  >
                             <h1 class="count" style="color: white; display: inline-block; width: auto;float: left;" data-count="5000"> {{ $kr_project }} </h1>
@@ -102,11 +102,11 @@
                             <div class="avatar flex-shrink-0">
                                 <img src="{{ asset("assets/img/icons/unicons/icons-sign-76.png") }}" alt="chart success" class="rounded"/>
                             </div>
-                            <h5  style="color: white; margin-left:12px;">
+                            <h5  style="color: white; margin-right:550px;">
                                 Permintaan untuk persetujuan
                             </h5>
                         </div>
-                        <div style="padding-top:16px; float: right;" >
+                        <div style="padding-top:16px;" >
                             <h1  style="color: white; display: inline-block; width: auto;float: left;" data-count="1000"> 0</h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Permintaan Persetujuan</p>
                         </div>

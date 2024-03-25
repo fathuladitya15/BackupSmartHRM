@@ -94,7 +94,6 @@ class LoginController extends Controller
                     if($jabatan->nama_jabatan == 'Supervisor') {
                         if($divisi->id == 4) {
                             $data->roles == 'hrd';
-
                         }else {
                             $data->roles = 'spv-internal';
                         }
@@ -104,6 +103,9 @@ class LoginController extends Controller
                         $data->update();
                     }else if($jabatan->nama_jabatan == 'Koordinator Lapangan') {
                         $data->roles = 'korlap';
+                        $data->update();
+                    }else if($jabatan->nama_jabatan == 'Manager') {
+                        $data->roles == 'manajer';
                         $data->update();
                     }
                 }

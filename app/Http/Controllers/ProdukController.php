@@ -22,7 +22,7 @@ class ProdukController extends Controller
 
     function list_produk() {
         $id_client = Auth::user()->clients()->first()->id;
-        if($id_client == 2) {
+        if(in_array($id_client, [2,8])) {
             return view('layouts.admin_korlap.vListProduk');
         }
         else {
@@ -43,7 +43,7 @@ class ProdukController extends Controller
         $upload = Excel::import(new ListProdukImport($tipe_produk),$file);
 
         if($upload) {
-            $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Berhasil Upload Data Produk '];
+            $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Berhasil Upload Data Produk ','tipe' => $cek_list];
         }
         else {
             $pesan = ['status' => FALSe,'title' => 'Terjadi Kesalahan !' ,'pesan' => 'Hubungi Tim IT !'];
@@ -110,25 +110,31 @@ class ProdukController extends Controller
         return response()->json(['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Produk Berhasil dihapus']);
     }
 
-    function laporan_produksi() {
-        $client = Auth::user()->id_client;
+    function laporan_produksi(Request $request) {
 
-        if($client == 2) {
-            if(in_array(Auth::user()->roles,['admin','korlap'])) {
-                return view("layouts.admin_korlap.vLaporanProdukMegasari");
-            }else if(Auth::user()->roles == 'spv-internal') {
-                return view('layouts.spv.vLaporanProduksiMegasari');
-            }else{
-                abort(404);
-            }
+
+        if(in_array(Auth::user()->roles,['admin','korlap'])) {
+            return view("layouts.admin_korlap.vLaporanProdukMegasari");
+        }else if(Auth::user()->roles == 'spv-internal') {
+            return view('layouts.spv.vLaporanProduksiMegasari');
         }else {
-            abort(404);
+            abort(404,'Halaman Tidak ditemukan');
+        }
+    }
+
+    function laporan_produksi_yp(Request $request,$kategori) {
+        if(in_array(Auth::user()->roles,['admin','korlap'])) {
+            return view("layouts.admin_korlap.vLaporanProdukYupi");
+        }else if(Auth::user()->roles == 'spv-internal') {
+            return view('layouts.spv.vLaporanProduksiMegasari');
+        }else {
+            abort(404,'Halaman Tidak ditemukan');
         }
     }
 
     function add_laporan_produksi(Request $request) {
 
-        $cekLaporan = ListLaporanProduksi::where('from_date',$request->from_date)->where('to_date',$request->to_date)->first();
+        $cekLaporan = ListLaporanProduksi::where('from_date',$request->from_date)->where('to_date',$request->to_date)->where('id_client',Auth::user()->id_client)->first();
 
         if($cekLaporan) {
             $pesan = ['status' => FALSE,'title' => 'Data Duplikat','pesan' => 'Laporan Produk dengan tanggal tersebut sudah tersedia, hapus terlebih dahulu jika ingin menggantinya'];
@@ -203,7 +209,7 @@ class ProdukController extends Controller
         $cek = ListLaporanProduksi::find($request->id);
         $status = $cek->status;
         if(in_array(Auth::user()->roles,['admin','korlap'])){
-            if(in_array($status,[0,3])) {
+            if(in_array($status,[1])) {
                 $link = null;
                 $pesan = ['status' => TRUE,'title' => 'Mohon Maaf ...','pesan' => 'Laporan ini sedang diriview supervisor' ,'link' => $link];
             }else {

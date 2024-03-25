@@ -157,38 +157,38 @@
                     </div>
                 </div>
                 @if (in_array(Auth::user()->roles,['admin','korlap']))
-                    @if (in_array($data->status ,[1,3]) )
+                <div class="row">
+                    <br>
+                    <hr>
+                        <h3 style="color:black">Perhitungan Laporan </h3>
+                    <hr>
+                    <form action="#" id="kirimLaporan" >
                         <div class="row">
-                            <br>
-                            <hr>
-                                <h3 style="color:black">Perhitungan Laporan </h3>
-                            <hr>
-                            <form action="#" id="kirimLaporan" >
-                                <div class="row">
-                                    <div class="form-group col-md-3">
-                                        <label class="col-form-label" for="fee">Management Fee %</label>
-                                        <span class="text-danger pl-1">*</span>
-                                        <input class="form-control" required="required"  name="fee" type="number" value="" id="fee" >
-                                        <input type="hidden" id="" name="id_list_laporan" value="{{ Request::segment(3)  }}">
-                                    </div>
-                                    <div class="form-group col-md-3">
-                                        <label class="col-form-label" for="tagihan">Total Tagihan </label>
-                                        <input class="form-control" required="required"  name="tagihan" type="text" value="{{ $totalHargaProdukRP }}" id="tagihan" readonly >
-                                        <input type="hidden" name="mentahan_harga" value="{{ $totalHargaProdukInt }}">
-                                    </div>
-                                    <div class="form-group col-md-3">
-                                        <label class="col-form-label" for="hasil"> Hasil </label>
-                                        <input class="form-control" required="required"  name="hasil" type="text" value="" id="hasil" readonly >
-                                    </div>
-                                    <div class="form-group col-md-3" style="margin-top: 8px">
-                                        <label class="col-form-label" for="hasil">   </label>
-                                        <button type="submit" class="btn btn-primary form-control"> <i class="menu-icon tf-icons bx bx-chevrons-right"></i>Kirim Laporan</button>
-                                        {{-- <input class="form-control" required="required"  name="hasil" type="text" value="" id="hasil" readonly > --}}
-                                    </div>
-                                </div>
-                            </form>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label" for="fee">Management Fee %</label>
+                                <span class="text-danger pl-1">*</span>
+                                <input class="form-control" required="required"  name="fee" type="number" value="" id="fee" >
+                                <input type="hidden" id="" name="id_list_laporan" value="{{ Request::segment(3)  }}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label" for="tagihan">Total Tagihan </label>
+                                <input class="form-control" required="required"  name="tagihan" type="text" value="{{ $totalHargaProdukRP }}" id="tagihan" readonly >
+                                <input type="hidden" name="mentahan_harga" value="{{ $totalHargaProdukInt }}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label" for="hasil"> Hasil </label>
+                                <input class="form-control" required="required"  name="hasil" type="text" value="" id="hasil" readonly >
+                            </div>
+                            <div class="form-group col-md-3" style="margin-top: 8px">
+                                <label class="col-form-label" for="hasil">   </label>
+                                <button type="submit" class="btn btn-primary form-control"> <i class="menu-icon tf-icons bx bx-chevrons-right"></i>Kirim Laporan</button>
+                                {{-- <input class="form-control" required="required"  name="hasil" type="text" value="" id="hasil" readonly > --}}
+                            </div>
                         </div>
-                    @else
+                    </form>
+                </div>
+                    {{-- @if (in_array($data->status ,[1,3]) ) --}}
+                    {{-- @else
                         <div class="row">
                             <br>
                             <hr>
@@ -218,7 +218,7 @@
                                 </div>
                             </form>
                         </div>
-                    @endif
+                    @endif --}}
                 @elseif (Auth::user()->roles =='spv-internal')
                 <div class="row">
                     <br>
@@ -234,7 +234,7 @@
                                 <input type="hidden" id="" name="id_list_laporan" value="{{ Request::segment(3)  }}">
                             </div>
                             <div class="form-group col-md-3">
-                                <label class="col-form-label" for="tagihan">Total Tagihan </label>
+                                <label class="col-form-label" for="tagihan">Jumlah Tagihan </label>
                                 <input class="form-control" required="required"  name="tagihan" type="text" value="{{ $totalHargaProdukRP }}" id="tagihan" readonly >
                                 <input type="hidden" name="mentahan_harga" value="{{ $totalHargaProdukInt }}">
                             </div>
@@ -243,8 +243,13 @@
                                 <input class="form-control" required="required"  name="hasil" type="text" value="{{ 'Rp. '. $data->hasil_persentase }}" id="hasil" readonly >
                             </div>
                             <div class="form-group col-md-3">
-                                <label class="col-form-label" for="hasil"> Total Semua </label>
-                                <input class="form-control" required="required"  name="hasil" type="text" value="{{ 'Rp. '. number_format($data->total_tagihan,2,',','.') }}" id="hasil" readonly >
+                                <label class="col-form-label" for="hasil"> Total Tagihan + Management Fee </label>
+                                @php
+                                    $result         = $data->total_tagihan * ($data->persentase / 100);
+                                    $totalF        = $data->total_tagihan + $result;
+                                    $toRp           =  "Rp. " .number_format(round($totalF,1),2,',','.');
+                                @endphp
+                                <input class="form-control" required="required"  name="hasil" type="text" value="{{ $toRp  }}" id="hasil" readonly >
                             </div>
                         </div>
                     </form>

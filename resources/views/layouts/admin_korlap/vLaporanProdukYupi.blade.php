@@ -59,7 +59,7 @@
                               <th>Keterangan</th>
                               <th>Periode</th>
                               <th>Grand Total</th>
-                              <th>Total Tagihan + Fee</th>
+                              <th>Total Tagihan</th>
                               <th>status</th>
                               <th>Aksi</th>
                             </tr>
@@ -104,7 +104,7 @@
                         <div class="form-group col-md-12">
                             <label class="col-form-label" for="keterangan">Keterangan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="keterangan" type="text" value=""  >
+                            <input class="form-control" required="required"  name="keterangan" type="text" value="{{ Request::segment(2) }}"  readonly>
                         </div>
                     </div>
                 </div>

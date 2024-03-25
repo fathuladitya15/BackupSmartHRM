@@ -66,7 +66,7 @@
                             <div class="avatar flex-shrink-0">
                                 <img src="{{ asset("assets/img/icons/unicons/icons-user-76.png") }}" alt="Credit Card" class="rounded" />
                             </div>
-                            <h5  style="color: white; margin-left:12px;">Total Karyawan Internal Pusat - Project</h5>
+                            <h5  style="color: white; margin-left:30px;">Total Karyawan Internal Pusat - Project</h5>
                         </div>
                         <div >
                             <h1 style="color: white; display: inline-block; width: auto;float: left;">{{ $kr_internal }} </h1>
@@ -82,15 +82,16 @@
                             <div class="avatar flex-shrink-0">
                                 <img src="{{ asset("assets/img/icons/unicons/icons-user-76.png") }}" alt="Credit Card" class="rounded" />
                             </div>
-                            <h5  style="color: white; margin-right:100px;">Total Karyawan Project</h5><br>
+                            <h5  style="color: white; margin-right:110px;">Total Karyawan  Project </h5><br>
                         </div>
-                        <div style="padding-top:16px" >
+                        <div  >
                             <h1 style="color: white; display: inline-block; width: auto;float: left;">{{ $kr_project }} </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
         <!-- END INFORMASI TOTAL KARYAWAN PROJECT & INTERNAL -->
         <!-- REQUEST APPROVAL -->
@@ -102,11 +103,11 @@
                             <div class="avatar flex-shrink-0">
                                 <img src="{{ asset("assets/img/icons/unicons/icons-sign-76.png") }}" alt="chart success" class="rounded"/>
                             </div>
-                            <h5  style="color: white; margin-left:12px;">
-                                Permintaan untuk persetujuan ( Laporan Produksi, Izin, Surat Peringatan, Surat Referensi Kerja, Lembur  )
+                            <h5  style="color: white; margin-right:552px;">
+                                Permintaan untuk persetujuan
                             </h5>
                         </div>
-                        <div style="padding-top:16px; float: right;" >
+                        <div style="padding-top:16px;" >
                             <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Permintaan Persetujuan</p>
                         </div>
@@ -173,6 +174,18 @@
                                         <th>Tanggal</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    @php
+                                        $no = 1;
+                                    @endphp
+                                    @foreach ($riwayat as $t )
+                                        <tr>
+                                            <td>{{ $no++ }}</td>
+                                            <td>{{ $t->aktivitas }}</td>
+                                            <td>{{ $t->created_at }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
                             </table>
                         </div>
                     </div>

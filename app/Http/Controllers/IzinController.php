@@ -38,6 +38,7 @@ class IzinController extends Controller
             ->where('ti.status','0')
             ->where('ti.id_client','LIKE','%'.Auth::user()->id_client.'%')
             ->count();
+            // dd($detail->lokasi_kerja);
 
         if($detail->lokasi_kerja != 3) {
             if (in_array($role,['admin','korlap'])){ // ADMIN

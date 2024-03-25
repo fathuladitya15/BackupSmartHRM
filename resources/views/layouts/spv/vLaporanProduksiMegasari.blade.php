@@ -55,7 +55,7 @@
                               <th>Keterangan</th>
                               <th>Periode</th>
                               <th>Grand Total</th>
-                              <th>Total Tagihan</th>
+                              <th>Total Tagihan + Fee</th>
                               <th>status</th>
                               <th>Aksi</th>
                             </tr>

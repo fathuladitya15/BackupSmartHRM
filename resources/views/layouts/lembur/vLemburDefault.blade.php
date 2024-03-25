@@ -51,7 +51,9 @@
             <div class="card-header d-flex align-items-center justify-content-between" >
                 <h5 class="mb-0">Data Lembur</h5>
             </div>
-
+            <div class="card-title">
+                <button class="btn btn-primary" style="float: right;" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">Tambah Lembur</button>
+            </div>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">
                     <table class="table" id="myTable">
@@ -118,7 +120,7 @@
                         <div class="form-group col-md-6">
                             <label class="col-form-label" for="basic-default-name">Nama Karyawan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="nama_karyawan" id="nama_karyawan" type="text" value="" readonly>
+                            <input class="form-control" required="required"  name="nama_karyawan" id="nama_karyawan" type="text" value="{{ $data_karyawan->nama_karyawan }}" readonly>
                             <input class="form-control" required="required"  name="id_karyawan" id="id_karyawan" type="hidden" value="">
                         </div>
                     </div>
@@ -126,20 +128,20 @@
                         <div class="form-group col-md-6">
                             <label class=" col-form-label" for="basic-default-name">Jabatan</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required" name="jabatan" id="jabatan" type="text" value=""  readonly>
+                            <input class="form-control" required="required" name="jabatan" id="jabatan" type="text" value="{{ $jabatan }}"  readonly>
 
                         </div>
                         <div class="form-group col-md-6">
                             <label class="col-form-label" for="basic-default-name">Divisi</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required"  name="divisi" id="divisi" type="text" value="" readonly>
+                            <input class="form-control" required="required"  name="divisi" id="divisi" type="text" value="{{ $divisi }}" readonly>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-md-6">
                             <label class=" col-form-label" for="basic-default-name">Lokasi Kerja</label>
                             <span class="text-danger pl-1">*</span>
-                            <input class="form-control" required="required" name="lokasi_kerja" id="lokasi_kerja" type="text" value="" readonly >
+                            <input class="form-control" required="required" name="lokasi_kerja" id="lokasi_kerja" type="text" value="{{ $lokasi_kerja }}" readonly >
                             <input class="form-control" required="required" name="id_client" id="id_client" type="hidden" value="" readonly >
 
                         </div>

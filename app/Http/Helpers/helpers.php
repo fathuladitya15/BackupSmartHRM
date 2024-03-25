@@ -187,7 +187,8 @@ if(!function_exists('Aktivitas')) {
     function Aktivitas($data) {
         Aktifitas::create([
             'id_user' => Auth::user()->id,
-            'aktivitas' => $data
+            'aktivitas' => $data,
+            'id_client' => Auth::user()->id_client,
         ]);
     }
 }

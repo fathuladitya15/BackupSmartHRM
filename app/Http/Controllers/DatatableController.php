@@ -1917,7 +1917,15 @@ class DatatableController extends Controller
                 return number_format($row->total_produk,0,',','.');
             })
             ->addColumn('total_tagihan',function ($row) {
-                return "Rp. ". number_format($row->total_tagihan,2,',','.');
+                if($row->persentase == null) {
+                    $persen = 0;
+                }else {
+                    $persen = $row->persentase;
+                }
+                $result        = $row->total_tagihan * ($persen / 100);
+                $totalF        = $row->total_tagihan + $result;
+                $toRp           =  "Rp. " .number_format(round($totalF,1),2,',','.');
+                return $toRp;
             })
             ->rawColumns(['aksi','periode','status'])
             ->make(true);
@@ -1964,7 +1972,15 @@ class DatatableController extends Controller
             return number_format($row->total_produk,0,',','.');
         })
         ->addColumn('total_tagihan',function ($row) {
-            return "Rp. ". number_format($row->total_tagihan,2,',','.');
+            if($row->persentase == null) {
+                $persen = 0;
+            }else {
+                $persen = $row->persentase;
+            }
+            $result        = $row->total_tagihan * ($persen / 100);
+            $totalF        = $row->total_tagihan + $result;
+            $toRp           =  "Rp. " .number_format(round($totalF,1),2,',','.');
+            return $toRp;
         })
         ->rawColumns(['aksi','periode','status'])
         ->make(true);

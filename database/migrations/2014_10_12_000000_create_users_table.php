@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('roles');
             $table->string('id_client')->nullable();
             $table->string('id_karyawan')->nullable();
+            $table->string('token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
