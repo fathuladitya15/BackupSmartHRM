@@ -114,7 +114,13 @@ class ProdukController extends Controller
         $client = Auth::user()->id_client;
 
         if($client == 2) {
-            return view("layouts.admin_korlap.vLaporanProdukMegasari");
+            if(in_array(Auth::user()->roles,['admin','korlap'])) {
+                return view("layouts.admin_korlap.vLaporanProdukMegasari");
+            }else if(Auth::user()->roles == 'spv-internal') {
+                return view('layouts.spv.vLaporanProduksiMegasari');
+            }else{
+                abort(404);
+            }
         }else {
             abort(404);
         }
@@ -149,14 +155,28 @@ class ProdukController extends Controller
     function update_laporan_produksi(Request $request) {
         $u = ListLaporanProduksi::find($request->id) ;
 
-        if($u->status != 0) {
-            $pesan = ['status' => FALSE,'pesan' => 'Data ini belum bisa perbaharui karena masih dalam proses' ,'title' => 'Mohon Maaf ...'];
-        }else {
-            $u->from_date = $request->from_date;
-            $u->to_date = $request->to_date;
-            $u->keterangan = $request->keterangan;
+        if(in_array(Auth::user()->roles,['admin','korlap'])) {
+            if($u->status != 0) {
+                $pesan = ['status' => FALSE,'pesan' => 'Data ini belum bisa perbaharui karena masih dalam proses' ,'title' => 'Mohon Maaf ...'];
+            }else {
+                $u->from_date   = $request->from_date;
+                $u->to_date     = $request->to_date;
+                $u->keterangan  = $request->keterangan;
+                $u->update();
+                $pesan = ['status' => TRUE ,'pesan' => 'Laporan telah diperbarui','title' => 'Sukses'];
+            }
+
+        }else if(Auth::user()->roles == 'spv-internal') {
+            $u->status = $request->status;
             $u->update();
-            $pesan = ['status' => TRUE ,'pesan' => 'Laporan telah diperbarui','title' => 'Sukses'];
+            if($request->status == 2) {
+                $pesan = ['status' => TRUE,'pesan' => 'Laporan telah disetujui','title' => 'Sukses'];
+            }else if($request->status == 3) {
+                $pesan = ['status' => TRUE,'pesan' => 'Laporan ditolak, dikembalikan ke admin','title' => 'Sukses'];
+            }
+        }else {
+            $pesan = ['status' => FALSE ,'pesan' => 'Terjadi kesalahan','title' => 'Error'];
+
         }
 
         return response()->json($pesan);
@@ -182,36 +202,42 @@ class ProdukController extends Controller
     function data_laporan_produksi(Request $request) {
         $cek = ListLaporanProduksi::find($request->id);
         $status = $cek->status;
-        if($status != 0) {
-            $link = null;
-            $pesan = ['status' => TRUE,'title' => 'Mohon Maaf ...','pesan' => 'Laporan ini sedang diriview supervisor' ,'link' => $link];
-        }else {
-            $cekProduk = ListProduk::where('id_client',Auth::user()->id_client)->count();
-
-            if($cekProduk == 0) {
+        if(in_array(Auth::user()->roles,['admin','korlap'])){
+            if(in_array($status,[0,3])) {
                 $link = null;
-                $pesan = ['status' => TRUE,'title' => 'Produk tidak tersedia','pesan' => 'Cek terlebih dahulu produk anda' ,'link' => $link,'data' => $cekProduk];
-
+                $pesan = ['status' => TRUE,'title' => 'Mohon Maaf ...','pesan' => 'Laporan ini sedang diriview supervisor' ,'link' => $link];
             }else {
-                $link =  route('laporan-produksi-detail',['id' => $request->id]);
-                $dataProduk = ListProduk::where('id_client',Auth::user()->id_client)->get();
+                $cekProduk = ListProduk::where('id_client',Auth::user()->id_client)->count();
 
-                $cekDetailLaporan = DetailLaporanProduksi::where('id_table_lap_period',$request->id)->count();
+                if($cekProduk == 0) {
+                    $link = null;
+                    $pesan = ['status' => TRUE,'title' => 'Produk tidak tersedia','pesan' => 'Cek terlebih dahulu produk anda' ,'link' => $link,'data' => $cekProduk];
 
-                if($cekDetailLaporan == 0) {
-                    foreach ($dataProduk as $key ) {
-                        DetailLaporanProduksi::create([
-                            'no_produk'     => $key->no_produk,
-                            'nama_produk'   => $key->nama_produk,
-                            'harga_produk_satuan'   => $key->harga_produk,
-                            'id_table_lap_period' => $request->id,
-                            'tipe_produk' => $key->tipe_produk
-                        ]);
+                }else {
+                    $link =  route('laporan-produksi-detail',['id' => $request->id]);
+                    $dataProduk = ListProduk::where('id_client',Auth::user()->id_client)->get();
+
+                    $cekDetailLaporan = DetailLaporanProduksi::where('id_table_lap_period',$request->id)->count();
+
+                    if($cekDetailLaporan == 0) {
+                        foreach ($dataProduk as $key ) {
+                            DetailLaporanProduksi::create([
+                                'no_produk'     => $key->no_produk,
+                                'nama_produk'   => $key->nama_produk,
+                                'harga_produk_satuan'   => $key->harga_produk,
+                                'id_table_lap_period' => $request->id,
+                                'tipe_produk' => $key->tipe_produk
+                            ]);
+                        }
                     }
-                }
 
-                $pesan = ['status' => TRUE,'title' => 'Redirecting','pesan' => 'Redirect','link' => $link];
+                    $pesan = ['status' => TRUE,'title' => 'Redirecting','pesan' => 'Redirect','link' => $link];
+                }
             }
+        }else if(Auth::user()->roles == 'spv-internal') {
+            $link =  route('laporan-produksi-detail',['id' => $request->id]);
+            $pesan = ['status' => TRUE,'title' => 'Redirecting','pesan' => 'Redirect','link' => $link];
+
         }
         return response()->json($pesan);
     }
@@ -245,6 +271,7 @@ class ProdukController extends Controller
 
         $totalHargaProdukRP = "Rp. " .number_format(round($totalHargaProduk,2),2,',','.');
         $totalHargaProdukInt = round($totalHargaProduk,2);
+
 
         if(Auth::user()->id_client == 2) {
             return view("layouts.admin_korlap.vDetailLaporanProduksiMegasari",compact('data','totalDays','startDate','dataRekap','totalProduk','totalHargaProdukRP' ,'totalHargaProdukInt'));
@@ -365,21 +392,14 @@ class ProdukController extends Controller
         $result          = $request->mentahan_harga * ($request->fee / 100);
         $hasilPersentase = number_format($result,2,',','.');
 
-        $UpdateList = ListLaporanProduksi::find($request->id_list_laporan);
-        $UpdateList->status = 1;
-        $UpdateList->update();
-
-        $insert = [
-            'id_table_lap_period' => $request->id_list_laporan,
-            'total_tagihan' => $request->tagihan,
+        $dataUpdate = [
+            'status' => 1,
             'persentase' => $request->fee,
             'hasil_persentase' => $hasilPersentase,
-            'status' => 0
         ];
-
-        LaporanSPV::create($insert);
+        $u = ListLaporanProduksi::where("id",$request->id_list_laporan)->update($dataUpdate);
 
         $lins = route('laporan-produksi');
-        return response()->json(['status' => TRUE,'title' => 'Data Terkirim' ,'pesan' => 'Data berhasil dikirim ke supervisor. Halaman anda dialihkan ','link' => $lins]);
+        return response()->json(['status' => TRUE,'title' => 'Data Terkirim' ,'pesan' => 'Data berhasil dikirim ke supervisor. Halaman anda dialihkan ','link' => $lins,'data' => $u]);
     }
 }

@@ -93,3 +93,57 @@ var table  = $('#myTable').dataTable({
         searchable: false
     }, ]
 }) ;
+
+
+$("#ImportKaryawan").submit(function (e) {
+    e.preventDefault();
+    var formdata  = new FormData(this);
+    $.ajax({
+        url: $(this).attr('action'),
+        data :formdata,
+        type: "POST",
+        processData: false,
+        contentType: false,
+        beforeSend: function() {
+            $('#modalUpload').modal('hide');
+            Swal.fire({
+                title: "Sedang Import Data !",
+                html: "Jangan Tinggalkan Halaman ini <b></b> ",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+        },success: function(s) {
+            var pesan = s.status;
+            if(pesan == true) {
+                Swal.fire({
+                    title: s.title,
+                    text: s.pesan,
+                    icon: "success"
+                  });
+            }else {
+                Swal.fire({
+                    title: "Opps !",
+                    text: "Import Data Gagal!",
+                    icon: "errror"
+                  });
+            }
+        },
+        error: function(e) {
+            var errors = '';
+            $.each(e.responseJSON.errors, function(key, value) {
+                errors += value + '<br>'; // Membuat daftar pesan kesalahan
+            });
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan!',
+                html: errors
+            });
+        },complete: function() {
+            table.DataTable().ajax.reload();
+        }
+    })
+})

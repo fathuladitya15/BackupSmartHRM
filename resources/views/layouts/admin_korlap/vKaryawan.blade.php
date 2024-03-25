@@ -110,7 +110,7 @@
 
 <div class="modal fade" id="modalUpload" data-bs-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
-        <form class="modal-content" action="{{ route('karyawan-upload') }}" enctype="multipart/form-data" method="POST">
+        <form id="ImportKaryawan" class="modal-content" action="{{ route('karyawan-upload') }}" enctype="multipart/form-data" method="POST">
             @csrf
             <div class="modal-header">
                 <h5 style="color: black" class="modal-title" id="modalUploadTitle">Upload Karyawan</h5>
@@ -119,8 +119,10 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col mb-3">
-                    <label for="nameBackdrop" class="form-label">Upload file Excel</label>
-                    <input type="file" id="file" name="file_excel" class="form-control"  />
+                        <label for="nameBackdrop" class="form-label">Upload file Excel</label>
+                        <input type="file" id="file" name="file_excel" class="form-control"  />
+
+                        <span><a href="{{ route('karyawan-export') }}">Download Tamplate disini </a></span>
                     </div>
                 </div>
             </div>

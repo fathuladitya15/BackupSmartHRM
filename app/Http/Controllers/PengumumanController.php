@@ -125,20 +125,10 @@ class PengumumanController extends Controller
         $filename   = EncryprVariable($ency);
         $file       = public_path().'/filemanager/lampiran_att/'.$filename ;
 
-        // // Periksa apakah file tersebut ada
         if (file_exists($file)) {
-            // Tentukan tipe konten gambar
-
-            $contentType = mime_content_type($file);
-            $headers = array('Content-type : '.$contentType);
-
-            // return Response::download($file, $filename, $headers);
-            // readfile($file);
-
-            return response()->json(['file_url' => asset($file)]);
+            return Response::download($file);
         } else {
-        //     // Jika tidak ada, tampilkan pesan error
-            abort(404);
+            abort(404,'File tidak tersedia');
         }
     }
 

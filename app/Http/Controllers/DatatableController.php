@@ -1872,14 +1872,75 @@ class DatatableController extends Controller
 
     function data_laporan_produksi() {
         $data = ListLaporanProduksi::where('id_client',Auth::user()->id_client)->get();
+        // dd(Auth::user()->roles);
+        if(Auth::user()->roles == 'spv-internal') {
+            return $this->data_laporan_produksi_spv();
+        }else {
 
-        $dt  = DataTables::of($data)
+            $dt  = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('aksi', function($row) {
+                $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="edit('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Edit</a>';
+                $hapus   = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')"  ><i class="bx bx-trash"></i>Hapus</a>';
+                $data   = '<a href="javascript:void(0)" class="btn btn-sm btn-warning" id="data_'.$row->id.'" onclick="data('.$row->id.')"><i class="menu-icon tf-icons bx bx-table"></i> Data </a>';
+                if($row->status == 2) {
+                    return $data;
+                }
+                return $data.'&nbsp;'.$edit.'&nbsp;'.$hapus;
+            })
+            ->addColumn('periode', function($row) {
+                $from = Carbon::parse($row->from_date)->translatedFormat('d F Y');
+                $to   = Carbon::parse($row->to_date)->translatedFormat('d F Y');
+                // $month = Carbon::parse($row->from_date)->translatedFormat('Y');
+                return $from.'  s/d  '.$to;
+            })
+            ->addColumn('status', function($row) {
+                if($row->status == 0) {
+                    $s = '<span class="badge badge bg-info badge-sm"> <i class="menu-icon tf-icons bx bx-timer"></i> Dalam pengerjaan </span>';
+                }
+                else if($row->status == 1) {
+                    $s = '<span class="badge badge bg-warning badge-sm"> <i class="menu-icon tf-icons bx bxs-time"></i> Sedang direview ... </span>';
+                }
+                else if($row->status == 2) {
+                    $s = '<span class="badge badge bg-success"> Laporan disetujui </span>';
+                }
+                else if($row->status == 3) {
+                    $s = '<span class="badge badge bg-danger"> Laporan ditolak </span>';
+
+                }
+                else {
+                    $s = "";
+                }
+                return $s;
+            })
+            ->addColumn('total_produk',function ($row) {
+                return number_format($row->total_produk,0,',','.');
+            })
+            ->addColumn('total_tagihan',function ($row) {
+                return "Rp. ". number_format($row->total_tagihan,2,',','.');
+            })
+            ->rawColumns(['aksi','periode','status'])
+            ->make(true);
+            return $dt;
+        }
+
+
+
+    }
+
+    function data_laporan_produksi_spv() {
+        $data   = ListLaporanProduksi::where('id_client',Auth::user()->id_client)->where('status','>',0)->get();
+        $dt     = DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('aksi', function($row) {
-            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="edit('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Edit</a>';
-            $hapus   = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')"  ><i class="bx bx-trash"></i>Hapus</a>';
+            $acc   = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="acc_'.$row->id.'" onclick="acc('.$row->id.')"  ><i class="bx bx-check-circle"></i></a>';
+            $reject   = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="reject_'.$row->id.'" onclick="reject('.$row->id.')"  ><i class="bx bx-x-circle"></i></a>';
             $data   = '<a href="javascript:void(0)" class="btn btn-sm btn-warning" id="data_'.$row->id.'" onclick="data('.$row->id.')"><i class="menu-icon tf-icons bx bx-table"></i> Data </a>';
-             return $data.'&nbsp;'.$edit.'&nbsp;'.$hapus;
+            if($row->status == 2) {
+                return $data;
+            }
+
+            return $data.'&nbsp;'.$acc.'&nbsp;'.$reject;
         })
         ->addColumn('periode', function($row) {
             $from = Carbon::parse($row->from_date)->translatedFormat('d F Y');
@@ -1888,10 +1949,14 @@ class DatatableController extends Controller
             return $from.'  s/d  '.$to;
         })
         ->addColumn('status', function($row) {
-            if($row->status == 0) {
-                $s = '<span class="badge badge bg-info badge-sm"> <i class="menu-icon tf-icons bx bx-timer"></i> Dalam pengerjaan </span>';
-            }else if($row->status == 1) {
-                $s = '<span class="badge badge bg-warning badge-sm"> <i class="menu-icon tf-icons bx bxs-time"></i> Sedang direview ... </span>';
+            if($row->status == 1) {
+                $s = '<span class="badge badge bg-warning"> Menunggu Persetujuan ... </span>';
+            }else if($row->status == 2) {
+                $s = '<span class="badge badge bg-success"> Laporan disetujui </span>';
+
+            }
+            else {
+                $s = "";
             }
             return $s;
         })
@@ -1904,7 +1969,6 @@ class DatatableController extends Controller
         ->rawColumns(['aksi','periode','status'])
         ->make(true);
         return $dt;
-
     }
 
     function detail_laporan_produksi_data(Request $request) {

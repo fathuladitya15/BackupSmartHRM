@@ -81,21 +81,21 @@ class HomeController extends Controller
         }
         else if(Auth::user()->roles == 'direktur'){
             $divisi = Divisi::find(Auth::user()->karyawan->divisi)->nama_divisi;
-            if($divisi == 'MPO') {
-                $view = 'layouts.Dashboard.vDirekturMPO';
-                $client = Clients::where('id','!=',1)->get();
-                $AddData = ['client' => $client ];
-                $total_karyawan = [];
-                foreach ($client as $key ) {
-                    $total_karyawan[] = [
-                        'nama_client' => $key->nama_client,
-                        'total'   => User::where('id_client',$key->id)->where('roles','karyawan')->count()
-                    ];
-                }
-                $kr_project = Karyawan::where('kategori','project')->count();
-                $kr_pusat = Karyawan::where('kategori','pusat')->count();
-               array_push($data,'total_karyawan','kr_project','kr_pusat');
+            $view = 'layouts.Dashboard.vDirekturMPO';
+            $client = Clients::where('id','!=',1)->get();
+            $AddData = ['client' => $client ];
+            $total_karyawan = [];
+            foreach ($client as $key ) {
+                $total_karyawan[] = [
+                    'nama_client' => $key->nama_client,
+                    'total'   => User::where('id_client',$key->id)->where('roles','karyawan')->count()
+                ];
             }
+            $kr_project = Karyawan::where('kategori','project')->count();
+            $kr_pusat = Karyawan::where('kategori','pusat')->count();
+           array_push($data,'total_karyawan','kr_project','kr_pusat');
+            // if($divisi == 'MPO') {
+            // }
         }
         elseif (in_array(Auth::user()->roles ,['admin','korlap'])) {
             $izin       = DB::table("table_izin as ti")

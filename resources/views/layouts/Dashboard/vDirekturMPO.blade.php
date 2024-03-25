@@ -158,6 +158,10 @@
 
 </div>
 <!-- END FIRST COLUMN -->
+@php
+     $divisi = App\Models\Divisi::find(Auth::user()->karyawan->divisi)->nama_divisi;
+@endphp
+@if ($divisi  == 'MPO')
 <div class="row">
     <div class="col-lg-12 mb-4 order-0">
         <div class="row">
@@ -179,6 +183,8 @@
         </div>
     </div>
 </div>
+
+@endif
 
 @endsection
 

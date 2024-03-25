@@ -20,6 +20,10 @@ return new class extends Migration
             $table->string('total_tagihan')->nullable();
             $table->string('id_client');
             $table->string('status')->default(0);
+            $table->string('persentase')->nullable();
+            $table->string('hasil_persentase')->nullable();
+            $table->string('disetujui_oleh')->nullable();
+            $table->string('disetujui_pada')->nullable();
             $table->timestamps();
         });
     }

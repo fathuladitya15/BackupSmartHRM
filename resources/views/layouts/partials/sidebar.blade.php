@@ -89,26 +89,34 @@
                                 <div data-i18n="">Karyawan</div>
                             </a>
                             <ul class="menu-sub">
-                                <li class="menu-item {{  menuActive('karyawan-add') }}">
-                                    <a href="{{ route('karyawan-add') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Tambah Karyawan</div>
-                                    </a>
-                                </li>
+                                @if (Auth::user()->roles != 'spv-internal')
+                                    <li class="menu-item {{  menuActive('karyawan-add') }}">
+                                        <a href="{{ route('karyawan-add') }}" class="menu-link" >
+                                        <div data-i18n="Basic">Tambah Karyawan</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item {{  menuActive(['karyawan','karyawan-edit']) }}">
+                                        <a href="{{ route('karyawan') }}" class="menu-link" >
+                                        <div data-i18n="Basic">Kelola Karyawan</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item {{  menuActive(['divisi']) }}">
+                                        <a href="{{ route('divisi') }}" class="menu-link" >
+                                        <div data-i18n="Basic">Kelola Divisi</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item {{  menuActive(['jabatan']) }}">
+                                        <a href="{{ route('jabatan') }}" class="menu-link" >
+                                        <div data-i18n="Basic">Kelola Jabatan</div>
+                                        </a>
+                                    </li>
+                                @else
                                 <li class="menu-item {{  menuActive(['karyawan','karyawan-edit']) }}">
                                     <a href="{{ route('karyawan') }}" class="menu-link" >
                                     <div data-i18n="Basic">Kelola Karyawan</div>
                                     </a>
                                 </li>
-                                <li class="menu-item {{  menuActive(['divisi']) }}">
-                                    <a href="{{ route('divisi') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Kelola Divisi</div>
-                                    </a>
-                                </li>
-                                <li class="menu-item {{  menuActive(['jabatan']) }}">
-                                    <a href="{{ route('jabatan') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Kelola Jabatan</div>
-                                    </a>
-                                </li>
+                                @endif
                             </ul>
                         </li>
                     @endif
@@ -254,39 +262,41 @@
                                 <div data-i18n="Authentications">Produk</div>
                                 </a>
                                 <ul class="menu-sub">
-                                    <li class="menu-item {{ menuActive("list-produk") }}">
-                                        <a href="{{ route("list-produk") }}" class="menu-link" >
-                                        <div data-i18n="Basic">List Produk</div>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item {{ menuActive("produk-satuan") }}">
-                                        <a href="#" class="menu-link" >
-                                        <div data-i18n="Basic">List Satuan Produk</div>
-                                        </a>
-                                    </li>
-                                    @if (Auth::user()->id_client == 2)
-                                        <li class="menu-item  {{ menuActive("laporan-produksi-detail") }}">
-                                            <a href="{{ route('laporan-produksi') }}" class="menu-link" >
-                                            <div data-i18n="Basic">Buat Laporan Produksi</div>
+                                    @if (in_array(Auth::user()->roles ,['admin','korlap']))
+                                        <li class="menu-item {{ menuActive("list-produk") }}">
+                                            <a href="{{ route("list-produk") }}" class="menu-link" >
+                                            <div data-i18n="Basic">List Produk</div>
                                             </a>
                                         </li>
-                                    @endif
-                                    @if (Auth::user()->id_client == 8)
+                                        <li class="menu-item {{ menuActive("produk-satuan") }}">
+                                            <a href="#" class="menu-link" >
+                                            <div data-i18n="Basic">List Satuan Produk</div>
+                                            </a>
+                                        </li>
+                                        @if (Auth::user()->id_client == 2)
+                                            <li class="menu-item  {{ menuActive("laporan-produksi-detail") }}">
+                                                <a href="{{ route('laporan-produksi') }}" class="menu-link" >
+                                                <div data-i18n="Basic">Buat Laporan Produksi</div>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if (Auth::user()->id_client == 8)
 
-                                        <li class="menu-item ">
-                                            <a href="{{ route('produk') }}" class="menu-link" >
-                                            <div data-i18n="Basic">Rekap FG Y3</div>
-                                            </a>
-                                        </li>
-                                        <li class="menu-item ">
-                                            <a href="" class="menu-link" >
-                                            <div data-i18n="Basic">Rekap FG Y4</div>
-                                            </a>
-                                        </li>
-                                    @endif
-                                    @if (in_array(Auth::user()->role, ['super-admin', 'spv-internal']))
-                                        <li class="menu-item {{ menuActive(["spv-laporan-produksi","spv-laporan-produksi-detail"]) }}">
-                                            <a href="{{ route('spv-laporan-produksi') }}" class="menu-link" >
+                                            <li class="menu-item ">
+                                                <a href="{{ route('produk') }}" class="menu-link" >
+                                                <div data-i18n="Basic">Rekap FG Y3</div>
+                                                </a>
+                                            </li>
+                                            <li class="menu-item ">
+                                                <a href="" class="menu-link" >
+                                                <div data-i18n="Basic">Rekap FG Y4</div>
+                                                </a>
+                                            </li>
+                                        @endif
+
+                                    @elseif (in_array(Auth::user()->roles, ['super-admin', 'spv-internal']))
+                                        <li class="menu-item {{ menuActive(["laporan-produksi"]) }}">
+                                            <a href="{{ route('laporan-produksi') }}" class="menu-link" >
                                             <div data-i18n="Basic">Laporan Produksi</div>
                                             </a>
                                         </li>

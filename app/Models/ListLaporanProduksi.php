@@ -18,7 +18,11 @@ class ListLaporanProduksi extends Model
         'total_produk',
         'total_tagihan',
         'id_client',
-        'status'
+        'status',
+        'persentase',
+        'hasil_persentase',
+        'disetujui_oleh',
+        'disetujui_pada',
     ];
 
 }

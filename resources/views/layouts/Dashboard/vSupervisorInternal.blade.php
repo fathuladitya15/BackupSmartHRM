@@ -157,6 +157,39 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-lg-12 mb-4 order-0">
+        <div class="row">
+            <div class="card">
+                <di class="row row-bordered g-0">
+                    <h5 class="card-header m-0 me-2 pb-3">Aktivitas</h5>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table" id="table_riwayat">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Aktivitas</th>
+                                        <th>Tanggal</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </di>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- END FIRST COLUMN -->
 @endsection
+@push('js')
+
+<script>
+    var table = $("#table_riwayat").dataTable();
+
+</script>
+
+@endpush

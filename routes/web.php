@@ -71,6 +71,7 @@ Route::get('/camera-test', function() {
 });
 
 Route::get('/export-karyawan',[ManageKaryawanController::class,'export'])->name("karyawan-export");
+Route::get('/download-pengumuman/{ency}/{ext}',[PengumumanController::class,'download'])->name("download-pengumuman");
 Route::middleware('revalidate')->group(function() {
     Route::get('/login',[LoginController::class,'showLoginForm'])->name('login');
     Route::post('/login',[LoginController::class,'login'])->name('login');
@@ -99,7 +100,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('detail/{hash}/data-bank',[ManageKaryawanController::class,'bank'])->name('karyawan-bank');
                 Route::post('detail/{hash}/update',[ManageKaryawanController::class,'update_data'])->name("karyawan-update");
                 Route::post('detail/{hash}/view_file',[ManageKaryawanController::class,'view_file'])->name("karyawan-view-file");
-                Route::get('export-karyawan',[ManageKaryawanController::class,'export'])->name("karyawan-export");
+                // Route::get('export-karyawan',[ManageKaryawanController::class,'export'])->name("karyawan-export");
                 Route::post('upload-karyawan',[ManageKaryawanController::class,'import'])->name('karyawan-upload');
             });
 
@@ -187,6 +188,18 @@ Route::middleware('revalidate')->group(function() {
             Route::get('/cuti/data-manajer',[DatatableController::class,'data_cuti_manajer'])->name('data-cuti-manajer');
             Route::get('/cuti/data-direktur',[DatatableController::class,'data_cuti_direktur'])->name('data-cuti-direktur');
 
+            Route::prefix('laporan-produksi')->group(function() {
+                Route::get('index',[ProdukController::class,'laporan_produksi'])->name("laporan-produksi");
+                Route::get('data',[DatatableController::class,'data_laporan_produksi'])->name("laporan-produksi-data");
+                Route::get('datas',[ProdukController::class,'data_laporan_produksi'])->name("laporan-produksi-isi");
+                Route::get('datas/{id}',[ProdukController::class,'detail_laporan_produksi'])->name('laporan-produksi-detail');
+                Route::post('datas-detail',[DatatableController::class,'detail_laporan_produksi_data'])->name('laporan-produksi-detail-data');
+                Route::post('data-get-totals',[ProdukController::class,'laporan_produksi_get_totals'])->name('lap-produk-totals');
+                Route::post('update',[ProdukController::class,'update_laporan_produksi'])->name("laporan-produksi-update");
+
+
+
+            });
 
             Route::middleware(['role:karyawan'])->group(function(){
                 Route::get('/surat-peringatan/data-karyawan',[DatatableController::class,"data_peringatan_karyawan"])->name('peringatan-data-kr');
@@ -194,6 +207,7 @@ Route::middleware('revalidate')->group(function() {
 
             Route::middleware(['role:spv-internal'])->group(function(){
                 Route::get('/surat-peringatan/data-spv',[DatatableController::class,'data_peringatan_spv'])->name('peringatan-data-spv');
+
 
             });
 
@@ -204,6 +218,7 @@ Route::middleware('revalidate')->group(function() {
                 // LIST PRODUK
 
                 Route::get('/list-produk',[ProdukController::class,'list_produk'])->name('list-produk');
+                Route::get('data/{id_client}',[DataTableController::class,'data_list_produk'])->name('list-produk-data');
                 Route::post('/list-produk/upload',[ProdukController::class,'upload_list_produk'])->name('list-produk-upload');
                 Route::get('/list-produk/data/{id_client}',[DataTableController::class,'data_list_produk'])->name('list-produk-data');
                 Route::post('/list-produk/get',[ProdukController::class,'get_list_produk'])->name('list-produk-get');
@@ -211,19 +226,15 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('/list-produk/add',[ProdukController::class,'add_list_produk'])->name('list-produk-add');
                 Route::delete('/list-produk/delete',[ProdukController::class,'delete_list_produk'])->name('list-produk-delete');
 
-                Route::get('/laporan-produksi',[ProdukController::class,'laporan_produksi'])->name("laporan-produksi");
-                Route::get('/laporan-produksi/data',[DatatableController::class,'data_laporan_produksi'])->name("laporan-produksi-data");
+
+
                 Route::post('/laporan-produksi/add',[ProdukController::class,'add_laporan_produksi'])->name("laporan-produksi-add");
                 Route::post('/laporan-produksi/get',[ProdukController::class,'get_laporan_produksi'])->name("laporan-produksi-get");
-                Route::post('/laporan-produksi/update',[ProdukController::class,'update_laporan_produksi'])->name("laporan-produksi-update");
                 Route::delete('/laporan-produksi/delete',[ProdukController::class,'delete_laporan_produksi'])->name("laporan-produksi-delete");
-                Route::get('/laporan-produksi/datas',[ProdukController::class,'data_laporan_produksi'])->name("laporan-produksi-isi");
 
-                Route::get('/laporan-produksi/datas/{id}',[ProdukController::class,'detail_laporan_produksi'])->name('laporan-produksi-detail');
-                Route::post('/laporan-produksi/datas-detail',[DatatableController::class,'detail_laporan_produksi_data'])->name('laporan-produksi-detail-data');
+
                 Route::post('/laporan-produksi/data-details-lap',[ProdukController::Class,'get_detail_laporan_produksi'])->name('laporan-produksi-get-detail');
                 Route::post('/laporan-produksi/data-details-updated',[ProdukController::Class,'update_detail_laporan_produksi'])->name('laporan-produksi-update-detail');
-                Route::post('/laporan-produksi/data-get-totals',[ProdukController::class,'laporan_produksi_get_totals'])->name('lap-produk-totals');
                 Route::post('/laporan-produksi/data-get-calculate',[ProdukController::class,'laporan_produksi_get_calculate'])->name('lap-produk-calculate');
                 Route::post('/laporan-produksi/kirimm',[ProdukController::class,'laporan_produksi_kirim'])->name('lap-produk-kirim');
 

@@ -68,8 +68,7 @@ class ManageKaryawanController extends Controller
             return view('layouts.admin_korlap.vKaryawan',compact('link_data'));
         }
         else if(in_array($tipe_akun,['spv-internal'])) {
-            // return view('layouts.supervisor.vLembur');
-            // dd($tipe_akun);
+            return view('layouts.spv.vKaryawan');
 
         }else {
             abort(403,'Akun anda tidak mempunyai akses');
@@ -795,6 +794,8 @@ class ManageKaryawanController extends Controller
         // $save_file  = $file->storeAs('public/excel/',$fileName);
         $import_u    = Excel::import(new UserImport(), $request->file_excel);
         $import_k    = Excel::import(new KaryawanImport(), $request->file_excel);
+
+        return response()->json(['status'  => TRUE,'title' => 'Sukses' ,'pesan' => 'Data Berhasil diimport']);
     }
 
 }
