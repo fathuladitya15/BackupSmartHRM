@@ -54,6 +54,16 @@ class UserSeeder extends Seeder
             'id_karyawan' => 'SPVM001'
         ]);
 
+        $spv_yp     = User::create([
+            'username' => 'unyil',
+            'name' => 'Allfiansal',
+            'email' => 'alfin123@gmail.com',
+            'password' => Hash::make('password'),
+            'roles' => 'admin',
+            'id_client' => 8,
+            'id_karyawan' => 'YP00001'
+        ]);
+
         $admin_AIO_sukabumi     =   User::create([
             'username' => 'rehan',
             'name' => 'REHAN ERLANGGA',

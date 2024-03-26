@@ -170,10 +170,15 @@
 
 <script>
     var url_data = "{{ route('laporan-produksi-data') }}";
+    var tipe_produk = "{{ Request::Segment(2) }}";
     var table = $('#myTable').dataTable({
         processing: true,
         serverSide: true,
-        ajax: url_data,
+        ajax: {
+            url : url_data,
+            tipe: "GET",
+            data : {tipe_produk : tipe_produk}
+        },
         columns: [{
             data: 'DT_RowIndex',
             orderable: false,
@@ -316,6 +321,7 @@
                     },
                 });
             }, success : function(s) {
+                console.log(s);
                 if(s.status == true) {
                     Swal.fire({
                         title: s.title,
@@ -426,7 +432,7 @@
         $.ajax({
             url : url_data_laporan,
             type:"GET",
-            data: {id:id},
+            data: {id:id, tipe_produk:tipe_produk},
             beforeSend: function() {
                 button.innerHTML = loading;
                 button.disabled = true;

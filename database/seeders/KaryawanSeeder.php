@@ -92,6 +92,32 @@ class KaryawanSeeder extends Seeder
             'kategori'      => 'pusat'
         ]);
 
+        Karyawan::create([
+            'nama_karyawan' => 'Allfiansal',
+            'id_karyawan'   => 'YP00001',
+            'no_hp'         => "0889225439000",
+            'tanggal_lahir' => "1993-10-10",
+            'tempat_lahir'  => "Bogor",
+            'jenis_kelamin' => "L",
+            'nik'           => 3201301502010179,
+            'no_kk'         => 0,
+            'alamat'        =>"Bogor",
+            'alamat_domisili' => 'Bogor',
+            'lokasi_kerja'  => 8,
+            'divisi'        => 1,
+            'jabatan'       => 3,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK SYARIAH INDONESIA (Eks BNI SYARIAH)",
+            'cabang_bank'   => "Bogor",
+            'kd_bank'       => 427,
+            'norek_bank'    => 779873211,
+            'status'        => 0,
+            'kategori'      => 'pusat'
+        ]);
+
         // KARYAWAN AIO SUKABUMI
 
         Karyawan::create([

@@ -198,6 +198,9 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('update',[ProdukController::class,'update_laporan_produksi'])->name("laporan-produksi-update");
 
                 Route::get('{kategori}',[ProdukController::class,'laporan_produksi_yp'])->name("laporan-produksi-yp");
+                Route::get('data/yupi/{id}/{tipe_produk}',[ProdukController::class,'laporan_produksi_yupi'])->name('laporan-produksi-yp-data');
+                Route::post('cek-selisih',[ProdukController::class,'laporan_produksi_yupi_cek_selisih'])->name('laporan-produksi-yp-cek-selisih');
+                Route::get('get-compare/{id}/{tipe_produk}',[ProdukController::class,'laporan_produksi_compare'])->name('laporan-produksi-yp-compare');
 
 
 

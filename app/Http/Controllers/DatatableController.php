@@ -1867,9 +1867,14 @@ class DatatableController extends Controller
 
     // DATA LIST LAPORAN PRODUKSI
 
-    function data_laporan_produksi() {
-        $data = ListLaporanProduksi::where('id_client',Auth::user()->id_client)->get();
-        // dd(Auth::user()->roles);
+    function data_laporan_produksi(Request $request) {
+        if($request->tipe_produk){
+            $data = ListLaporanProduksi::where('id_client',Auth::user()->id_client)->where('keterangan',$request->tipe_produk)->get();
+
+        }else {
+            $data = ListLaporanProduksi::where('id_client',Auth::user()->id_client)->get();
+
+        }
         if(Auth::user()->roles == 'spv-internal') {
             return $this->data_laporan_produksi_spv();
         }else {
@@ -1911,7 +1916,13 @@ class DatatableController extends Controller
                 return $s;
             })
             ->addColumn('total_produk',function ($row) {
-                return number_format($row->total_produk,0,',','.');
+                if($row->id_client == 8) {
+                    return number_format($row->total_produk,2,',','.').' TON';
+                }else {
+                    return number_format($row->total_produk,0,',','.');
+                }
+
+                // return
             })
             ->addColumn('total_tagihan',function ($row) {
                 if($row->persentase == null) {
@@ -2000,7 +2011,7 @@ class DatatableController extends Controller
             return $row->harga_produk_satuan == null ? 'Belum ditentukan' : "Rp ". number_format($row->harga_produk_satuan,2,',','.') ;
         })
         ->addColumn('satuan_produk', function($row) {
-            return "";
+            return "Kg";
         })
         ->addColumn('total_harga_produk', function($row) {
             return $row->total_harga_produk == null ? '' : "Rp ". number_format($row->total_harga_produk,2,',','.') ;

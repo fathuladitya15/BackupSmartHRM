@@ -450,8 +450,8 @@
                 }
             });
         });
-        // CLICK TABLE NON PRIMARY
 
+        // CLICK TABLE NON PRIMARY
         $('#myTableS tbody').on('click', 'td', function() {
             var id = $(this).closest('tr').data('id');
             var className = $(this).attr('class');

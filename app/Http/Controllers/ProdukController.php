@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use DB;
 use Auth;
+use DataTables;
 use Carbon\Carbon;
 use App\Models\ListProduk;
+use App\Models\CekSelisih;
 use App\Models\LaporanSPV;
 use Illuminate\Http\Request;
 use App\Imports\ListProdukImport;
 use App\Models\ListLaporanProduksi;
-use App\Models\DetailLaporanProduksi;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Models\DetailLaporanProduksi;
 use Illuminate\Support\Facades\Validator;
 
 class ProdukController extends Controller
@@ -20,6 +22,7 @@ class ProdukController extends Controller
         $this->middleware('auth');
     }
 
+    // LIST PRODUK
     function list_produk() {
         $id_client = Auth::user()->clients()->first()->id;
         if(in_array($id_client, [2,8])) {
@@ -110,6 +113,10 @@ class ProdukController extends Controller
         return response()->json(['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Produk Berhasil dihapus']);
     }
 
+    // END LIST PRODUK
+
+    // LIST LAPORAN PRODUK
+
     function laporan_produksi(Request $request) {
 
 
@@ -134,11 +141,26 @@ class ProdukController extends Controller
 
     function add_laporan_produksi(Request $request) {
 
-        $cekLaporan = ListLaporanProduksi::where('from_date',$request->from_date)->where('to_date',$request->to_date)->where('id_client',Auth::user()->id_client)->first();
+        $cekLaporan = ListLaporanProduksi::where('from_date',$request->from_date)
+        ->where('to_date',$request->to_date)
+        ->where('id_client',Auth::user()->id_client)->first();
 
-        if($cekLaporan) {
+        $tanggal        = Carbon::parse($request->from_date)->format('d'); // MENGAMBIL TANGGAL SAJA DARI REQUEST YANG DIKIRIM
+        $tanggal_las    = Carbon::parse($request->from_date)->endOfMonth(); // MENGAMBIL TOTAL HARI DALAM BULAN YANG DIMAKSUD
+
+        $month_1 = Carbon::parse($request->from_date)->format('d-m-y'); // CEK TANGGAL APAKAH MULAI DARI TANGGAL 1 ATAU TIDAK
+        $month_2 = Carbon::parse($request->to_date)->format('d-m-y');
+
+        if($cekLaporan) { // CEK TANGGAL APAKAH YANG DIMAKSUD DUPLICATE ATAU TIDAK
             $pesan = ['status' => FALSE,'title' => 'Data Duplikat','pesan' => 'Laporan Produk dengan tanggal tersebut sudah tersedia, hapus terlebih dahulu jika ingin menggantinya'];
-        }else {
+        }
+        else if($tanggal != '01'){ // TANGGAL HARUS DIMULAI DARI TANGGAL 1
+            $pesan = ['status' => FALSE,'title' => 'Tanggal tidak valid','pesan' => 'Laporan harus dimulai dari tanggal 1'];
+        }
+        else if($tanggal_las->format('Y-m-d') != $request->to_date) { // APAKAH TANGGAL SATU PADA BULAN YANG DI REQUEST SAMA ATAU TIDAK
+            $pesan = ['status' => FALSE,'title' => 'Tanggal Tidak valid', 'pesan' => 'Tanggal laporan harus 1 bulan, mulai dari tanggal 1 sampai dengan selesai'];
+        }
+        else {
             ListLaporanProduksi::create([
                 'keterangan' => $request->keterangan,
                 'from_date'   => $request->from_date,
@@ -209,35 +231,69 @@ class ProdukController extends Controller
         $cek = ListLaporanProduksi::find($request->id);
         $status = $cek->status;
         if(in_array(Auth::user()->roles,['admin','korlap'])){
-            if(in_array($status,[1])) {
-                $link = null;
-                $pesan = ['status' => TRUE,'title' => 'Mohon Maaf ...','pesan' => 'Laporan ini sedang diriview supervisor' ,'link' => $link];
-            }else {
-                $cekProduk = ListProduk::where('id_client',Auth::user()->id_client)->count();
-
-                if($cekProduk == 0) {
+            if(Auth::user()->id_client == 2){
+                if(in_array($status,[1])) {
                     $link = null;
-                    $pesan = ['status' => TRUE,'title' => 'Produk tidak tersedia','pesan' => 'Cek terlebih dahulu produk anda' ,'link' => $link,'data' => $cekProduk];
-
+                    $pesan = ['status' => TRUE,'title' => 'Mohon Maaf ...','pesan' => 'Laporan ini sedang diriview supervisor' ,'link' => $link];
                 }else {
-                    $link =  route('laporan-produksi-detail',['id' => $request->id]);
-                    $dataProduk = ListProduk::where('id_client',Auth::user()->id_client)->get();
+                    $cekProduk = ListProduk::where('id_client',Auth::user()->id_client)->count();
 
-                    $cekDetailLaporan = DetailLaporanProduksi::where('id_table_lap_period',$request->id)->count();
+                    if($cekProduk == 0) {
+                        $link = null;
+                        $pesan = ['status' => TRUE,'title' => 'Produk tidak tersedia','pesan' => 'Cek terlebih dahulu produk anda' ,'link' => $link,'data' => $cekProduk];
 
-                    if($cekDetailLaporan == 0) {
-                        foreach ($dataProduk as $key ) {
-                            DetailLaporanProduksi::create([
-                                'no_produk'     => $key->no_produk,
-                                'nama_produk'   => $key->nama_produk,
-                                'harga_produk_satuan'   => $key->harga_produk,
-                                'id_table_lap_period' => $request->id,
-                                'tipe_produk' => $key->tipe_produk
-                            ]);
+                    }else {
+                        $link =  route('laporan-produksi-detail',['id' => $request->id]);
+                        $dataProduk = ListProduk::where('id_client',Auth::user()->id_client)->get();
+
+                        $cekDetailLaporan = DetailLaporanProduksi::where('id_table_lap_period',$request->id)->count();
+
+                        if($cekDetailLaporan == 0) {
+                            foreach ($dataProduk as $key ) {
+                                DetailLaporanProduksi::create([
+                                    'no_produk'     => $key->no_produk,
+                                    'nama_produk'   => $key->nama_produk,
+                                    'harga_produk_satuan'   => $key->harga_produk,
+                                    'id_table_lap_period' => $request->id,
+                                    'tipe_produk' => $key->tipe_produk
+                                ]);
+                            }
                         }
-                    }
 
-                    $pesan = ['status' => TRUE,'title' => 'Redirecting','pesan' => 'Redirect','link' => $link];
+                        $pesan = ['status' => TRUE,'title' => 'Redirecting','pesan' => 'Redirect','link' => $link];
+                    }
+                }
+            }else if(Auth::user()->id_client == 8 ){
+                if($status == 1) {
+                    $link = null;
+                    $pesan = ['status' => TRUE,'title' => 'Mohon Maaf ...','pesan' => 'Laporan ini sedang diriview supervisor' ,'link' => $link];
+                }else {
+                    $cekProduk = ListProduk::where('id_client',Auth::user()->id_client)->where('tipe_produk',$request->tipe_produk)->count();
+
+                    if($cekProduk == 0) {
+                        $link = null;
+                        $pesan = ['status' => TRUE,'title' => 'Produk tidak tersedia','pesan' => 'Cek terlebih dahulu produk anda','s' => $request->tipe_produk ];
+
+                    }else {
+                        $link =  route('laporan-produksi-detail',['id' => $request->id]);
+                        $dataProduk = ListProduk::where('id_client',Auth::user()->id_client)->where('tipe_produk',$request->tipe_produk )->get();
+
+                        $cekDetailLaporan = DetailLaporanProduksi::where('id_table_lap_period',$request->id)->where('tipe_produk',$request->tipe_produk )->count();
+
+                        if($cekDetailLaporan == 0) {
+                            foreach ($dataProduk as $key ) {
+                                DetailLaporanProduksi::create([
+                                    'no_produk'     => $key->no_produk,
+                                    'nama_produk'   => $key->nama_produk,
+                                    'harga_produk_satuan'   => $key->harga_produk,
+                                    'id_table_lap_period' => $request->id,
+                                    'tipe_produk' => $key->tipe_produk
+                                ]);
+                            }
+                        }
+
+                        $pesan = ['status' => TRUE,'title' => 'Redirecting','pesan' => 'Redirect','link' => $link,'dataProduk' => $dataProduk];
+                    }
                 }
             }
         }else if(Auth::user()->roles == 'spv-internal') {
@@ -261,15 +317,31 @@ class ProdukController extends Controller
         $dataRekap = [];
         $result   = DetailLaporanProduksi::where('id_table_lap_period',$id)->orderBy('nama_produk','ASC')->get();
 
-        for ($i=1; $i <=$totalDays ; $i++) {
-            $currentDate    = $startDate->copy()->addDays($i);
-            $t              = DetailLaporanProduksi::where('id_table_lap_period',$id);
-            $names          = $t->selectRaw('SUM(CAST(tanggal_'.$i.' AS INT)) AS total')->first();
-            $dataRekap['tanggal_'.$i] =  $names->total;
+        if(Auth::user()->id_client == 2) {
+            for ($i=1; $i <=$totalDays ; $i++) {
+                $currentDate    = $startDate->copy()->addDays($i);
+                $t              = DetailLaporanProduksi::where('id_table_lap_period',$id);
+                $names          = $t->selectRaw('SUM(CAST(tanggal_'.$i.' AS INT)) AS total')->first();
+                $dataRekap['tanggal_'.$i] =  $names->total;
+            }
+            $totalProduk =  DB::table('table_lap_produksi')
+                ->where('id_table_lap_period',$id)
+                ->selectRaw('SUM(CAST(total_produk AS INT)) AS total')->first();
+
+        }else {
+            for ($i=1; $i <=$totalDays ; $i++) {
+                $currentDate    = $startDate->copy()->addDays($i);
+                $t              = DetailLaporanProduksi::where('id_table_lap_period',$id);
+                $names          = $t->selectRaw('SUM(CONVERT(float,tanggal_'.$i.')) AS total')->first();
+                $dataRekap['tanggal_'.$i] =  $names->total;
+            }
+            $totalProduk_C =  DB::table('table_lap_produksi')
+                ->where('id_table_lap_period',$id)
+                ->selectRaw('SUM(CONVERT(float,total_produk)) AS total')->first();
+            $totalProduk = number_format($totalProduk_C->total,2,'.','.');
+
         }
-        $totalProduk =  DB::table('table_lap_produksi')
-            ->where('id_table_lap_period',$id)
-            ->selectRaw('SUM(CAST(total_produk AS INT)) AS total')->first();
+
 
         $totalHargaProduk   = DB::table('table_lap_produksi')
             ->where('id_table_lap_period',$id)
@@ -281,7 +353,10 @@ class ProdukController extends Controller
 
         if(Auth::user()->id_client == 2) {
             return view("layouts.admin_korlap.vDetailLaporanProduksiMegasari",compact('data','totalDays','startDate','dataRekap','totalProduk','totalHargaProdukRP' ,'totalHargaProdukInt'));
-        }else {
+        }else if(Auth::user()->id_client == 8) {
+            return view('layouts.admin_korlap.vDetailLaporanProduksiYupi',compact('data','totalDays','startDate','dataRekap','totalProduk','totalHargaProdukRP' ,'totalHargaProdukInt'));
+        }
+        else {
             abort(404);
         }
     }
@@ -297,7 +372,7 @@ class ProdukController extends Controller
 
         $validator = Validator::make($request->all(), [
             'total_produk' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'] // Hanya angka dan titik
-        ]);
+        ],['total_produk.regex' => 'Hanya angka dan titik yang diperbolehkan' ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()->all()], 422);
@@ -325,7 +400,13 @@ class ProdukController extends Controller
         $updateLocalProduk->total_harga_produk  = $hargaTotal;
         $updateLocalProduk->update();
 
-        $totalProduk        = DB::table('table_lap_produksi')->where('id_table_lap_period',$data->id_table_lap_period)->selectRaw('SUM(CAST(total_produk AS INT)) AS total')->first();
+        if(Auth::user()->id_client == 2) {
+            $totalProduk        = DB::table('table_lap_produksi')->where('id_table_lap_period',$data->id_table_lap_period)->selectRaw('SUM(CAST(total_produk AS INT)) AS total')->first();
+        }
+        else {
+            $totalProduk        = DB::table('table_lap_produksi')->where('id_table_lap_period',$data->id_table_lap_period)->selectRaw('SUM(CONVERT(float,total_produk )) AS total')->first();
+
+        }
         $totalHargaProduk   = DB::table('table_lap_produksi')->where('id_table_lap_period',$data->id_table_lap_period)->selectRaw('SUM(CONVERT(float,total_harga_produk)) AS total')->first();
 
         $listProdukLap                      = ListLaporanProduksi::find($data->id_table_lap_period);
@@ -346,22 +427,44 @@ class ProdukController extends Controller
 
         $totals = [];
 
-        for ($i=1; $i <= 31 ; $i++) {
-            $data = DB::table('table_lap_produksi')
-                    ->where('id_table_lap_period',$request->id)
-                    ->where('tipe_produk',$request->tipe_produk)
-                    ->selectRaw('SUM(CAST(tanggal_'.$i.' AS INT)) AS total')
-                    ->first();
-
-            $totals[] = [
-                'total_tanggal_'.$i => $data->total == null ? 0 : number_format($data->total,0,',','.'),
-            ];
-        }
-
-        $totalProduk =  DB::table('table_lap_produksi')
+        if(Auth::user()->id_client == 2){// PERHITUNGAN UNTUK PRODUK MEGASARI
+            for ($i=1; $i <= 31 ; $i++) {
+                $data = DB::table('table_lap_produksi')
                         ->where('id_table_lap_period',$request->id)
                         ->where('tipe_produk',$request->tipe_produk)
-                        ->selectRaw('SUM(CAST(total_produk AS INT)) AS total')->first();
+                        ->selectRaw('SUM(CAST(tanggal_'.$i.' AS INT)) AS total')
+                        ->first();
+
+                $totals[] = [
+                    'total_tanggal_'.$i => $data->total == null ? 0 : number_format($data->total,0,',','.'),
+                ];
+            }
+
+            $totalProduk =  DB::table('table_lap_produksi')
+                            ->where('id_table_lap_period',$request->id)
+                            ->where('tipe_produk',$request->tipe_produk)
+                            ->selectRaw('SUM(CAST(total_produk AS INT)) AS total')->first();
+        }
+        else { //PERHITUNGAN YUPI
+            for ($i=1; $i <= $request->hari ; $i++) {
+                $data = DB::table('table_lap_produksi')
+                        ->where('id_table_lap_period',$request->id)
+                        ->where('tipe_produk',$request->tipe_produk)
+                        ->selectRaw('SUM(CONVERT(float,tanggal_'.$i.')) AS total')
+                        ->first();
+
+                $totals[] = [
+                    'total_tanggal_'.$i => $data->total == null ? 0.00 : number_format($data->total,2,',','.'),
+                ];
+            }
+
+            $totalProduk =  DB::table('table_lap_produksi')
+                            ->where('id_table_lap_period',$request->id)
+                            ->where('tipe_produk',$request->tipe_produk)
+                            ->selectRaw('SUM(CONVERT(float,total_produk)) AS total')->first();
+        }
+
+
         $totalHargaProduk   = DB::table('table_lap_produksi')
                             ->where('id_table_lap_period',$request->id)
                             ->where('tipe_produk',$request->tipe_produk)
@@ -369,7 +472,7 @@ class ProdukController extends Controller
 
         $result = [
             'totals'            => $totals,
-            'totalProduk'       => $totalProduk->total,
+            'totalProduk'       => number_format($totalProduk->total,2,'.','.'),
             'totalHargaProduk'  => "Rp. " .number_format(round($totalHargaProduk->total,2),2,',','.'),
 
 
@@ -395,17 +498,164 @@ class ProdukController extends Controller
     }
 
     function laporan_produksi_kirim(Request $request) {
-        $result          = $request->mentahan_harga * ($request->fee / 100);
-        $hasilPersentase = number_format($result,2,',','.');
+        if (Auth::user()->id_client == 22) {
+            $result          = $request->mentahan_harga * ($request->fee / 100);
+            $hasilPersentase = number_format($result,2,',','.');
 
-        $dataUpdate = [
-            'status' => 1,
-            'persentase' => $request->fee,
-            'hasil_persentase' => $hasilPersentase,
-        ];
-        $u = ListLaporanProduksi::where("id",$request->id_list_laporan)->update($dataUpdate);
+            $dataUpdate = [
+                'status' => 1,
+                'persentase' => $request->fee,
+                'hasil_persentase' => $hasilPersentase,
+            ];
+            $u = ListLaporanProduksi::where("id",$request->id_list_laporan)->update($dataUpdate);
+        }else if(Auth::user()->id_client == 8){
+            $u = ListLaporanProduksi::find($request->id_list_laporan);
+            if($request->status == 2 ) {
+                $u->status         = $request->status;
+                $u->disetujui_pada = Carbon::now();
+                $u->disetujui_pada = Auth::user()->name.'(Supervisor)';
+                $u->update();
+            }else {
+                $u->status         = $request->status;
+                $u->update();
+
+            }
+        }
 
         $lins = route('laporan-produksi');
         return response()->json(['status' => TRUE,'title' => 'Data Terkirim' ,'pesan' => 'Data berhasil dikirim ke supervisor. Halaman anda dialihkan ','link' => $lins,'data' => $u]);
+    }
+
+    // LAPORAN YUPI
+    function laporan_produksi_yupi($id, $tipe_produk) {
+        $data       = ListLaporanProduksi::find($id);
+
+        // Tanggal awal dan akhir yang ditentukan
+        $startDate  = Carbon::parse($data->from_date);
+        $endDate    = Carbon::parse($data->to_date);
+
+        // Hitung total hari antara dua tanggal
+        $totalDays = $endDate->diffInDays($startDate) + 1;
+        $data = [];
+
+        for($i = 1; $i <= $totalDays; $i++){
+            $total = DetailLaporanProduksi::where('id_table_lap_period',$id)->selectRaw('SUM(CONVERT(float,tanggal_'.$i.')) AS total')->first();
+            $cekValuInput = CekSelisih::where('id_table_lap_produksi',$id)->where('tanggal','tanggal_'.$i);
+            $data[] =[
+                'tanggal'       => 'Tanggal '.$i,
+                'total_produk'=> number_format($total->total,2,'.',''),
+                'value_name'    => 'tanggal_'.$i,
+                'value_input'   => $cekValuInput->count() == 1 ? $cekValuInput->first()->TotalCountProduk_M : "",
+                'no'            => $i,
+            ];
+        }
+        // dd($data);
+
+        $dt     = DataTables::of($data)
+        ->addColumn('input', function($row) use ($id) {
+
+            $html = '<form id="formSelisih_'.$row['no'].'">';
+            $html .= '<input class="form-control-sm" type="text" name="input_selisih" id="input_selisih" placeholder="Masukan data anda" value="'.$row['value_input'].'">';
+            $html .= '<input type="hidden" name="tanggal" id="tanggal" value='.$row['value_name'].'>';
+            $html .= '<input type="hidden" name="total_produk" id="total_produk" value='.$row['total_produk'].'>';
+            $html .= '<input type="hidden" name="id_table_lap_period" id="id_table_lap_period" value='.$id.'>';
+            $html .= ' <a href="javascript:void(0)" onclick="cek_selisih('.$row['no'].')" type="button" class="btn btn-sm btn-primary" >Cek</a>';
+            $html .= '</form>';
+
+            return $html;
+        })
+        ->addColumn('status', function($row) use ($id) {
+            $cekDB      = CekSelisih::where('tanggal',$row['value_name'])->where('id_table_lap_produksi',$id);
+            if($cekDB->count() == 1) {
+                $data = $cekDB->first();
+                if($data->status == 0) {
+                    $status = '<span class="badge badge bg-danger badge-sm">Selisih</span>';
+                }else {
+                    $status = '<span class="badge badge bg-success badge-sm">OK</span>';
+                }
+            }else {
+                $status = "";
+            }
+            return $status;
+        })
+        ->addcolumn('selisih', function($row) use ($id) {
+            $cekDB      = CekSelisih::where('tanggal',$row['value_name'])->where('id_table_lap_produksi',$id);
+            if($cekDB->count() != null) {
+                $data = $cekDB->first();
+                $selisih = $data->selisih;
+            }else {
+                $selisih = 00.00;
+            }
+            return $selisih;
+        })
+        ->rawColumns(['input','selisih','status'])
+        ->make(true);
+        return $dt;
+    }
+
+    function laporan_produksi_yupi_cek_selisih(Request $request) {
+
+        $validasi = Validator::make($request->all(), [
+            'input_selisih' => ['required', 'regex:/^[0-9.]{6,}$/'] // Hanya angka dan koma
+        ],['input_selisih.regex' => 'Hanya angka titik dan koma yang diperbolehkan' ]);
+
+        if ($validasi->fails()) {
+            return response()->json(['errors' => $validasi->errors()->all()], 422);
+        }
+        $cekDB      = CekSelisih::where('tanggal',$request->tanggal)->where('id_table_lap_produksi',$request->id_table_lap_period)->count();
+        $idMSelisih = CekSelisih::where('tanggal',$request->tanggal)->where('id_table_lap_produksi',$request->id_table_lap_period)->first();
+        $status     = $request->total_produk == $request->input_selisih ? TRUE : FALSE;
+        $selisih    = (float)$request->total_produk - (float) $request->input_selisih;
+        $data = [
+            'id_table_lap_produksi'   => $request->id_table_lap_period,
+            'tanggal'                 => $request->tanggal,
+            'TotalCountProduk_DB'     => $request->total_produk,
+            'TotalCountProduk_M'      => $request->input_selisih,
+            'status'                  => $status,
+            'selisih'                 => number_format((float)$selisih,2,'.','.'),
+        ];
+        if($cekDB == 0){
+            CekSelisih::create($data);
+        }else {
+            CekSelisih::where('id',$idMSelisih->id)->update([
+                'TotalCountProduk_DB'     => $request->total_produk,
+                'TotalCountProduk_M'      => $request->input_selisih,
+                'status'                  => $status,
+                'selisih'                 => number_format((float)$selisih,2,'.','.'),
+            ]);
+        }
+
+        return response()->json(['status' => TRUE,'pesan' => 'Data Berhasil diupdate' ,'title' => 'Sukses' ,'asd' => $request->all()]);
+        // return response()->json($idMSelisih->id);
+    }
+
+    function laporan_produksi_compare($id,$tipe_produk) {
+        $totalProduk =  DB::table('table_lap_produksi')
+            ->where('id_table_lap_period',$id)
+            ->where('tipe_produk',$tipe_produk)
+            ->selectRaw('SUM(CONVERT(float,total_produk)) AS total')->first();
+        $totalProdukM =  DB::table('table_selisih_yupi')
+            ->where('id_table_lap_produksi',$id)
+            ->selectRaw('SUM(CONVERT(float,TotalCountProduk_M)) AS total')->first();
+        $selisih =  ($totalProdukM->total/1000) - ($totalProduk->total/ 1000);
+        $data = [
+            [
+                'name' => 'yupi',
+                'total' => number_format($totalProduk->total/ 1000,5,'.',''),
+            ],[
+                'name' => 'pfi',
+                'total' => number_format($totalProdukM->total/1000,5,'.',''),
+            ], [
+                'name' => 'selisih',
+                'total'=>number_format($selisih,5,'.',''),
+            ]
+        ];
+        $dt     = DataTables::of($data)
+        ->addColumn('satuan', function() {
+            return "TON";
+        })
+        ->rawcolumns(['satuan'])
+        ->make(true);
+        return $dt;
     }
 }
