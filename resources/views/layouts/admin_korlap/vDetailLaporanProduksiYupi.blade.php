@@ -137,8 +137,8 @@
                         <input type="hidden" value="{{ $data->id }}" name="id_list_laporan">
                     @if (Auth::user()->roles == 'spv-internal')
                         <input type="hidden" value="2" name="status">
-                        <button type="button" class="btn btn-success"> <i class="menu-icon tf-icons bx bx-check-circle"></i>Setujui</button>
-                        <button type="button" class="btn btn-danger"> <i class="menu-icon tf-icons bx bxs-x-circle"></i>Tolak</button>
+                        <button type="submit" class="btn btn-success"> <i class="menu-icon tf-icons bx bx-check-circle"></i>Setujui</button>
+                        <button type="submit" class="btn btn-danger"> <i class="menu-icon tf-icons bx bxs-x-circle"></i>Tolak</button>
                     @else
                         <input type="hidden" value="1" name="status">
                         <button type="submit" class="btn btn-primary form-control"> <i class="menu-icon tf-icons bx bx-chevrons-right"></i>Kirim Laporan</button>
@@ -198,6 +198,7 @@
         var url_data_yupi   = "{{ route('laporan-produksi-yp-data',['id'=> Request::segment(3),'tipe_produk' => $data->keterangan]) }}";
         var url_selisih     = "{{ route('laporan-produksi-yp-cek-selisih') }}";
         var url_compare     = "{{ route('laporan-produksi-yp-compare',['id'=> Request::segment(3),'tipe_produk' => $data->keterangan]) }}";
+        var roles           = "{{ Auth::user()->roles }}";
 
 
         // COLUMN DEFAULT

@@ -196,6 +196,8 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('datas-detail',[DatatableController::class,'detail_laporan_produksi_data'])->name('laporan-produksi-detail-data');
                 Route::post('data-get-totals',[ProdukController::class,'laporan_produksi_get_totals'])->name('lap-produk-totals');
                 Route::post('update',[ProdukController::class,'update_laporan_produksi'])->name("laporan-produksi-update");
+                Route::post('/laporan-produksi/kirimm',[ProdukController::class,'laporan_produksi_kirim'])->name('lap-produk-kirim');
+
 
                 Route::get('{kategori}',[ProdukController::class,'laporan_produksi_yp'])->name("laporan-produksi-yp");
                 Route::get('data/yupi/{id}/{tipe_produk}',[ProdukController::class,'laporan_produksi_yupi'])->name('laporan-produksi-yp-data');
@@ -241,7 +243,6 @@ Route::middleware('revalidate')->group(function() {
                 Route::post('/laporan-produksi/data-details-lap',[ProdukController::Class,'get_detail_laporan_produksi'])->name('laporan-produksi-get-detail');
                 Route::post('/laporan-produksi/data-details-updated',[ProdukController::Class,'update_detail_laporan_produksi'])->name('laporan-produksi-update-detail');
                 Route::post('/laporan-produksi/data-get-calculate',[ProdukController::class,'laporan_produksi_get_calculate'])->name('lap-produk-calculate');
-                Route::post('/laporan-produksi/kirimm',[ProdukController::class,'laporan_produksi_kirim'])->name('lap-produk-kirim');
 
             });
 

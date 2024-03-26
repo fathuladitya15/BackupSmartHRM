@@ -2005,7 +2005,11 @@ class DatatableController extends Controller
         ->addColumn('aksi', function($row) {
             $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="edit('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Edit</a>';
             $hapus   = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')"  ><i class="bx bx-trash"></i>Hapus</a>';
-            return $hapus;
+            if(Auth::user()->roles == 'spv-internal'){
+                return  "";
+            }else {
+                return $hapus;
+            }
         })
         ->addColumn('harga_produk_satuan', function($row) {
             return $row->harga_produk_satuan == null ? 'Belum ditentukan' : "Rp ". number_format($row->harga_produk_satuan,2,',','.') ;

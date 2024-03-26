@@ -498,7 +498,8 @@ class ProdukController extends Controller
     }
 
     function laporan_produksi_kirim(Request $request) {
-        if (Auth::user()->id_client == 22) {
+        $lins = route('laporan-produksi');
+        if (Auth::user()->id_client == 2) {
             $result          = $request->mentahan_harga * ($request->fee / 100);
             $hasilPersentase = number_format($result,2,',','.');
 
@@ -508,6 +509,8 @@ class ProdukController extends Controller
                 'hasil_persentase' => $hasilPersentase,
             ];
             $u = ListLaporanProduksi::where("id",$request->id_list_laporan)->update($dataUpdate);
+            $pesan = ['status' => TRUE,'title' => 'Data Terkirim' ,'pesan' => 'Data berhasil dikirim ke supervisor. Halaman anda dialihkan ','link' => $lins,'data' => $u];
+            Aktivitas(Auth::user()->name.' Menyetujui laporan produksi '.$u->keterangan.'('.$u->from_date.'/'.$u->to_date.')');
         }else if(Auth::user()->id_client == 8){
             $u = ListLaporanProduksi::find($request->id_list_laporan);
             if($request->status == 2 ) {
@@ -515,15 +518,19 @@ class ProdukController extends Controller
                 $u->disetujui_pada = Carbon::now();
                 $u->disetujui_pada = Auth::user()->name.'(Supervisor)';
                 $u->update();
+                $pesan = ['status' => TRUE,'title' => 'Laporan disetujui' ,'pesan' => 'Laporan berhasil disetujui. Halaman anda dialihkan ','link' => $lins,'data' => $u];
+                Aktivitas(Auth::user()->name.' Menyetujui laporan produksi '.$u->keterangan.'('.$u->from_date.'/'.$u->to_date.')');
             }else {
                 $u->status         = $request->status;
                 $u->update();
+                $pesan = ['status' => TRUE,'title' => 'Laporan ditolak' ,'pesan' => 'Laporan dikembalikan ke admin/korlap. Halaman anda dialihkan ','link' => $lins,'data' => $u];
+                Aktivitas(Auth::user()->name.' Menolak laporan produksi '.$u->keterangan.'('.$u->from_date.'/'.$u->to_date.')');
 
             }
         }
 
-        $lins = route('laporan-produksi');
-        return response()->json(['status' => TRUE,'title' => 'Data Terkirim' ,'pesan' => 'Data berhasil dikirim ke supervisor. Halaman anda dialihkan ','link' => $lins,'data' => $u]);
+
+        return response()->json();
     }
 
     // LAPORAN YUPI
@@ -549,17 +556,20 @@ class ProdukController extends Controller
                 'no'            => $i,
             ];
         }
-        // dd($data);
 
         $dt     = DataTables::of($data)
         ->addColumn('input', function($row) use ($id) {
-
             $html = '<form id="formSelisih_'.$row['no'].'">';
-            $html .= '<input class="form-control-sm" type="text" name="input_selisih" id="input_selisih" placeholder="Masukan data anda" value="'.$row['value_input'].'">';
-            $html .= '<input type="hidden" name="tanggal" id="tanggal" value='.$row['value_name'].'>';
-            $html .= '<input type="hidden" name="total_produk" id="total_produk" value='.$row['total_produk'].'>';
-            $html .= '<input type="hidden" name="id_table_lap_period" id="id_table_lap_period" value='.$id.'>';
-            $html .= ' <a href="javascript:void(0)" onclick="cek_selisih('.$row['no'].')" type="button" class="btn btn-sm btn-primary" >Cek</a>';
+            if(Auth::user()->roles == 'spv-internal') {
+                $html .= '<input class="form-control-sm" type="text" name="input_selisih" id="input_selisih" placeholder="0.00" value="'.$row['value_input'].'" readonly>';
+            }else {
+                $html .= '<input class="form-control-sm" type="text" name="input_selisih" id="input_selisih" placeholder="Masukan data anda" value="'.$row['value_input'].'" >';
+                $html .= '<input type="hidden" name="tanggal" id="tanggal" value='.$row['value_name'].'>';
+                $html .= '<input type="hidden" name="total_produk" id="total_produk" value='.$row['total_produk'].'>';
+                $html .= '<input type="hidden" name="id_table_lap_period" id="id_table_lap_period" value='.$id.'>';
+                $html .= ' <a href="javascript:void(0)" onclick="cek_selisih('.$row['no'].')" type="button" class="btn btn-sm btn-primary" >Cek</a>';
+            }
+
             $html .= '</form>';
 
             return $html;
@@ -624,7 +634,7 @@ class ProdukController extends Controller
                 'selisih'                 => number_format((float)$selisih,2,'.','.'),
             ]);
         }
-
+        Aktivitas(Auth::user()->name.' Memperbarui Selisih Tonase ');
         return response()->json(['status' => TRUE,'pesan' => 'Data Berhasil diupdate' ,'title' => 'Sukses' ,'asd' => $request->all()]);
         // return response()->json($idMSelisih->id);
     }
