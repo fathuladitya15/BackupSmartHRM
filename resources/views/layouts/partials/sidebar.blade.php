@@ -423,7 +423,7 @@
                 @endif
 
 
-
+                {{-- ROUTING DIREKTUR --}}
                 @if (Auth::user()->roles == 'direktur')
                     <li class="menu-header small text-uppercase">
                         <span class="menu-header-text">Manajemen</span>
@@ -431,15 +431,15 @@
                     @php
                         $data = App\Models\Clients::where("nama_client",'!=','PT Proven Force Indonesia')->get();
                     @endphp
-                    <li class="menu-item {{  menuOpen(['direktur-packlaring-index']) }} ">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle" style="color: white">
+                    <li class="menu-item {{  menuOpen(['direktur-rf-index']) }} ">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-file"></i>
                             <div data-i18n="Authentications">Referensi Kerja </div>
                         </a>
 
                         <ul class="menu-sub">
                             @foreach ($data as $item)
-                                <li class="menu-item  {{ ($item->nama_client == Request::segment(4)) && ( Request::segment(3) == "referensi-kerja") ? 'active' : ""  }}">
+                                <li class="menu-item  {{ $item->nama_client == Request::segment(2)  ? 'active' : ""  }}">
                                     <a href="{{ route('direktur-rf-index',['nama_client' => $item->nama_client, 'id' => HashVariable($item->id)]) }}" class="menu-link " >
                                         <div data-i18n="Basic">{{ $item->nama_client }} </div>
                                     </a>

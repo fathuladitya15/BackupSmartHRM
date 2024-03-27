@@ -1744,9 +1744,7 @@ class DatatableController extends Controller
 
     // REFERENSI KERJA
     function data_referensi_kerja(Request $request) {
-        if(Auth::user()->roles == 'direktur') {
-            $data = ReferensiKerja::all();
-        }else if(Auth::user()->roles == 'karyawan') {
+         if(Auth::user()->roles == 'karyawan') {
             $data = ReferensiKerja::where('id_karyawan', Auth::user()->id_karyawan)->get();
 
         }else {
@@ -1766,7 +1764,7 @@ class DatatableController extends Controller
         })
         ->addColumn('keterangan', function($row) {
             if($row->keterangan == 1) {
-                $s = 'Menundurkan Diri';
+                $s = 'Mengundurkan Diri';
             }else if($row->keterangan == 2) {
                 $s = 'Habis Kontrak';
             }else if($row->keterangan == 3) {
@@ -1779,22 +1777,21 @@ class DatatableController extends Controller
 
         ->addColumn('status',function ($row) {
             $role = Auth::user()->roles;
-            if($role != 'karyawan') {
-                if(in_array($row->status, [0,1])) {
-                    $s = '<span class="badge badge bg-warning"> Menunggu ditandatangani Supervisor </span>';
-                }else if(in_array($row->status, [2,3])) {
-                    $s = '<span class="badge badge bg-warning"> Menunggu ditandatangani Direktur </span>';
-                }else if($row->status == 4) {
-                    $s = '<span class="badge badge bg-warning"> Sedang diriview Supervisor </span>';
-                }else if($row->status == 5) {
-                    $s = '<span class="badge badge bg-success"> Terkirim ke karyawan </span>';
-                }else {
-                    $s = '';
-                }
+            if(in_array($row->status, [0,1])) {
+                $s = '<span class="badge badge bg-warning"> Menunggu ditandatangani Supervisor </span>';
+            }else if(in_array($row->status, [2,3])) {
+                $s = '<span class="badge badge bg-warning"> Menunggu ditandatangani Direktur </span>';
+            }else if($row->status == 4) {
+                $s = '<span class="badge badge bg-warning"> Sedang diriview Supervisor </span>';
+            }else if($row->status == 5) {
+                $s = '<span class="badge badge bg-success"> Terkirim ke karyawan </span>';
             }else {
-                $s = "";
+                $s = '';
             }
             return $s;
+        })
+        ->addColumn('acc_on',function($row) {
+            return "";
         })
         ->addColumn('aksi', function($row) {
             $detail   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="detail_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';

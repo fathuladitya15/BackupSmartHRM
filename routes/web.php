@@ -154,6 +154,7 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/surat-referensi-kerja/update',[ReferensiKerjaController::class,'update'])->name('update-rf');
             Route::post('/surat-referensi-kerja/detail',[ReferensiKerjaController::class,'detail'])->name('detail-rf');
             Route::get('/surat-referensi-kerja/dokumen/{id}',[ReferensiKerjaController::class,'dokumen'])->name('dokumen-rf');
+            Route::post('/surat-referensi-kerja/data/direktur',[ReferensiKerjaController::class,'data_direktur'])->name('data-rf-direktur');
 
             Route::get('/izin',[IzinController::class,'index'])->name('izin');
             Route::get('/izin-self',[IzinController::class,'self'])->name('izin-self');
@@ -270,10 +271,7 @@ Route::middleware('revalidate')->group(function() {
             });
 
             Route::middleware(['role:direktur'])->group(function() {
-                Route::get('/referensi-kerja-direktur/{nama_client}/{id}', function($c,$id) {
-                    // dd($c,$id);
-                    abort(500);
-                })->name('direktur-rf-index');
+                Route::get('/referensi-kerja-direktur/{nama_client}/{id}',[ReferensiKerjaController::class,'index_direktur'])->name('direktur-rf-index');
 
                 Route::get('/pre-order-direktur/{nama_client}/{id}', function($c,$id) {
                     // dd($c,$id);

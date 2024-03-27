@@ -48,7 +48,7 @@
 
 @endpush
 @section('content')
-<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Surat /</span>Referensi Kerja</h4>
+<h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Surat / Referensi Kerja/</span>{{ Request::segment(2) }}</h4>
 <div class="row">
     <div class="col-xxl">
         <div class="card mb-4">
@@ -170,7 +170,7 @@
                 <div id="aksi">
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Kirim Ke Direktur Alih Daya</button>
+                        <button type="submit" class="btn btn-primary">Lanjutkan</button>
                     </div>
 
                 </div>
@@ -185,14 +185,79 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="{{ asset("assets/js/jquery.signature.js") }}"></script>
 <script>
-    var url_data            = "{{ route('data-rf') }}";
+    var url_data            = "{{ route('data-rf-direktur') }}";
     var url_save            = "{{ route('update-rf') }}";
     var url_update          = "{{ route('update-rf') }}";
     var url_detail          = "{{ route('detail-rf') }}";
     var url_get_karyawan    = "{{ route('peringatan-data-karyawan') }}";
+    var id                  = "{{ EncryprVariable(Request::segment(3)) }}";
 
 </script>
 <script>
+
+var table  = $('#myTable').dataTable({
+    processing: true,
+    serverSide: true,
+    ajax:  {
+        url : url_data,
+        type: "POST",
+        data: {id_client : id}
+    },
+    columns: [{
+        data: 'DT_RowIndex',
+        orderable: false,
+        searchable: false
+    },  {
+        data: 'no_surat',
+        name: 'no_surat',
+        orderable: false,
+        searchable: false
+    },
+    {
+        data: 'id_karyawan',
+        name: 'id_karyawan',
+        orderable: false,
+        searchable: false
+    },{
+        data: 'nama_karyawan',
+        name: 'nama_karyawan',
+        orderable: false,
+        searchable: false
+    },  {
+        data: 'awal_masuk',
+        name: 'awal_masuk',
+        orderable: false,
+        searchable: false
+    },  {
+        data: 'akhir_masuk',
+        name: 'akhir_masuk',
+        orderable: false,
+        searchable: false
+    }, {
+        data: 'tanggal_pembuatan',
+        name: 'tanggal_pembuatan',
+        orderable: false,
+        searchable: false
+    }, {
+        data: 'keterangan',
+        name: 'keterangan',
+        orderable: false,
+        searchable: false
+    },{
+
+        data: 'status',
+        name: 'status',
+        orderable: false,
+        searchable: false
+    },
+    {
+        data: 'aksi',
+        name: 'aksi',
+        orderable: false,
+        searchable: false
+    },]
+});
+
 function acc(id) {
     const edit          = document.getElementById("acc_"+id+"");
     const stoploading   = '<i class="bx bx-check"></i>Setujui';
@@ -267,6 +332,6 @@ function detail(id) {
     })
 }
 </script>
-<script src="{{ asset('assets/js/admin_korlap/referensi_kerja.js') }}"></script>
+{{-- <script src="{{ asset('assets/js/supervisor/referensi_kerja.js') }}"></script> --}}
 
 @endpush
