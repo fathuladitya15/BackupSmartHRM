@@ -209,34 +209,12 @@ class ReferensiKerjaController extends Controller
             $acc      = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="acc_'.$row->id.'" onclick="acc('.$row->id.')"  ><i class="bx bx-check"></i>Setujui</a>';
             $dokumen  = '<a href="'.route('dokumen-rf',['id' => $row->id]).'" class="btn btn-danger btn-sm" ><i class=bx bx-file ></i> Lihat File</a>';
             $role = Auth::user()->roles;
-            if(in_array($role,['admin','korlap'])){
-                $btn = "";
-            }else if($role == 'spv-internal') {
-                if($row->status == 0){
-                    $btn = $acc;
-                }else  if($row->status == 1){
-                    $btn = $detail;
-                }else if($row->status == 4) {
-                    $btn = '<a href="javascript:void(0)" class="btn btn-success btn-sm" id="send_'.$row->id.'" onclick="send('.$row->id.')"  ><i class="bx bxs-send"></i>Kirim Ke Karyawan</a>' ;
-                }else {
-                    $btn = "";
-                }
-            }else if($role == 'direktur') {
-                if($row->status == 2) {
-                    $btn = $acc;
-                }else if($row->status == 3) {
-                    $btn = $detail;
-                }else {
-                    $btn = "";
-                }
-            }else if($role == 'karyawan') {
-                if($row->status == 5) {
-                    $btn = $dokumen;
-                }else {
-                    $btn = "";
-                }
+            if($row->status == 2) {
+                $btn = $acc;
+            }else if($row->status == 3) {
+                $btn = $detail;
             }else {
-                $btn ="";
+                $btn = "";
             }
             return $btn;
         })

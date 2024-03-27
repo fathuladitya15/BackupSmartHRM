@@ -425,8 +425,8 @@
             orderable: false,
             searchable: false
         },{
-            data: 'ttd_direktur',
-            name: 'ttd_direktur',
+            data: 'nama_direktur',
+            name: 'nama_direktur',
             orderable: false,
             searchable: false
         },{

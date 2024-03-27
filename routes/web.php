@@ -310,6 +310,9 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('data',[PreorderController::class,'data'])->name('pre-order-data');
                 Route::post('get-data',[PreorderController::class,'get_data'])->name('pre-order-get-data');
                 Route::post('update',[PreorderController::class,'update'])->name('pre-order-update');
+                Route::get('index/{nama_client}/{id}',[Preordercontroller::class,'index_direktur'])->name('pre-order-direktur');
+                Route::post('data-direktur',[PreorderController::class,'data_direktur'])->name('pre-order-data-direktur');
+                Route::get('dokumen/{id}',[PreorderController::class,'dokumen'])->name('pre-order-dokumen');
             });
         });
 
