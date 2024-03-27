@@ -296,12 +296,32 @@
                                             </li>
                                         @endif
 
-                                    @elseif (in_array(Auth::user()->roles, ['super-admin', 'spv-internal']))
+                                    @elseif (in_array(Auth::user()->roles, ['super-admin']))
                                         <li class="menu-item {{ menuActive(["laporan-produksi"]) }}">
                                             <a href="{{ route('laporan-produksi') }}" class="menu-link" >
                                             <div data-i18n="Basic">Laporan Produksi</div>
                                             </a>
                                         </li>
+                                    @elseif (in_array(Auth::user()->roles, ['spv-internal']))
+                                            @if (Auth::user()->id_client == 8)
+
+                                                <li class="menu-item  {{ Request::segment(2) == 'Y3' ? 'active' : ''  }}">
+                                                    <a href="{{ route('laporan-produksi-yp',['kategori' => "Y3"]) }}" class="menu-link" >
+                                                    <div data-i18n="Basic">Rekap FG Y3</div>
+                                                    </a>
+                                                </li>
+                                                <li class="menu-item {{ Request::segment(2) == 'Y4' ? 'active' : ''  }}">
+                                                    <a href="{{ route('laporan-produksi-yp',['kategori' => 'Y4']) }}" class="menu-link" >
+                                                    <div data-i18n="Basic">Rekap FG Y4</div>
+                                                    </a>
+                                                </li>
+                                            @else
+                                                <li class="menu-item {{ menuActive(["laporan-produksi"]) }}">
+                                                    <a href="{{ route('laporan-produksi') }}" class="menu-link" >
+                                                    <div data-i18n="Basic">Laporan Produksi</div>
+                                                    </a>
+                                                </li>
+                                            @endif
                                     @endif
                                 </ul>
                             </li>

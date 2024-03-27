@@ -137,8 +137,8 @@
                         <input type="hidden" value="{{ $data->id }}" name="id_list_laporan">
                     @if (Auth::user()->roles == 'spv-internal')
                         <input type="hidden" value="2" name="status">
-                        <button type="submit" class="btn btn-success"> <i class="menu-icon tf-icons bx bx-check-circle"></i>Setujui</button>
-                        <button type="submit" class="btn btn-danger"> <i class="menu-icon tf-icons bx bxs-x-circle"></i>Tolak</button>
+                        <a href="javascript:void(0)" onclick="acc({{ $data->id }})" id="acc" class="btn btn-success"> <i class="menu-icon tf-icons bx bx-check-circle"></i>Setujui</a>
+                        <a href="javascript:void(0)" onclick="reject({{ $data->id }})" id="reject" class="btn btn-danger"> <i class="menu-icon tf-icons bx bxs-x-circle"></i>Tolak</a>
                     @else
                         <input type="hidden" value="1" name="status">
                         <button type="submit" class="btn btn-primary form-control"> <i class="menu-icon tf-icons bx bx-chevrons-right"></i>Kirim Laporan</button>
@@ -199,6 +199,7 @@
         var url_selisih     = "{{ route('laporan-produksi-yp-cek-selisih') }}";
         var url_compare     = "{{ route('laporan-produksi-yp-compare',['id'=> Request::segment(3),'tipe_produk' => $data->keterangan]) }}";
         var roles           = "{{ Auth::user()->roles }}";
+        var url_back        = "{{ route('laporan-produksi-yp',['kategori' => $data->keterangan]) }}";
 
 
         // COLUMN DEFAULT
@@ -235,9 +236,9 @@
                 name : 'total_produk',
                 orderable: false,
                 searchable: false,
-                render :  function(data, type, row) {
-                    return  formatRupiah('' + data, 'IDR');
-                }
+                // render :  function(data, type, row) {
+                //     return  formatRupiah('' + data, 'IDR');
+                // }
             },
             {data: 'harga_produk_satuan',name : 'harga_produk_satuan', orderable: false,
                 searchable: false,},
@@ -330,22 +331,32 @@
                     });
                 },
                 success: function(s) {
-                    Swal.fire({
-                        title: s.title,
-                        text: s.pesan,
-                        icon: "success"
-                    });
-                    $("#modalInput").modal('hide');
-                    $("#update_laporan").trigger('reset');
-                    $("#tagihan").val(s.hargaTotal);
-                    totalHargaProdukInt = s.totalHargaProdukInt
+                    if(s.status == true) {
+                        Swal.fire({
+                            title: s.title,
+                            text: s.pesan,
+                            icon: "success"
+                        });
+                        $("#modalInput").modal('hide');
+                        $("#update_laporan").trigger('reset');
+                        $("#tagihan").val(s.hargaTotal);
+                        totalHargaProdukInt = s.totalHargaProdukInt
+
+                    }else {
+                        Swal.fire({
+                            title: s.title,
+                            text: s.pesan,
+                            icon: 'warning',
+                        });
+                    }
+
                 },error: function(e) {
                     var errors = '';
                     $.each(e.responseJSON.errors, function(key, value) {
                         errors += value + '<br>'; // Membuat daftar pesan kesalahan
                     });
                     Swal.fire({
-                        icon: 'error',
+                        icon: 'warning',
                         title: 'Terjadi Kesalahan!',
                         html: errors
                     });
@@ -407,9 +418,25 @@
                 data : form,
                 type: "POST",
                 beforeSend:function(){
-
+                    Swal.fire({
+                        title: 'Dalam proses',
+                        html: 'Mohon tunggu...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                    });
                 }, success: function(s) {
                     console.log(s);
+                    if(s.status == false) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: s.title,
+                            html: s.pesan
+                        });
+                    }else {
+                        swal.close()
+                    }
                     $("#input_selisih").val(s.TotalCountProduk_M);
                 }, error: function (e) {
                     console.log(e);
@@ -500,6 +527,106 @@
                 }
             });
         })
+
+        var url_acc = "{{ route('laporan-produksi-update') }}";
+        function acc(id) {
+            const button        = document.getElementById('acc');
+            const stoploading   = '<i class="menu-icon tf-icons bx bx-check-circle"></i>';
+            const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+
+            $.ajax({
+                url : url_acc,
+                data: {id:id,status : 2},
+                type: "POST",
+                beforeSend: function() {
+                    // button.innerHTML = loading;
+                    // button.disabled = true;
+                },success: function(s) {
+                    console.log(s);
+                    if(s.status == true) {
+                        Swal.fire({
+                            icon : 'success',
+                            title: s.title,
+                            html: s.pesan ,
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            },
+                        });
+
+                    }else {
+                        Swal.fire({
+                            title: s.title,
+                            text: s.pesan,
+                            icon: "warning"
+                        });
+                    }
+                }, error : function(e) {
+                        Swal.fire({
+                            title: 'Terjadi Kesalahan',
+                            text: 'Hubungi Tim IT',
+                            icon: "error"
+                        });
+                }, complete: function() {
+                    // table.dataTable().ajax.reload();
+                    // table.DataTable().ajax.reload();
+
+                    setTimeout(function() {
+                            window.location.href = url_back; // Ganti dengan halaman yang diinginkan
+                        }, 2000);
+
+                }
+            })
+        }
+
+        function reject(id) {
+            const button        = document.getElementById('reject');
+            const stoploading   = '<i class="menu-icon tf-icons bx bx-check-circle"></i>';
+            const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+
+            $.ajax({
+                url : url_acc,
+                data: {id:id,status : 3},
+                type: "POST",
+                beforeSend: function() {
+                    // button.innerHTML = loading;
+                    // button.disabled = true;
+                },success: function(s) {
+                    console.log(s);
+                    if(s.status == true) {
+                        Swal.fire({
+                            icon : 'success',
+                            title: s.title,
+                            html: s.pesan ,
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            },
+                        });
+                    }else {
+                        Swal.fire({
+                            title: s.title,
+                            text: s.pesan,
+                            icon: "warning"
+                        });
+                    }
+                }, error : function(e) {
+                        Swal.fire({
+                            title: 'Terjadi Kesalahan',
+                            text: 'Hubungi Tim IT',
+                            icon: "error"
+                        });
+                }, complete: function() {
+                    // table.dataTable().ajax.reload();
+                    // table.DataTable().ajax.reload();
+
+                    setTimeout(function() {
+                            window.location.href = url_back; // Ganti dengan halaman yang diinginkan
+                        }, 2000);
+
+                }
+            })
+        }
 
 
 </script>

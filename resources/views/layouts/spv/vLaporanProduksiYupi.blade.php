@@ -41,12 +41,7 @@
     <div class="col-xxl">
         <div class="card mb-4">
             <div class="card-header d-flex align-items-center justify-content-between" >
-                <h5 class="mb-0">List Produk </h5>
-            </div>
-            <div class="card-title">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah" style="float: right">
-                    <i class='bx bx-plus'></i> Tambah Laporan Baru
-                </button>
+                <h5 class="mb-0">List Laporan </h5>
             </div>
             <br>
             <div class="card-body">
@@ -216,59 +211,21 @@
     });
 
 
-    var url_get = "{{ route('laporan-produksi-get') }}";
-    function edit(id) {
-        const button = document.getElementById('edit_'+id);
-        const stoploading   = '<i class="bx bx-edit-alt"></i>Edit';
+    var url_acc = "{{ route('laporan-produksi-update') }}";
+    function acc(id) {
+        const button        = document.getElementById('acc_'+id);
+        const stoploading   = '<i class="menu-icon tf-icons bx bx-check-circle"></i>';
         const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
 
-
         $.ajax({
-            url : url_get,
-            type: 'POST',
-            data: {id:id},
+            url : url_acc,
+            data: {id:id,status : 2},
+            type: "POST",
             beforeSend: function() {
                 button.innerHTML = loading;
                 button.disabled = true;
-            },success : function(s) {
+            },success: function(s) {
                 console.log(s);
-                $('#modalEdit').modal('show');
-                $('#id').val(s.id);
-                $('#from_date').val(s.from_date);
-                $('#to_date').val(s.to_date);
-                $('#keterangan').val(s.keterangan);
-            }, error : function(e) {
-                console.log(e);
-                Swal.fire({
-                    title: "Terjadi kesalahan",
-                    text: "Hubungi tim IT",
-                    icon: "error"
-                });
-            },complete: function() {
-                button.innerHTML  = stoploading;
-                button.disabled = false;
-
-            }
-        })
-    }
-
-
-    $("#update_laporan").submit(function (e) {
-        e.preventDefault();
-        $.ajax({
-            url : $(this).attr('action'),
-            data : $(this).serialize(),
-            type : "POST",
-            beforeSend :  function() {
-                Swal.fire({
-                    title: 'Loading...',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    },
-                });
-            }, success : function(s) {
                 if(s.status == true) {
                     Swal.fire({
                         title: s.title,
@@ -282,44 +239,33 @@
                         icon: "warning"
                     });
                 }
-                $("#modalEdit").modal('hide');
-                $("#update_laporan").trigger('reset');
             }, error : function(e) {
-                console.log(e);
-                var errors = '';
-                $.each(e.responseJSON.errors, function(key, value) {
-                    errors += value + '<br>'; // Membuat daftar pesan kesalahan
-                });
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi Kesalahan!',
-                    html: errors
-                });
+                    Swal.fire({
+                        title: 'Terjadi Kesalahan',
+                        text: 'Hubungi Tim IT',
+                        icon: "error"
+                    });
             }, complete: function() {
-
+                // table.dataTable().ajax.reload();
                 table.DataTable().ajax.reload();
-                // Swal.close();
 
             }
         })
-    })
+    }
 
-    $("#add_laporan").submit(function (e) {
-        e.preventDefault();
+    function reject(id) {
+        const button        = document.getElementById('reject_'+id);
+        const stoploading   = '<i class="menu-icon tf-icons bx bx-x-circle"></i>';
+        const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+
         $.ajax({
-            url : $(this).attr('action'),
-            data : $(this).serialize(),
-            type : "POST",
-            beforeSend :  function() {
-                Swal.fire({
-                    title: 'Loading...',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    },
-                });
-            }, success : function(s) {
+            url : url_acc,
+            data: {id:id,status : 3},
+            type: "POST",
+            beforeSend: function() {
+                button.innerHTML = loading;
+                button.disabled = true;
+            },success: function(s) {
                 console.log(s);
                 if(s.status == true) {
                     Swal.fire({
@@ -327,99 +273,25 @@
                         text: s.pesan,
                         icon: "success"
                     });
-                    $("#modalTambah").modal('hide');
-                    $("#add_laporan").trigger('reset');
                 }else {
                     Swal.fire({
                         title: s.title,
                         text: s.pesan,
-                        icon: "info"
+                        icon: "warning"
                     });
                 }
             }, error : function(e) {
-                console.log(e);
-                var errors = '';
-                $.each(e.responseJSON.errors, function(key, value) {
-                    errors += value + '<br>'; // Membuat daftar pesan kesalahan
-                });
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi Kesalahan!',
-                    html: errors
-                });
+                    Swal.fire({
+                        title: 'Terjadi Kesalahan',
+                        text: 'Hubungi Tim IT',
+                        icon: "error"
+                    });
             }, complete: function() {
-
+                // table.dataTable().ajax.reload();
                 table.DataTable().ajax.reload();
-                // Swal.close();
 
             }
         })
-    })
-
-
-    var url_delete = "{{ route('laporan-produksi-delete') }}";
-    function hapus(id) {
-        const button = document.getElementById('hapus_'+id);
-        const stoploading   = '<i class="bx bx-trash"></i>Hapus';
-        const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
-
-        Swal.fire({
-            title: "Konfirmasi",
-            text: "Apakah Anda yakin ingin menghapus data?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Hapus Produk!"
-            }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                        url : url_delete,
-                        type: 'DELETE',
-                        data: {id:id},
-                        beforeSend: function() {
-                            Swal.fire({
-                                title: 'Loading...',
-                                allowOutsideClick: false,
-                                allowEscapeKey: false,
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                },
-                            });
-                        },success : function(s) {
-                            console.log(s);
-                            if(s.status == true) {
-                                Swal.fire({
-                                title: s.title,
-                                text: s.pesan,
-                                icon: "success"
-                            });
-                            }else {
-                                Swal.fire({
-                                    title: s.title,
-                                    text: s.pesan,
-                                    icon: "warning"
-                                });
-
-                            }
-                        }, error : function(e) {
-                            console.log(e);
-                            Swal.fire({
-                                title: "Terjadi kesalahan",
-                                text: "Hubungi tim IT",
-                                icon: "error"
-                            });
-                        },complete: function() {
-                            button.innerHTML  = stoploading;
-                            button.disabled = false;
-                            table.DataTable().ajax.reload();
-
-
-                        }
-                    })
-            }
-        });
-
     }
 
     var url_data_laporan = "{{ route('laporan-produksi-isi') }}";

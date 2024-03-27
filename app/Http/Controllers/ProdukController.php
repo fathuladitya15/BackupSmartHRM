@@ -133,7 +133,8 @@ class ProdukController extends Controller
         if(in_array(Auth::user()->roles,['admin','korlap'])) {
             return view("layouts.admin_korlap.vLaporanProdukYupi");
         }else if(Auth::user()->roles == 'spv-internal') {
-            return view('layouts.spv.vLaporanProduksiMegasari');
+            // return view('layouts.spv.vLaporanProduksiMegasari');
+            return view('layouts.spv.vLaporanProduksiYupi');
         }else {
             abort(404,'Halaman Tidak ditemukan');
         }
@@ -141,9 +142,19 @@ class ProdukController extends Controller
 
     function add_laporan_produksi(Request $request) {
 
-        $cekLaporan = ListLaporanProduksi::where('from_date',$request->from_date)
-        ->where('to_date',$request->to_date)
-        ->where('id_client',Auth::user()->id_client)->first();
+        if(Auth::user()->id_client == 2) {
+            $cekLaporan = ListLaporanProduksi::where('from_date',$request->from_date)
+            ->where('to_date',$request->to_date)
+            ->where('id_client',Auth::user()->id_client)->first();
+
+        }else if(Auth::user()->id_client == 8) {
+            $cekLaporan = ListLaporanProduksi::where('from_date',$request->from_date)
+            ->where('to_date',$request->to_date)
+            ->where('keterangan',$request->keterangan)
+            ->where('id_client',Auth::user()->id_client)->first();
+        }else {
+            $cekLaporan = 1;
+        }
 
         $tanggal        = Carbon::parse($request->from_date)->format('d'); // MENGAMBIL TANGGAL SAJA DARI REQUEST YANG DIKIRIM
         $tanggal_las    = Carbon::parse($request->from_date)->endOfMonth(); // MENGAMBIL TOTAL HARI DALAM BULAN YANG DIMAKSUD
@@ -152,7 +163,7 @@ class ProdukController extends Controller
         $month_2 = Carbon::parse($request->to_date)->format('d-m-y');
 
         if($cekLaporan) { // CEK TANGGAL APAKAH YANG DIMAKSUD DUPLICATE ATAU TIDAK
-            $pesan = ['status' => FALSE,'title' => 'Data Duplikat','pesan' => 'Laporan Produk dengan tanggal tersebut sudah tersedia, hapus terlebih dahulu jika ingin menggantinya'];
+            $pesan = ['status' => FALSE,'title' => 'Data Duplikat','pesan' => 'Laporan Produk dengan tanggal tersebut sudah tersedia, hapus terlebih dahulu jika ingin menggantinya','data'=>$request->all()];
         }
         else if($tanggal != '01'){ // TANGGAL HARUS DIMULAI DARI TANGGAL 1
             $pesan = ['status' => FALSE,'title' => 'Tanggal tidak valid','pesan' => 'Laporan harus dimulai dari tanggal 1'];
@@ -182,7 +193,7 @@ class ProdukController extends Controller
 
     function update_laporan_produksi(Request $request) {
         $u = ListLaporanProduksi::find($request->id) ;
-
+        $lins = route('laporan-produksi');
         if(in_array(Auth::user()->roles,['admin','korlap'])) {
             if($u->status != 0) {
                 $pesan = ['status' => FALSE,'pesan' => 'Data ini belum bisa perbaharui karena masih dalam proses' ,'title' => 'Mohon Maaf ...'];
@@ -198,9 +209,9 @@ class ProdukController extends Controller
             $u->status = $request->status;
             $u->update();
             if($request->status == 2) {
-                $pesan = ['status' => TRUE,'pesan' => 'Laporan telah disetujui','title' => 'Sukses'];
+                $pesan = ['status' => TRUE,'pesan' => 'Laporan telah disetujui','title' => 'Sukses' ,'link' => $lins];
             }else if($request->status == 3) {
-                $pesan = ['status' => TRUE,'pesan' => 'Laporan ditolak, dikembalikan ke admin','title' => 'Sukses'];
+                $pesan = ['status' => TRUE,'pesan' => 'Laporan ditolak, dikembalikan ke admin','title' => 'Sukses','link' => $lins];
             }
         }else {
             $pesan = ['status' => FALSE ,'pesan' => 'Terjadi kesalahan','title' => 'Error'];
@@ -227,6 +238,7 @@ class ProdukController extends Controller
 
     }
 
+    // DETAIL PRODUK LAPORAN PRODUKSI
     function data_laporan_produksi(Request $request) {
         $cek = ListLaporanProduksi::find($request->id);
         $status = $cek->status;
@@ -605,9 +617,12 @@ class ProdukController extends Controller
 
     function laporan_produksi_yupi_cek_selisih(Request $request) {
 
+        if(strpos($request->input_selisih, ',') !== false){
+            return response()->json(['status' => FALSE,'pesan' => 'Gunakan titik untuk total produk (bilangan desimal)','title' => "Input tidak valid"]);
+        }
         $validasi = Validator::make($request->all(), [
-            'input_selisih' => ['required', 'regex:/^[0-9.]{6,}$/'] // Hanya angka dan koma
-        ],['input_selisih.regex' => 'Hanya angka titik dan koma yang diperbolehkan' ]);
+            'input_selisih' => ['required'] // Hanya angka dan koma
+        ],['input_selisih.required' => 'Total produk tidak boleh kosong' ]);
 
         if ($validasi->fails()) {
             return response()->json(['errors' => $validasi->errors()->all()], 422);
@@ -640,6 +655,7 @@ class ProdukController extends Controller
     }
 
     function laporan_produksi_compare($id,$tipe_produk) {
+
         $totalProduk =  DB::table('table_lap_produksi')
             ->where('id_table_lap_period',$id)
             ->where('tipe_produk',$tipe_produk)
@@ -650,16 +666,17 @@ class ProdukController extends Controller
         $selisih =  ($totalProdukM->total/1000) - ($totalProduk->total/ 1000);
         $data = [
             [
-                'name' => 'yupi',
+                'name' => 'pfi',
                 'total' => number_format($totalProduk->total/ 1000,5,'.',''),
             ],[
-                'name' => 'pfi',
+                'name' => 'yupi',
                 'total' => number_format($totalProdukM->total/1000,5,'.',''),
             ], [
                 'name' => 'selisih',
                 'total'=>number_format($selisih,5,'.',''),
             ]
         ];
+
         $dt     = DataTables::of($data)
         ->addColumn('satuan', function() {
             return "TON";

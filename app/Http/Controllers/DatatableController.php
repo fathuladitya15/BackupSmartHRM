@@ -1876,7 +1876,8 @@ class DatatableController extends Controller
 
         }
         if(Auth::user()->roles == 'spv-internal') {
-            return $this->data_laporan_produksi_spv();
+            $tipe_produk = $request->tipe_produk;
+            return $this->data_laporan_produksi_spv($tipe_produk);
         }else {
 
             $dt  = DataTables::of($data)
@@ -1887,8 +1888,11 @@ class DatatableController extends Controller
                 $data   = '<a href="javascript:void(0)" class="btn btn-sm btn-warning" id="data_'.$row->id.'" onclick="data('.$row->id.')"><i class="menu-icon tf-icons bx bx-table"></i> Data </a>';
                 if($row->status == 2) {
                     return $data;
+                }else if($row->status == 3) {
+                    return $data.'&nbsp;'.$edit.'&nbsp;'.$hapus;
+                }else {
+                    return $data.'&nbsp;'.$edit.'&nbsp;'.$hapus;
                 }
-                return $data.'&nbsp;'.$edit.'&nbsp;'.$hapus;
             })
             ->addColumn('periode', function($row) {
                 $from = Carbon::parse($row->from_date)->translatedFormat('d F Y');
@@ -1944,8 +1948,14 @@ class DatatableController extends Controller
 
     }
 
-    function data_laporan_produksi_spv() {
-        $data   = ListLaporanProduksi::where('id_client',Auth::user()->id_client)->where('status','>',0)->get();
+    function data_laporan_produksi_spv($tipe) {
+        if($tipe !=  null ){
+            $data   = ListLaporanProduksi::where('id_client',Auth::user()->id_client)->where('keterangan',$tipe)->where('status','>',0)->get();
+
+        }else {
+            $data   = ListLaporanProduksi::where('id_client',Auth::user()->id_client)->where('status','>',0)->get();
+
+        }
         $dt     = DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('aksi', function($row) {
@@ -1954,14 +1964,16 @@ class DatatableController extends Controller
             $data   = '<a href="javascript:void(0)" class="btn btn-sm btn-warning" id="data_'.$row->id.'" onclick="data('.$row->id.')"><i class="menu-icon tf-icons bx bx-table"></i> Data </a>';
             if($row->status == 2) {
                 return $data;
+            }else if($row->status == 3) {
+                return "";
+            }else {
+                return $data.'&nbsp;'.$acc.'&nbsp;'.$reject;
             }
 
-            return $data.'&nbsp;'.$acc.'&nbsp;'.$reject;
         })
         ->addColumn('periode', function($row) {
             $from = Carbon::parse($row->from_date)->translatedFormat('d F Y');
             $to   = Carbon::parse($row->to_date)->translatedFormat('d F Y');
-            // $month = Carbon::parse($row->from_date)->translatedFormat('Y');
             return $from.'  s/d  '.$to;
         })
         ->addColumn('status', function($row) {
@@ -1969,6 +1981,9 @@ class DatatableController extends Controller
                 $s = '<span class="badge badge bg-warning"> Menunggu Persetujuan ... </span>';
             }else if($row->status == 2) {
                 $s = '<span class="badge badge bg-success"> Laporan disetujui </span>';
+
+            }elseif($row->status == 3) {
+                $s = '<span class="badge badge bg-danger"> Laporan ditolak </span>';
 
             }
             else {
@@ -1989,6 +2004,9 @@ class DatatableController extends Controller
             $totalF        = $row->total_tagihan + $result;
             $toRp           =  "Rp. " .number_format(round($totalF,1),2,',','.');
             return $toRp;
+        })
+        ->addColumn('total_produk', function($row){
+            return number_format($row->total_produk,2,',','.');
         })
         ->rawColumns(['aksi','periode','status'])
         ->make(true);
@@ -2012,6 +2030,7 @@ class DatatableController extends Controller
             }
         })
         ->addColumn('harga_produk_satuan', function($row) {
+            // return "TS";
             return $row->harga_produk_satuan == null ? 'Belum ditentukan' : "Rp ". number_format($row->harga_produk_satuan,2,',','.') ;
         })
         ->addColumn('satuan_produk', function($row) {
