@@ -69,7 +69,7 @@
                             <h5  style="color: white; margin-right:155px;">Total Karyawan Pusat</h5>
                         </div>
                         <div >
-                            <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
+                            <h1 style="color: white; display: inline-block; width: auto;float: left;">0 </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                             <h5  style="color: white; margin-right:0px;">Total Karyawan Internal (Pusat - Project) </h5><br>
                         </div>
                         <div  >
-                            <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
+                            <h1 style="color: white; display: inline-block; width: auto;float: left;">0 </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Karyawan</p>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
                             </h5>
                         </div>
                         <div style="padding-top:16px;" >
-                            <h1 style="color: white; display: inline-block; width: auto;float: left;">100 </h1>
+                            <h1 style="color: white; display: inline-block; width: auto;float: left;">0 </h1>
                             <p style="color: white;display: inline-block; width: auto; float: left;margin-left: 10px;">Permintaan Persetujuan</p>
                         </div>
                     </div>

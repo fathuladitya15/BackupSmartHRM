@@ -1,10 +1,10 @@
         <!-- Menu -->
 
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme" data-bg-class="bg-menu-theme" style="touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
-            <div class="app-brand demo">
-              <a href="index.html" class="app-brand-link">
-                <img src="{{ asset('assets/img/layouts/pfiBlueWhite.png') }}" alt="" width="90px">
-                <span class="app-brand-text demo menu-text fw-bolder ms-2">Smart HRM</span>
+            <div class="app-brand demo" style="padding-left:32px !important">
+              <a href="{{ route('home') }}" class="app-brand-link">
+                <img src="{{ asset('assets/img/layouts/pfiBlueWhite.png') }}" alt="" width="90">
+                <span class="app-brand-text demo menu-text fw-bolder ms-2"></span>
               </a>
 
               <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
@@ -371,46 +371,53 @@
 
                 {{-- ROUTING DIREKTUR --}}
                 @if (Auth::user()->roles == 'direktur')
+                @php
+                    $divisi = App\Models\Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first();
+                    $nama_divisi = App\Models\Divisi::find($divisi->divisi)->nama_divisi;
+                @endphp
                     <li class="menu-header small text-uppercase">
                         <span class="menu-header-text">Manajemen</span>
                     </li>
                     @php
                         $data = App\Models\Clients::where("nama_client",'!=','PT Proven Force Indonesia')->get();
                     @endphp
-                    <li class="menu-item {{  menuOpen(['direktur-rf-index']) }} ">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-file"></i>
-                            <div data-i18n="Authentications">Referensi Kerja </div>
-                        </a>
+                    @if ($nama_divisi == 'MPO')
+                        <li class="menu-item {{  menuOpen(['direktur-rf-index']) }} ">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <i class="menu-icon tf-icons bx bx-file"></i>
+                                <div data-i18n="Authentications">Referensi Kerja </div>
+                            </a>
 
-                        <ul class="menu-sub">
-                            @foreach ($data as $item)
-                                <li class="menu-item  {{ $item->nama_client == Request::segment(2)  ? 'active' : ""  }}">
-                                    <a href="{{ route('direktur-rf-index',['nama_client' => $item->nama_client, 'id' => HashVariable($item->id)]) }}" class="menu-link " >
-                                        <div data-i18n="Basic">{{ $item->nama_client }} </div>
-                                    </a>
-                                </li>
-                            @endforeach
+                            <ul class="menu-sub">
+                                @foreach ($data as $item)
+                                    <li class="menu-item  {{ $item->nama_client == Request::segment(2)  ? 'active' : ""  }}">
+                                        <a href="{{ route('direktur-rf-index',['nama_client' => $item->nama_client, 'id' => HashVariable($item->id)]) }}" class="menu-link " >
+                                            <div data-i18n="Basic">{{ $item->nama_client }} </div>
+                                        </a>
+                                    </li>
+                                @endforeach
 
-                        </ul>
-                    </li>
-                    <li class="menu-item {{  menuOpen(['pre-order-direktur']) }} ">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-cart"></i>
-                            <div data-i18n="Authentications">Permintaan Pembelian</div>
-                        </a>
+                            </ul>
+                        </li>
+                        <li class="menu-item {{  menuOpen(['pre-order-direktur']) }} ">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <i class="menu-icon tf-icons bx bx-cart"></i>
+                                <div data-i18n="Authentications">Permintaan Pembelian</div>
+                            </a>
 
-                        <ul class="menu-sub">
-                            @foreach ($data as $item)
-                                <li class="menu-item  {{ $item->nama_client == Request::segment(3)  ? 'active' : ""  }}">
-                                    <a href="{{ route('pre-order-direktur',['nama_client' => $item->nama_client,'id' => HashVariable($item->id)]) }}" class="menu-link " >
-                                        <div data-i18n="Basic">{{ $item->nama_client }} </div>
-                                    </a>
-                                </li>
-                            @endforeach
+                            <ul class="menu-sub">
+                                @foreach ($data as $item)
+                                    <li class="menu-item  {{ $item->nama_client == Request::segment(3)  ? 'active' : ""  }}">
+                                        <a href="{{ route('pre-order-direktur',['nama_client' => $item->nama_client,'id' => HashVariable($item->id)]) }}" class="menu-link " >
+                                            <div data-i18n="Basic">{{ $item->nama_client }} </div>
+                                        </a>
+                                    </li>
+                                @endforeach
 
-                        </ul>
-                    </li>
+                            </ul>
+                        </li>
+
+                    @endif
                     {{-- SURAT --}}
                     {{-- <li class="menu-item {{  menuOpen(['index-rf']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
