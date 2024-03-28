@@ -64,7 +64,8 @@ class ManageKaryawanController extends Controller
             return view('layouts.hrd.vKaryawan',compact('link_data'));
         }
         else if(in_array($tipe_akun,['admin','korlap'])) {
-            $link_data = route('data-kr-admin');
+            $link_data  = route('data-kr-admin');
+            // $data       = Karyawan
             return view('layouts.admin_korlap.vKaryawan',compact('link_data'));
         }
         else if(in_array($tipe_akun,['spv-internal'])) {

@@ -74,6 +74,7 @@
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalUpload" style="display: inline-block; width: auto;">
                     <i class='bx bx-upload'></i> Upload
                 </button>
+                <button type="button" id="quick_" data-bs-toggle="modal" data-bs-target="#modalUpdate" class="btn btn-primary" style="display: none;"><i class='bx bx-cog'></i> Quick Update</button>
             </div>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">
@@ -81,6 +82,7 @@
                         <thead>
                         <tr class="text-nowrap">
                             <th>No</th>
+                            <th>#</th>
                             <th>face id</th>
                             <th>id karyawan</th>
                             <th>photo</th>
@@ -134,7 +136,57 @@
             </div>
         </form>
     </div>
-  </div>
+</div>
+
+<div class="modal fade" id="modalUpdate" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <form id="ImportKaryawan" class="modal-content" action="{{ route('karyawan-upload') }}" enctype="multipart/form-data" method="POST">
+            @csrf
+            <div class="modal-header">
+                <h5 style="color: black" class="modal-title" id="">Quick Update</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="nameBackdrop" class="form-label">Pilih Tipe Update</label>
+                        <select name="tipe_update" id="tipe_update" class="form-control">
+                            <option value="">-- Pilih Tipe Update --</option>
+                            <option value="jabatan">Jabatan</option>
+                            <option value="divisi">Divisi</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col mb-3" id="jabatan" style="display: none">
+                        <label for="nameBackdrop" class="form-label">Pilih Jabatan</label>
+                        <select name="tipe_update" id="" class="form-control">
+                            <option value="">-- Pilih Jabatan --</option>
+                            <option value="jabatan">Jabatan</option>
+                            <option value="jabatan">Jabatan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col mb-3" id="divisi" style="display: none">
+                        <label for="nameBackdrop" class="form-label">Pilih divisi</label>
+                        <select name="tipe_update" id="" class="form-control">
+                            <option value="">-- Pilih divisi --</option>
+                            <option value="divisi">divisi</option>
+                            <option value="divisi">divisi</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Tutup
+                </button>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 @push('js')
 
@@ -142,5 +194,33 @@
     var url_data = "{{ $link_data }}";
 </script>
 <script src="{{ asset('assets/js/admin_korlap/data_karyawan.js') }}"></script>
+<script>
+    document.getElementById("tipe_update").addEventListener("change", function() {
+        var selectedValue = this.value;
+        // document.getElementById("result").innerText = "Nilai yang dipilih: " + selectedValue;
+        console.log("Nilai yang dipilih: " + selectedValue);
+        if(selectedValue == 'jabatan' ) {
+            document.getElementById(selectedValue).style.display = 'block';
+            document.getElementById('divisi').style.display = 'none';
+        }
+        else if(selectedValue == 'divisi') {
+            document.getElementById(selectedValue).style.display = 'block';
+            document.getElementById('jabatan').style.display = 'none';
+        }
+    });
+    function toggleButtonVisibility() {
+        var checkedCount = $('input[type="checkbox"]:checked').length;
+        // console.log(checkedCount);
+        if (checkedCount > 0) {
+            $('#quick_').show(300);
+        } else {
+            $('#quick_').hide(300);
+        }
+    }
+    $('#myTable tbody').on('change', 'input[type="checkbox"]', function () {
+        toggleButtonVisibility();
+    });
+
+</script>
 @endpush
 @endsection

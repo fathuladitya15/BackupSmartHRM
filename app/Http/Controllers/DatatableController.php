@@ -151,6 +151,9 @@ class DatatableController extends Controller
 
         $dataTable = DataTables::of($data)
             ->addIndexColumn()
+            ->addColumn('checkbox', function($row) {
+                return "<input type='checkbox' value='".$row->id."' class='chk' >";
+            })
             ->addColumn('join_date',function($row) {
                 return Carbon::parse($row->join_date)->translatedFormat('d F Y');
             })
@@ -216,7 +219,7 @@ class DatatableController extends Controller
                 }
                 return "";
             })
-            ->rawColumns(['aksi','face_id','photo','disetujui_oleh','disetujui_pada','status','join_date','end_date','nama_divisi','nama_jabatan','status_karyawan'])
+            ->rawColumns(['checkbox','aksi','face_id','photo','disetujui_oleh','disetujui_pada','status','join_date','end_date','nama_divisi','nama_jabatan','status_karyawan'])
             ->make(true);
 
         return $dataTable;

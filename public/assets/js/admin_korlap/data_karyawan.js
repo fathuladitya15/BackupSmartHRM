@@ -2,11 +2,13 @@ var table  = $('#myTable').dataTable({
     processing: true,
     serverSide: true,
     ajax: url_data,
-    columns: [{
+    columns: [
+        {
         data: 'DT_RowIndex',
         orderable: false,
         searchable: false
     },
+    {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
     {
         data:'face_id',
         name:'face_id',

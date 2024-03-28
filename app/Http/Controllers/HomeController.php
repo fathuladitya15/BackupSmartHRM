@@ -82,10 +82,10 @@ class HomeController extends Controller
             array_push($data,'lembur','izin');
         }
         else if(Auth::user()->roles == 'direktur'){
-            $divisi = Divisi::find(Auth::user()->karyawan->divisi)->nama_divisi;
-            $view = 'layouts.Dashboard.vDirekturMPO';
-            $client = Clients::where('id','!=',1)->get();
-            $AddData = ['client' => $client ];
+            $divisi     = Divisi::find(Auth::user()->karyawan->divisi)->nama_divisi;
+            $view       = 'layouts.Dashboard.vDirekturMPO';
+            $client     = Clients::where('id','!=',1)->get();
+            $AddData    = ['client' => $client ];
             $total_karyawan = [];
             foreach ($client as $key ) {
                 $total_karyawan[] = [

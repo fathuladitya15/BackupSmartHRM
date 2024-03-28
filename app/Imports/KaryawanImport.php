@@ -18,10 +18,10 @@ class KaryawanImport implements ToModel
     */
     public function model(array $row)
     {
-        $cek_jabatan = Jabatan::where('nama_jabatan','LIKE','%'.$row[12].'%');
+        $cek_jabatan = Jabatan::where('nama_jabatan','LIKE','%'.$row[12].'%')->where("id_client",Auth::user()->id_client);
         $jabatan     = $cek_jabatan->count() > 0 ? $cek_jabatan->first()->id : "" ;
 
-        $cek_divisi = Divisi::where('nama_divisi','LIKE','%'.$row[13].'%');
+        $cek_divisi = Divisi::where('nama_divisi','LIKE','%'.$row[13].'%')->where("id_client",Auth::user()->id_client);
         $divisi     = $cek_divisi->count() > 0 ? $cek_divisi->first()->id : "" ;
 
         $insert = [
