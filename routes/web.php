@@ -84,6 +84,7 @@ Route::middleware('revalidate')->group(function() {
             Route::get('/Absensi/data/',[DatatableController::class,'absensi_karyawan'])->name('absensi-data-karyawan');
             Route::get('/Absensi/{karyawan}',[AbsensiController::class,'index'])->name('absensi-data');
             Route::get('/Absensi/korlap/{gol_karyawan}',[DatatableController::class,'absensi_korlap'])->name("absensi-korlap");
+            Route::get('/Absensi/spv/{gol_karyawan}',[DatatableController::class,'absensi_spv'])->name("absensi-spv");
             Route::get('/Absensi/{karyawan}/data',[DatatableController::class,'absensi_hrd'])->name('absensi-data-ajax');
             Route::get('/Absensi/{karyawan}/search/{id}',[AbsensiController::class,'search_by_one'])->name('absensi-search-one');
             Route::post('/Absensi/data/search/dokumen',[AbsensiController::class,'dokumen_perorang'])->name('absensi-doc-perorang');
@@ -214,7 +215,8 @@ Route::middleware('revalidate')->group(function() {
             });
 
             Route::middleware(['role:spv-internal'])->group(function(){
-                Route::get('/surat-peringatan/data-spv',[DatatableController::class,'data_peringatan_spv'])->name('peringatan-data-spv');
+                Route::get('/surat-peringatan/data-spv',[DataTableController::class,'data_peringatan_spv'])->name('peringatan-data-spv');
+                Route::get('/karyawan/data/spv',[DataTableController::class,'data_karyawan_SPV'])->name('data-kr-spv');
 
 
             });

@@ -800,4 +800,15 @@ class ManageKaryawanController extends Controller
         return response()->json(['status'  => TRUE,'title' => 'Sukses' ,'pesan' => 'Data Berhasil diimport']);
     }
 
+    function update_one(Request $request) {
+        $data = Karyawan::find($request->id);
+
+        $data->disetujui_oleh = Auth::user()->name;
+        $data->disetujui_pada = Carbon::now();
+        $data->status_karyawan = 1;
+        $data->update();
+
+        return response()->json(['status' => TRUE,'pesan' => $data->nama_karyawan.' berhasil disetujui','title' => "Sukses"]);
+    }
+
 }

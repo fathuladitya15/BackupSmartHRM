@@ -140,6 +140,62 @@ class DatatableController extends Controller
 
     }
 
+    // DATA KARYAWAN SUPERVISOR
+    function data_karyawan_SPV(Request $request) {
+        $data = DB::table('table_karyawan as tk')
+            ->join('users as us','us.id_karyawan','=','tk.id_karyawan')
+            ->where('us.id_client',Auth::user()->id_client)
+            ->where('us.roles','karyawan')
+            ->get();
+        $dataTable = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('join_date',function($row) {
+                return Carbon::parse($row->join_date)->translatedFormat('d F Y');
+            })
+            ->addColumn('end_date',function($row) {
+                return Carbon::parse($row->end_date)->translatedFormat('d F Y');
+            })
+            ->addColumn('face_id',function($row) {
+                return "";
+            })
+            ->addColumn('photo',function($row) {
+                return "";
+            })
+            ->addColumn('aksi',function($row) {
+                $edit   = '<a href="javascript:void(0)" onclick="acc_kr('.$row->id.')" id="acc_'.$row->id.'" class="btn btn-success btn-sm"  ><i class="bx bx-check-circle"></i>Setujui</a>';
+                return $edit;
+            })
+            ->addColumn('status_karyawan',function($row) {
+                if($row->status == 1) {
+                    $st =  "<span class='badge bg-success'>Disetujui</>";
+                }else {
+                    $st =  "<span class='badge bg-warning'>Menunggu Persetujuan</>";
+                }
+                return $st;
+            })
+
+            ->addColumn('acc_on',function($row) {
+                return "";
+            })
+            ->addColumn('acc_by',function($row) {
+              return "";
+            })
+            ->addColumn('acc',function($row) {
+               return "";
+            })
+            ->addColumn('nama_divisi',function($row) {
+                return Divisi::find($row->divisi)->nama_divisi;
+            })
+            ->addColumn('nama_jabatan',function($row) {
+                return Jabatan::find($row->jabatan)->nama_jabatan;
+            })
+            ->rawColumns(['aksi','face_id','photo','status_karyawan','join_date','end_date','kategori'])
+            ->make(true);
+
+        return $dataTable;
+
+    }
+
     // DATA KARYAWAN UNTUK ADMIN/KORLAP
     function data_karyawan_admin(Request $request) {
         $data = DB::table('table_karyawan as tk')

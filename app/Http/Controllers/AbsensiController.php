@@ -32,17 +32,15 @@ class AbsensiController extends Controller
             return view('layouts.hrd.vAbsensi',compact("route_data_table",'karyawan','kr'));
         }
         else if(in_array($role,['admin','korlap'])){
-            $data = DB::table('table_karyawan as tk')->select('ta.*')
-                        ->join('table_absensi as ta','ta.id_karyawan','=','tk.id_karyawan')
-                        ->join('users as us ','us.id_karyawan','=','tk.id_karyawan')
-                        ->where('us.id_client',Auth::user()->id_client)
-                        ->where('gol_karyawan',$kr)
-                        ->get();
-                    // dd($data);
+
             $route_data_table = route('absensi-korlap',['gol_karyawan' =>$kr]);
             $karyawan = User::where('id_client',Auth::user()->id_client)->where('roles','karyawan')->get();
 
-            return view('layouts.admin_korlap.vAbsensiMegasari',compact('data','kr','karyawan','route_data_table'));
+            return view('layouts.admin_korlap.vAbsensiMegasari',compact('kr','karyawan','route_data_table'));
+        }else if($role == 'spv-internal') {
+            $karyawan = User::where('id_client',Auth::user()->id_client)->where('roles',['karyawan','admin','korlap'])->get();
+            $route_data_table = route('absensi-korlap',['gol_karyawan' =>$kr]);
+            return view('layouts.spv.vAbsensiMegasari',compact('kr','karyawan','route_data_table'));
         }
     }
 
@@ -87,7 +85,10 @@ class AbsensiController extends Controller
         if(in_array($role,['admin','korlap'])){
             $karyawan = User::where('id_client',Auth::user()->id_client)->where('roles','karyawan')->get();
             // return view('layouts.admin_korlap.vAbsensiSearchOne',compact('data_karyawan','from_date','to_date','search','j','karyawan'));
-        }else {
+        }if($role == 'spv-internal') {
+            $karyawan = User::where('id_client',Auth::user()->id_client)->where('roles',['karyawan','admin','korlap'])->get();
+        }
+        else {
             $karyawan = Karyawan::where('kategori',$j)->get();
         }
         return view('layouts.hrd.vAbsensiSearchOne',compact('search','karyawan','from_date','to_date','j','data_karyawan','data'));
