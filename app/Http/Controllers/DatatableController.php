@@ -355,7 +355,7 @@ class DatatableController extends Controller
 
             }else {
                 if($row->status >= '1') {
-                    $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
+                    $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" targer="_BLANK" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
                     return $file;
                 }else {
                     return $edit.'&nbsp;'.$hapus;
@@ -944,9 +944,9 @@ class DatatableController extends Controller
 
         return $dt;
     }
-    // DATA IZIN DIREKTUR
+    // DATA IZIN SUERVISOR
     function data_izin_supervisor(Request $request) {
-        $data = Izin::where('id_client',Auth::user()->id_client)->get();
+        $data = Izin::where('id_client',Auth::user()->id_client)->where('status',1)->get();
 
         $dt = DataTables::of($data)
             ->addIndexColumn()

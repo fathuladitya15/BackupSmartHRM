@@ -108,7 +108,7 @@
                 <tr>
                     <td>Waktu</td>
                     <td>:</td>
-                    <td > {{ Carbon\Carbon::parse($data->tanggal_pembuatan)->translatedFormat("d F Y")  }}, Pukul  {{ $data->jam_keluar }} WIB ,  ( {{ $data->kembali == 0 ? 'Kembali' : "Tidak Kemabali" }} )</td>
+                    <td > {{ Carbon\Carbon::parse($data->tanggal_pembuatan)->translatedFormat("d F Y")  }}, Pukul  {{ $data->jam_keluar }} WIB ,  ( {{ $data->kembali == 0 ? 'Kembali' : "Tidak Kembali" }} )</td>
                 </tr>
                 <tr>
                     <td>Jelaskan</td>

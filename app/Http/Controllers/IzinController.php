@@ -54,7 +54,7 @@ class IzinController extends Controller
                 return view('layouts.izin.vIzinPFI',compact('jabatan','divisi','detail'));
             }
             else if($role == 'spv-internal') {
-                abort(404);
+                return view('layouts.spv.vIzinDefault');
             }
         }else {
             if(in_array($role,['admin','korlap'])){
@@ -85,7 +85,6 @@ class IzinController extends Controller
         $jabatan        = Jabatan::find($detail->jabatan);
 
         return view('layouts.izin.vIzinPFI',compact('jabatan','divisi','detail'));
-        dd(Auth::user()->roles);
     }
 
     function saving(Request $request) {
