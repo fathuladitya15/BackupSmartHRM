@@ -204,13 +204,13 @@
                             <input type="text" name="jumlah_anak" id="jumlah_anak" class="form-control" value="{{ @old('jumlah_anak') }}"   placeholder="Masukan Jumlah Anak">
                         </div>
                         <div class="form-group col-md-6">
-                            <label class="col-form-label" for="">Nama Ibu</label><span class="text-danger pl-1">*</span>
+                            <label class="col-form-label" for="">Nama Ibu</label>
                             <input type="text" name="nama_ibu" id="nama_ibu" value="{{ @old('nama_ibu') }}"  class="form-control"  placeholder="Masukan Nama Ibu">
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col-md-6">
-                            <label class="col-form-label" for="">Nama Bapak</label><span class="text-danger pl-1">*</span>
+                            <label class="col-form-label" for="">Nama Bapak</label>
                             <input type="text" name="nama_bapak" id="nama_bapak" class="form-control" value="{{ @old('nama_bapak') }}"  placeholder="Nama Bapak">
                         </div>
                         <div class="form-group col-md-6">

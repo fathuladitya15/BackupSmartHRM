@@ -80,6 +80,19 @@ class DatatableController extends Controller
                 }
                 return $st;
             })
+            ->addColumn('notif',function($row) {
+                $expiry             = Carbon::parse($row->end_date);
+                $daysUntilExpired   = now()->diffInDays($expiry);
+
+                if($row->gol_karyawan == 'KHL') {
+                    $d  = $daysUntilExpired <= 7 ? 'Kontrak segera selesai' : '';
+
+                }else {
+                    $d  = $daysUntilExpired <= 30 ? 'Kontrak segera selesai' : '';
+
+                }
+                return $d ;
+            })
             ->rawColumns(['aksi','face_id','photo','disetujui_oleh','disetujui_pada','status','join_date','end_date'])
             ->make(true);
 
@@ -99,6 +112,19 @@ class DatatableController extends Controller
 
         $dataTable = DataTables::of($data)
             ->addIndexColumn()
+            ->addColumn('notif',function($row) {
+                $expiry             = Carbon::parse($row->end_date);
+                $daysUntilExpired   = now()->diffInDays($expiry);
+
+                if($row->gol_karyawan == 'KHL') {
+                    $d  = $daysUntilExpired <= 7 ? 'Kontrak segera selesai' : '';
+
+                }else {
+                    $d  = $daysUntilExpired <= 30 ? 'Kontrak segera selesai' : '';
+
+                }
+                return $d ;
+            })
             ->addColumn('kategori',function($row) {
                 if($row->kategori == 'pusat'){
                     $r = 'Karyawan Pusat';
@@ -207,6 +233,19 @@ class DatatableController extends Controller
 
         $dataTable = DataTables::of($data)
             ->addIndexColumn()
+            ->addColumn('notif',function($row) {
+                $expiry             = Carbon::parse($row->end_date);
+                $daysUntilExpired   = now()->diffInDays($expiry);
+
+                if($row->gol_karyawan == 'KHL') {
+                    $d  = $daysUntilExpired <= 7 ? 'Kontrak segera selesai' : '';
+
+                }else {
+                    $d  = $daysUntilExpired <= 30 ? 'Kontrak segera selesai' : '';
+
+                }
+                return $d ;
+            })
             ->addColumn('checkbox', function($row) {
                 return "<input type='checkbox' value='".$row->id."' class='chk' >";
             })
@@ -284,7 +323,14 @@ class DatatableController extends Controller
 
     // DATA LEMBUR UNTUK KARYAWAN
     function data_lembur_karyawan(Request $request,$hash) {
-        $data     = Lembur::where('id_karyawan',Auth::user()->id_karyawan)->where('id_client',Auth::user()->id_client)->get();
+        // dd($hash);
+
+        if(Auth::user()->roles == 'spv-internal') {
+            // dd("SPG");
+            $data = Lembur::where('id_client',Auth::user()->id_client)->where('status',1)->get();
+        }else {
+            $data = Lembur::where('id_karyawan',Auth::user()->id_karyawan)->where('id_client',Auth::user()->id_client)->get();
+        }
 
         $dt = DataTables::of($data)
         ->addIndexColumn()
@@ -1776,7 +1822,7 @@ class DatatableController extends Controller
     // DATA ABSENSI KARYAWAN
     function absensi_karyawan(Request $request) {
         // dd("TES");
-        $data  = DB::table('table_absensi as kr') ->where('id_karyawan',Auth::user()->id_karyawan)
+        $data  = DB::table('table_absensi as kr') ->where('id_karyawan',Auth::user()->id_karyawan)->orderBy('tanggal','desc')
         ->get();
 
         $dt = DataTables::of($data)

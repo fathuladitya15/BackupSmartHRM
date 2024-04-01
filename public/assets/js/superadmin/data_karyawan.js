@@ -77,6 +77,11 @@ var table  = $('#myTable').dataTable({
         name: 'disetujui_pada',
         orderable: false,
         searchable: false
+    },{
+        data: 'notif',
+        name: 'notif',
+        orderable: false,
+        searchable: false
     },
     {
         data: 'aksi',

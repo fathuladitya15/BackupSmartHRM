@@ -418,20 +418,6 @@
                         </li>
 
                     @endif
-                    {{-- SURAT --}}
-                    {{-- <li class="menu-item {{  menuOpen(['index-rf']) }} ">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-file"></i>
-                        <div data-i18n="Authentications">Surat</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item {{  menuActive('index-rf') }}">
-                                <a href="{{ route('index-rf') }}" class="menu-link" >
-                                <div data-i18n="Basic">Surat Referensi Kerja</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li> --}}
                     {{-- LEMBUR --}}
                     @php
                         $data  = App\Models\Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first();
@@ -485,7 +471,28 @@
                         </ul>
                     </li>
                 @endif
+                @if(Auth::user()->roles == 'general-affair')
+                    @php
+                      $data = App\Models\Clients::where("nama_client",'!=','PT Proven Force Indonesia')->get();
+                    @endphp
+                    <li class="menu-item {{  menuOpen(['pre-order-ga']) }} ">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-cart"></i>
+                            <div data-i18n="Authentications">Permintaan Pembelian</div>
+                        </a>
 
+                        <ul class="menu-sub">
+                            @foreach ($data as $item)
+                                <li class="menu-item  {{ $item->nama_client == Request::segment(3)  ? 'active' : ""  }}">
+                                    <a href="{{ route('pre-order-ga',['id_client' => HashVariable($item->id)]) }}" class="menu-link " >
+                                        <div data-i18n="Basic">{{ $item->nama_client }} </div>
+                                    </a>
+                                </li>
+                            @endforeach
+
+                        </ul>
+                    </li>
+                @endif
                 {{-- PENGUMUMAN --}}
 
                 @if(Auth::user()->roles == 'spv-internal')

@@ -7,13 +7,14 @@ use DB;
 use Str;
 use Auth;
 use PDF;
-use App\Models\Clients;
-use App\Models\Karyawan;
-use App\Models\Absensi;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Shift;
+use App\Models\Absensi;
+use App\Models\Clients;
+use App\Models\Karyawan;
 use Carbon\CarbonPeriod;
+use Illuminate\Http\Request;
 
 class AbsensiController extends Controller
 {
@@ -121,8 +122,14 @@ class AbsensiController extends Controller
         return $pdf->stream();
     }
 
-    function cek(Request $request) {
-        return view('layouts.karyawan.vAbsensiProject');
+    function form_absensi(Request $request) {
+        $lokasi_absensi = Clients::find(Auth::user()->id_client);
+        $cek_shift      = Shift::where('id_client',Auth::user()->id_client)->count();
+        $shift          = Shift::where('id_client',Auth::user()->id_client)->orderBy('ke','DESC')->get();
+        $AbsensiHarini  = Absensi::where('tanggal',Carbon::now()->format('Y-m-d'))->count();
+        $detailAbsensiHariIni = Absensi::where('tanggal',Carbon::now()->format('Y-m-d'))->first();
+        // dd($nowAbsen);
+        return view('layouts.karyawan.vAbsensiProject',compact("lokasi_absensi",'cek_shift','shift','AbsensiHarini','detailAbsensiHariIni'));
 
         $ip = \Request::getClientIp(true); // Get the user's IP address
         // dd($ip);
@@ -206,5 +213,23 @@ class AbsensiController extends Controller
         // $now = Carbon::now()->translatedFormat('l, d F Y / H:i:s');
         // dd($now);
         return view('layouts.karyawan.vAbsensiPFI');
+    }
+
+    function cek_in(Request $request) {
+
+        $ip = \Request::getClientIp(true);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "http://ipinfo.io/{$ip}/json");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Execute API request
+        $execute = curl_exec($ch);
+
+        // Close cURL resource
+        curl_close($ch);
+
+        // Retrieve IP data from API response
+        $ipResult = json_decode($execute);
+        return response()->json($ip);
     }
 }

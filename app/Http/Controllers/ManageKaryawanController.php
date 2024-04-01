@@ -258,7 +258,7 @@ class ManageKaryawanController extends Controller
             'gol_karyawan'      => $request->gol_karyawan,
             'marital'           => $request->marital,
             'tJabatan'          => $request->tJabatan,
-            'tTransport'        => $request->tTransport,
+            'tTransport'        => $request->tTransportasi,
             'nama_bank'         => $request->nama_bank,
             'cabang_bank'       => $request->bank_cabang,
             'kd_bank'           => $request->kd_bank,

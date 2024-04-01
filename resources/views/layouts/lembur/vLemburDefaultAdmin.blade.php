@@ -32,12 +32,6 @@
     .swal2-container {
         z-index: 999999;
     };
-    p#nama_karyawan {
-        margin-top: -50px !important;
-    }
-    p#nama_korlap {
-        margin-top: -50px !important;
-    }
     .over_text {
         margin-top: -50px !important;
     }
@@ -338,17 +332,10 @@
                     <div class="row">
                         <div class="col-lg-6">
                             <label class="col-form-label" for="basic-default-name">Tanda Tangan</label> <br/>
-                            <img class="image_ttd" src="" alt="" id="image_ttd_kr" width="100"> <br  />
-                            <div class="over_text" style="">
-                                <p id="nama_ttd_karyawan">tes</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <label class="col-form-label" for="basic-default-name">Tanda Tangan</label> <br/>
                             <a href="javascript:void(0)" onclick="ttd('{{ Auth::user()->id_karyawan }}')" class="btn btn-primary btn-sm" id="button_ttd">Tanda Tangani</a>
-                            <img class="image_ttd" src="" alt="" id="image_ttd" width="100"> <br  />
-                            <div class="" style="">
-                                <p id="">{{ Auth::user()->name }}</p>
+                            <img class="" src="" alt="" id="image_ttd" width="100"> <br  />
+                            <div class="over_text" style="">
+                                <p id="nama_ttd_karyawan">{{ Auth::user()->name }}</p>
                             </div>
                             <input type="hidden" name="ttd" value="" id="ttd" required >
                         </div>

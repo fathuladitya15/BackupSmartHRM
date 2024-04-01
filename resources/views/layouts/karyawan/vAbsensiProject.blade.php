@@ -47,6 +47,60 @@
     </div>
 @endforeach
 @endif
+@if($AbsensiHarini == 0)
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    Anda Belum melakukan absensi hari ini
+    <button type="button" class="btn btn-default " style="float: right;" data-bs-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+@else
+@endif
+<div class="row">
+    <div class="col-xxl">
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="checkin">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="pilih_lokasi" class="form-label">Plih Lokasi</label>
+                            <select name="lokasi" id="lokasi" class="form-control" required>
+                                <option value="">-- Pilih Lokasi -- </option>
+                                <option value="{{ $lokasi_absensi->id }}" >{{ $lokasi_absensi->nama_client }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="pilih_lokasi" class="form-label">Plih Shift</label>
+                            <select name="lokasi" id="lokasi" class="form-control">
+                                <option value="">-- Pilih Shift -- </option>
+                                @if ($cek_shift > 0)
+                                    @foreach ($shift as $st)
+                                        <option value="{{ $st->id }}">{{ $st->type }}-{{ $st->ke }}</option>
+
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="pilih_lokasi" class="form-label">Tanggal</label>
+                            <input type="date"  class="form-control" value="{{ date("Y-m-d") }}" name="tanggal" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="pilih_lokasi" class="form-label">Jam</label>
+                            <input type="text"  class="form-control" name="jam_masuk" readonly id="jam">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="pilih_lokasi" class="form-label"></label>
+                            <input type="submit"  class="btn btn-primary form-control" name="submit" value="Absen">
+                        </div>
+                    </div>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-xxl">
         <div class="card mb-4">
@@ -175,7 +229,46 @@
 @push('js')
     <script>
        var url_data = "{{ route('absensi-data-karyawan') }}";
+       var url_cekin = "{{ route('absensi-cekin') }}";
        var roles = "{{ Auth::user()->roles }}";
     </script>
     <script src="{{ asset('assets/js/karyawan/absensi.js') }}"></script>
+    <script>
+        function updateClock() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+
+            // Tambahkan 0 di depan angka jika angka kurang dari 10
+            hours = ('0' + hours).slice(-2);
+            minutes = ('0' + minutes).slice(-2);
+            seconds = ('0' + seconds).slice(-2);
+
+            var currentTime = hours + ":" + minutes + ":" + seconds;
+            document.getElementById('jam').value = currentTime;
+        }
+
+        // Panggil fungsi updateClock setiap detik
+        setInterval(updateClock, 1000);
+
+        $("#checkin").submit(function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url : url_cekin,
+                data: $(this).serialize(),
+                type: "POST",
+                beforeSend: function() {
+
+                },success: function(s) {
+                    console.log(s);
+                }, error : function(e) {
+                    console.log(e);
+                }, complete: function() {
+
+                }
+            })
+        })
+        </script>
 @endpush

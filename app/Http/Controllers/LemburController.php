@@ -42,7 +42,8 @@ class LemburController extends Controller
                 ->count();
             $wait_acc = Lembur::where('id_client',Auth::user()->id_client)->where('status','0')->count();
             return view('layouts.hrd.vLembur',compact('daftar_kr','lembur','wait_acc'));
-        }else if(Auth::user()->roles == 'direktur') {
+        }
+        else if(Auth::user()->roles == 'direktur') {
             if($name_divisi == 'MPO'){
                 return view('layouts.manajer.vLembur');
             }else {
@@ -235,9 +236,11 @@ class LemburController extends Controller
                 }
             }
             else if(in_array($role, ['admin','korlap'])){
+                $ttd        = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
                 $dataUpdate = [
                     'status'    => 1,
                     'ttd_admin_korlap' => $ttd->path,
+                    'disetujui_oleh' => Auth::user()->name,
                 ];
                 return $this->update($request->id_lembur,$dataUpdate);
             }

@@ -30,6 +30,7 @@ use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\PeringatanController;
 use App\Http\Controllers\ReferensiKerjaController;
 use App\Http\Controllers\ManageKaryawanController;
+use App\Http\Controllers\GeneralAffairController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,15 +73,20 @@ Route::get('/camera-test', function() {
 
 Route::get('/export-karyawan',[ManageKaryawanController::class,'export'])->name("karyawan-export");
 Route::get('/download-pengumuman/{ency}/{ext}',[PengumumanController::class,'download'])->name("download-pengumuman");
+Route::get('/login',[LoginController::class,'showLoginForm'])->name('login');
+Route::post('/login',[LoginController::class,'login'])->name('login');
+Route::post('/logout',[LoginController::class,'logout'])->name('logout');
 Route::middleware('revalidate')->group(function() {
-    Route::get('/login',[LoginController::class,'showLoginForm'])->name('login');
-    Route::post('/login',[LoginController::class,'login'])->name('login');
-    Route::post('/logout',[LoginController::class,'logout'])->name('logout');
     Route::middleware('SingelSession')->group(function() {
         Route::middleware('auth')->group(function() {
             Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-            Route::get('/absen',[AbsensiController::class,'cek'])->name("absensi");
+            Route::prefix('Absensi')->group(function() {
+                Route::get('index',[AbsensiController::class,'form_absensi'])->name("absensi");
+                Route::post('cekin',[AbsensiController::class,'cek_in'])->name('absensi-cekin');
+            });
+
+            // Route::get('/absen',[AbsensiController::class,'cek'])->name("absensi");
             Route::get('/Absensi/data/',[DatatableController::class,'absensi_karyawan'])->name('absensi-data-karyawan');
             Route::get('/Absensi/{karyawan}',[AbsensiController::class,'index'])->name('absensi-data');
             Route::get('/Absensi/korlap/{gol_karyawan}',[DatatableController::class,'absensi_korlap'])->name("absensi-korlap");
@@ -88,6 +94,7 @@ Route::middleware('revalidate')->group(function() {
             Route::get('/Absensi/{karyawan}/data',[DatatableController::class,'absensi_hrd'])->name('absensi-data-ajax');
             Route::get('/Absensi/{karyawan}/search/{id}',[AbsensiController::class,'search_by_one'])->name('absensi-search-one');
             Route::post('/Absensi/data/search/dokumen',[AbsensiController::class,'dokumen_perorang'])->name('absensi-doc-perorang');
+
 
 
             Route::prefix('karyawan')->group(function() {
@@ -315,6 +322,10 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('index/{nama_client}/{id}',[Preordercontroller::class,'index_direktur'])->name('pre-order-direktur');
                 Route::post('data-direktur',[PreorderController::class,'data_direktur'])->name('pre-order-data-direktur');
                 Route::get('dokumen/{id}',[PreorderController::class,'dokumen'])->name('pre-order-dokumen');
+                Route::middleware(['role:general-affair'])->group(function() {
+                    Route::get('General-Affair/{id_client}',[GeneralAffairController::class,'index'])->name('pre-order-ga');
+                    Route::post('General-Affair/data',[GeneralAffairController::class,'data'])->name('pre-order-ga-data');
+                });
             });
         });
 

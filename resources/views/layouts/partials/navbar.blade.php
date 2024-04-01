@@ -51,8 +51,38 @@
         </div>
         <ul class="navbar-nav flex-row align-items-center ms-auto">
             <!-- Place this tag where you want the button to render. -->
-            <li class="nav-item lh-1 me-3">
-                <i class='bx bxs-bell'></i>
+            <li class="nav-item navbar-dropdown dropdown-karyawan dropdown">
+                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <i class='bx bxs-bell'></i>
+                </a>
+                @php
+                    $thirtyDaysFromNow = now()->addDays(30);
+                    $sevenDaysFromNow = now()->addDays(7);
+                    if(in_array(Auth::user()->roles,['spv-internal','admin','korlap'])){
+
+                        $karyawan_khl = \App\Models\Karyawan::where("gol_karyawan",'KHL')->where('lokasi_kerja',Auth::user()->id_client)->where('end_date','<=',$sevenDaysFromNow)->count();
+                        $karyawan_pkwt = \App\Models\Karyawan::where("gol_karyawan",'PKWT')->where('lokasi_kerja',Auth::user()->id_client)->where('end_date','<=',$thirtyDaysFromNow)->count();
+                    }else {
+
+                        $karyawan_khl = \App\Models\Karyawan::where("gol_karyawan",'KHL')->where('kategori','pusat')->orWhere('kategori','project')->where('end_date','<=',$thirtyDaysFromNow)->count();
+                        $karyawan_pkwt = \App\Models\Karyawan::where("gol_karyawan",'PKWT')->where('kategori','pusat')->orWhere('kategori','project')->where('end_date','<=',$thirtyDaysFromNow)->count();
+                    }
+                @endphp
+                <ul class="dropdown-menu dropdown-menu-end">
+
+                    <li class="dropdown-item">
+                        <a href="{{ route('karyawan') }}" class="dropdown-item">
+                            <i class="bx bx-user me-2"></i>
+                            <span class="align-middle">{{ $karyawan_khl }} Kontrak karyawan KHL akan berakhir</span>
+                        </a>
+                    </li>
+                    <li class="dropdown-item">
+                        <a href="{{ route('karyawan') }}" class="dropdown-item">
+                            <i class="bx bx-user me-2"></i>
+                            <span class="align-middle">{{ $karyawan_pkwt }} kontrak karyawan PKWT akan berakhir</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
             <!-- User -->

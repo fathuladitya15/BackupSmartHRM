@@ -234,6 +234,7 @@
     </div>
     </div>
 </div>
+
 <div class="row">
     <!-- Order Statistics -->
     <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4">

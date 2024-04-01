@@ -15,6 +15,8 @@ use App\Models\Pengumuman;
 use App\Models\Filemanager;
 use App\Models\Aktifitas;
 use Illuminate\Http\Request;
+use App\Notifications\NotifikasiSelesaiKontrak;
+
 
 class HomeController extends Controller
 {
@@ -51,6 +53,7 @@ class HomeController extends Controller
         else {
             $pengumuman = "";
         }
+
         $table_kr   = Karyawan::where('id_karyawan','like','%'.Auth::user()->id_karyawan.'')->first();
 
         $data = [
@@ -59,6 +62,14 @@ class HomeController extends Controller
 
         if(Auth::user()->roles == 'superadmin'){
             $dataKr = Karyawan::count();
+            $khl = Karyawan::where('gol_karyawan','KHL')->whereDate('end_date',Carbon::now()->addDays(7))->get();
+            $pkwt = Karyawan::where('gol_karyawan','PKWT')->get();
+            // dd($pkwt);
+
+            foreach ($khl as $kr_khl ) {
+                $kr_khl->notify(new NotifikasiSelesaiKontrak());
+            }
+
             return view('layouts.Dashboard.vSuperadmin',compact('dataKr'));
 
         }

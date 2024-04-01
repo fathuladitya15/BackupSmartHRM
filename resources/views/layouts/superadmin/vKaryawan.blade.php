@@ -72,6 +72,7 @@
                             <th>status</th>
                             <th>disetujui oleh</th>
                             <th>disetujui pada</th>
+                            <th>notif</th>
                             <th>Aksi</th>
                         </tr>
                         </thead>

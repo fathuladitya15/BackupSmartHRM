@@ -145,7 +145,7 @@
             </div>
             <div class="col-lg-6">
                 <img  src="{{ $data->ttd_admin_korlap }}" alt="" style="width: 100px;"> <br />
-                <div class="name_ttd" >{{ $nama_admin }}</div>
+                <div class="name_ttd" >{{ $data->disetujui_oleh }}</div>
             </div>
         </div>
 

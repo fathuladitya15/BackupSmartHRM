@@ -109,7 +109,7 @@
             <tr>
                 <td>HRD Personalia</td>
                 <td>:</td>
-                <td>{{ $data->disetujui_oleh }}</td>
+                <td>{{ $data->nama_pemberi_sp }}</td>
             </tr>
         </table>
 
@@ -146,7 +146,7 @@
             <tr style="text-align: center">
                 <td width="90" style="font-size: 80%"></td>
                 <td width="340"></td>
-                <td width="90" style="font-size:80%">{{ $data->nama_pemberi_sp }}</td>
+                <td width="90" style="font-size:80%">{{ $data->disetujui_oleh }}</td>
             </tr>
             <tr style="text-align: center">
                 <td width="90"></td>
