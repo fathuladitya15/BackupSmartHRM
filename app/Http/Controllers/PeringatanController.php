@@ -23,10 +23,8 @@ class PeringatanController extends Controller
         $karyawan   = User::where('id_client',Auth::user()->id_client)->where('roles','karyawan')->get();
         $role       = Auth::user()->roles;
 
-        // dd($role);
-
         if(in_array($role,['admin','korlap'])){
-            return view("layouts.admin_korlap.vSPadmin",compact("karyawan"));
+            return view("layouts.admin_korlap.vPeringatan",compact("karyawan"));
         }else if($role == 'spv-internal') {
             $total_surat  = peringatan::where('status','!=',0)->where('lokasi_kerja',Auth::user()->id_client)->count();
             $total_menuggu = peringatan::where('status',1)->where('lokasi_kerja',Auth::user()->id_client)->count();

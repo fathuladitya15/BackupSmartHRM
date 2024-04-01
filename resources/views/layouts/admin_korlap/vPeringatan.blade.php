@@ -177,7 +177,7 @@
                         <div class="form-group col-md-12">
                             <label for="" class="col-form-label"> Alasan Alasan Peringatan</label>
                             <span class="text-danger pl-1">*</span>
-                            <textarea name="alasan_peringatan" id="alasan_peringatan" class="form-control" cols="30" rows="10"></textarea>
+                            <textarea name="alasan_peringatan" id="alasan_peringatan" class="form-control" cols="30" rows="10" required></textarea>
                         </div>
 
                     </div>

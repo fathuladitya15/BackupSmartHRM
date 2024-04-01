@@ -78,6 +78,8 @@ var table  = $('#myTable').dataTable({
 $('#exampleModalCenter').on('hidden.bs.modal', function(e) {
     $("#Add  :input").attr("readonly",false);
     $("#Add").trigger("reset");
+    document.getElementById('tanggal_start').innerHTML = '...';
+    document.getElementById('tanggal_end').innerHTML = '...';
 
 });
 
@@ -162,6 +164,8 @@ function detail(id) {
                 $("#lokasi_kerja").val(s.lokasi_kerja);
                 // block
                 // document.getElementById("aksi").style.display = 'none';
+                document.getElementById('tanggal_start').innerHTML = data.tanggal_berlaku;
+                document.getElementById('tanggal_end').innerHTML = data.tanggal_kadaluarsa;
 
             }else {
                 Swal.fire({

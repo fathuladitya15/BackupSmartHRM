@@ -122,29 +122,23 @@
         <br><br>
         <table width="100%" style="text-align: right; font-size:80%;">
             <tr>
-                <td> <p>Gunung Putri, {{  Carbon\Carbon::parse($data->tanggal_pembuatan)->translatedFormat('l, d F Y')    }} </p> </td>
+                <td> <p> {{  Carbon\Carbon::parse($data->tanggal_pembuatan)->translatedFormat('l, d F Y')    }} </p> </td>
             </tr>
 
         </table>
         <br>
         <table  style="font-size: 80%" >
             <tr style="text-align: center">
-                <td width="80" ></td>
+                <td width="80" >Nama Karyawan</td>
                 <td width="350"></td>
                 <td width="80">HRD Personalia</td>
             </tr>
         </table>
         <br>
-        {{-- @php
-            $signature = App\Models\Filemanager::where('id_karyawan',$data->karyawan_id_pembuat)->where('slug','signature')->first()->path;
-        @endphp
-        <div id="ttd">
-            <img src="{{ asset($signature) }}" alt="" width="100" style="float: right">
-        </div> --}}
         <br><br>
         <table  style="font-size: 100%" >
             <tr style="text-align: center">
-                <td width="90" style="font-size: 80%"></td>
+                <td width="90" style="font-size: 80%">{{ $data->nama_karyawan }}</td>
                 <td width="340"></td>
                 <td width="90" style="font-size:80%">{{ $data->disetujui_oleh }}</td>
             </tr>

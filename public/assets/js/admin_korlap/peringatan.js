@@ -83,6 +83,12 @@ $(document).ready(function() {
     });
 })
 
+$("#mulai_dari").change( function() {
+    document.getElementById('tanggal_start').innerHTML = $(this).val()
+});
+$("#sampai_dengan").change( function() {
+    document.getElementById('tanggal_end').innerHTML = $(this).val()
+});
 
 $("#id_karyawan").change(function() {
     var id_karyawan = $(this).val();
@@ -91,7 +97,7 @@ $("#id_karyawan").change(function() {
         type: "POST",
         data: {id : id_karyawan},
         success : function(s) {
-            console.log(s)
+            // console.log(s)
             $("#jabatan").val(s.jabatan)
             $("#lokasi_kerja").val(s.lokasi_kerja)
         },error: function(e) {
@@ -276,7 +282,6 @@ function kirim_spv(id) {
             }
     });
 }
-
 
 function kirim_kr(id) {
     Swal.fire({
