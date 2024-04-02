@@ -113,7 +113,7 @@
         <br><br>
         <div class="row" id="text" style="font-size: 80%;">
             <p id="pertama">
-                {{ $data->teks_keterangan }}
+                {!! $data->teks_keterangan !!}
             </p>
         </div>
 

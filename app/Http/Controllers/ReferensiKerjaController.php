@@ -88,21 +88,21 @@ class ReferensiKerjaController extends Controller
         $akhir_masuk    = Carbon::parse($a_akhir_masuk)->translatedFormat('d F Y');
         $nama_client    = Clients::find($id_client)->nama_client;
 
-        $default        = 'Adalah benar bahwa nama tersebut diatas bekerja di PT Proven Force Indonesia yang di tempatkan '.$nama_client.' terhitung mulai tanggal '.$awal_masuk.' sampai dengan '.$akhir_masuk.'. Dalam hal ini telah';
-
-        $end_default    = ' Demikian surat referensi kerja ini dibuat untuk dapat dipergunakan sebagaimana mestinya.';
         if($id_ket == 1) {
-            $addDefault = $default.' Habis Masa Kontraknya';
-            $text = ' Adapun selama bekerja bersama kami, Sdr/i. '.$nama_karyawan.' telah menunjukan sikap yang baik,untuk itu kami atas nama perusahaan menyampaikan terimakasih atas segala sumbangsih yang telah diberikan dan semoga dimasa yang akan datang menjadi lebih sukses dan berhasil.';
+            $text = 'Adalah benar bahwa nama tersebut diatas  bekerja di PT Proven Force Indonesia yang di tempatkan di '.$nama_client.' terhitung mulai '.$awal_masuk.' sampai dengan '.$akhir_masuk.'. Dalam hal ini yang bersangkutan telah mengundurkan diri. <br>
+            Adapun selama bekerja bersama kami, Sdr/i. '.$nama_karyawan.' telah menunjukan sikap yang baik, untuk itu kami atas nama perusahaan menyampaikan terimakasih atas segala sumbangsih yang telah diberikan dan semoga dimasa yang akan datang menjadi lebih sukses dan berhasil. </br>
+            Demikian surat referensi kerja ini dibuat untuk dapat dipergunakan sebagaimana mestinya.';
         }else if($id_ket == 2) {
-            $addDefault = $default.' Mengundurkan diri.';
-            $text = 'Adapun selama bekerja bersama kami, Sdr/i. '.$nama_karyawan.' telah menunjukan sikap yang baik,untuk itu kami atas nama perusahaan menyampaikan terimakasih atas segala sumbangsih yang telah diberikan dan semoga dimasa yang akan datang menjadi lebih sukses dan berhasil.';
-        }else {
-            $addDefault = 'Adalah benar bahwa nama tersebut diatas bekerja di PT Proven Force Indonesia yang di tempatkan '.$nama_client.' terhitung mulai tanggal '.$awal_masuk.' sampai dengan '.$akhir_masuk.'.';
-            $text = '';
+            $text = 'Adalah benar bahwa nama tersebut diatas  bekerja di PT Proven Force Indonesia yang di tempatkan di '.$nama_client.' mulai tanggal '.$awal_masuk.' sampai dengan '.$akhir_masuk.'. Dalam hal ini yang bersangkutan telah habis masa kontraknya. <br>
+            Adapun selama bekerja bersama kami, Sdra/i. '.$nama_karyawan.' telah menunjukan sikap yang baik, untuk itu kami atas nama perusahaan menyampaikan terimakasih atas segala sumbangsih yang telah diberikan dan semoga dimasa yang akan datang menjadi lebih sukses dan berhasil. </br>
+            Demikian surat referensi kerja ini dibuat untuk dapat dipergunakan sebagaimana mestinya.';
+        }elseif($id_ket == 3) {
+            $text  = 'Adalah benar bahwa nama tersebut diatas  bekerja di PT Proven Force Indonesia yang di tempatkan di '.$nama_client.' terhitung mulai tanggal '.$awal_masuk.' sampai dengan '.$akhir_masuk.'. Dalam hal ini yang bersangkutan telah mengundurkan diri.<br>
+
+            Demikian surat referensi kerja ini dibuat untuk dapat dipergunakan sebagaimana mestinya.';
         }
 
-        return $addDefault.$text.$end_default;
+        return $text;
     }
 
     function update(Request $request) {
@@ -147,7 +147,7 @@ class ReferensiKerjaController extends Controller
 
     function detail(Request $request) {
         $data = ReferensiKerja::find($request->id);
-
+        // $text = $this->teks;
         return response()->json($data);
     }
 
@@ -222,4 +222,5 @@ class ReferensiKerjaController extends Controller
         ->make(true);
         return $dt;
     }
+
 }

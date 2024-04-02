@@ -162,6 +162,36 @@
                     <hr>
                         <h3 style="color:black">Perhitungan Laporan </h3>
                     <hr>
+                    @if ($data->status == 2)
+                    <form action="#" id="kirimLaporan" >
+                        <div class="row">
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label" for="fee">Management Fee %</label>
+                                <span class="text-danger pl-1">*</span>
+                                <input class="form-control" required="required" value="{{ $data->persentase }}"  name="fee" type="number" value="" id="fee" readonly>
+                                {{-- <input type="hidden" id="" name="id_list_laporan" value="{{ Request::segment(3)  }}"> --}}
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label" for="tagihan">Total Tagihan </label>
+                                <input class="form-control" required="required"  name="tagihan" type="text" value="{{ $totalHargaProdukRP }}" id="tagihan" readonly >
+                                <input type="hidden" name="mentahan_harga" value="{{ $totalHargaProdukInt }}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label" for="hasil"> Hasil </label>
+                                <input class="form-control" required="required"  name="hasil" type="text" value=" Rp. {{ $data->hasil_persentase }}" id="hasil" readonly >
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label" for="hasil"> Total Tagihan + Management Fee </label>
+                                @php
+                                    $result         = $data->total_tagihan * ($data->persentase / 100);
+                                    $totalF        = $data->total_tagihan + $result;
+                                    $toRp           =  "Rp. " .number_format(round($totalF,1),2,',','.');
+                                @endphp
+                                <input class="form-control" required="required"  name="hasil" type="text" value="{{ $toRp  }}" id="hasil" readonly >
+                            </div>
+                        </div>
+                    </form>
+                    @else
                     <form action="#" id="kirimLaporan" >
                         <div class="row">
                             <div class="form-group col-md-3">
@@ -186,6 +216,7 @@
                             </div>
                         </div>
                     </form>
+                    @endif
                 </div>
                     {{-- @if (in_array($data->status ,[1,3]) ) --}}
                     {{-- @else
@@ -439,12 +470,21 @@
                 data: {id : id,table: className},
                 type: 'POST',
                 success : function(ss) {
-                    var s = ss.data;
-                    document.getElementById('modalInputLongTitle').innerHTML = 'Total Produk ' + newText;
-                    $("#modalInput").modal('show');
-                    $("#id").val(id);
-                    $("#table_name").val(className);
-                    $("#total_produk").val(ss.name);
+
+                    if(ss.data_lap.status == 0) {
+                        var s = ss.data;
+                        document.getElementById('modalInputLongTitle').innerHTML = 'Total Produk ' + newText;
+                        $("#modalInput").modal('show');
+                        $("#id").val(id);
+                        $("#table_name").val(className);
+                        $("#total_produk").val(ss.name);
+                    }else {
+                        Swal.fire({
+                            icon : 'warning',
+                            title : 'Laporan ini telah selesai',
+                            text: 'Tidak dapat merubah value'
+                        });
+                    }
                 },error: function(xhr, status, error) {
                     console.error('Error:', error);
                 }

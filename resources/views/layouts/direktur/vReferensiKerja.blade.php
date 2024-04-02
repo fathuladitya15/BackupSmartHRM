@@ -317,6 +317,7 @@ function detail(id) {
             document.getElementById("alamat").innerHTML = s.alamat;
             document.getElementById("jabatan").innerHTML = s.jabatan;
             document.getElementById("no_surat").innerHTML = s.no_surat;
+            document.getElementById('text').innerHTML = s.teks_keterangan;
             $("#id_rf").val(s.id);
         }, error : function(e) {
             console.log(e)
@@ -331,6 +332,53 @@ function detail(id) {
         }
     })
 }
+
+$("#Add").submit(function (e) {
+    e.preventDefault();
+
+    $.ajax({
+        url: url_save,
+        data: $(this).serialize(),
+        type: "POST",
+        beforeSend: function() {
+            Swal.fire({
+                title: "Mohon Tunggu ... !",
+                html: "Jangan Tinggalkan Halaman ini <b></b> ",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+        },success : function(s) {
+            console.log(s)
+            if(s.status == true) {
+                Swal.fire({
+                    title: s.title,
+                    text: s.pesan,
+                    icon: "success"
+                });
+                $("#exampleModalCenter").modal('hide');
+
+            }else {
+                Swal.fire({
+                    title: s.title,
+                    text: s.pesan,
+                    icon: "warning"
+                });
+            }
+        },error: function(e) {
+            console.log(e)
+            Swal.fire({
+                title: "Terjadi kesalahan",
+                text: "Hubungi tim IT",
+                icon: "error"
+            });
+        },complete: function() {
+            table.DataTable().ajax.reload();
+        }
+    })
+})
 </script>
 {{-- <script src="{{ asset('assets/js/supervisor/referensi_kerja.js') }}"></script> --}}
 

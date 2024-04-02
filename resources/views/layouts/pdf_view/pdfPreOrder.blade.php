@@ -131,8 +131,8 @@
         <div class="row" style="text-align: center;">
             <div class="col-lg-6">
                 <img  src="{{ $data->ttd_pembuat != null ?  public_path($data->ttd_pembuat) : 'Error' }}" alt="" style="width: 100px;" ><br>
-                <div class="name_ttd" style="left:210px !important;" > <u>{{ Str::title($data->created_by) }}</u></div> <br>
-                <div class="name_ttd">(Korlap)</div>
+                <div class="name_ttd" style="left:210px !important;" > <u>{{ Str::title($data->dibuat_oleh) }}</u></div> <br>
+                <div class="name_ttd"></div>
             </div>
             <div class="col-lg-6">
                 <img  src="{{   public_path($data->ttd_direktur) }}" alt="" style="width: 100px;"> <br>

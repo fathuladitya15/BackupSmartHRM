@@ -142,7 +142,6 @@
                     <div class="row" id="text">
                         <p id="text">
                         </p>
-
                     </div>
                     <br>
                     <div class="row">
@@ -287,6 +286,7 @@ function detail(id) {
                 document.getElementById("alamat").innerHTML = s.alamat;
                 document.getElementById("jabatan").innerHTML = s.jabatan;
                 $("#id_rf").val(s.id);
+                document.getElementById("text").innerHTML = s.teks_keterangan;
             }else {
                 Swal.fire({
                     title: "Terjadi kesalahan",

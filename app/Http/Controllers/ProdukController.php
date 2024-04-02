@@ -267,7 +267,8 @@ class ProdukController extends Controller
                                     'nama_produk'   => $key->nama_produk,
                                     'harga_produk_satuan'   => $key->harga_produk,
                                     'id_table_lap_period' => $request->id,
-                                    'tipe_produk' => $key->tipe_produk
+                                    'tipe_produk' => $key->tipe_produk,
+                                    'satuan_produk' => $key->satuan_produk
                                 ]);
                             }
                         }
@@ -375,9 +376,10 @@ class ProdukController extends Controller
 
     function get_detail_laporan_produksi(Request $request){
         $data   = DetailLaporanProduksi::find($request->id);
+        $lap    = ListLaporanProduksi::find($data->id_table_lap_period);
         $d      = $request->table;
-        $values =   $data->$d;
-        return response()->json(['data' => $data,'name' => $values]);
+        $values = $data->$d;
+        return response()->json(['data' => $data,'name' => $values,'data_lap' => $lap]);
     }
 
     function update_detail_laporan_produksi(Request $request) {
@@ -512,6 +514,7 @@ class ProdukController extends Controller
     function laporan_produksi_kirim(Request $request) {
         $lins = route('laporan-produksi');
         if (Auth::user()->id_client == 2) {
+            $links = route('laporan-produksi');
             $result          = $request->mentahan_harga * ($request->fee / 100);
             $hasilPersentase = number_format($result,2,',','.');
 
@@ -521,8 +524,9 @@ class ProdukController extends Controller
                 'hasil_persentase' => $hasilPersentase,
             ];
             $u = ListLaporanProduksi::where("id",$request->id_list_laporan)->update($dataUpdate);
-            $pesan = ['status' => TRUE,'title' => 'Data Terkirim' ,'pesan' => 'Data berhasil dikirim ke supervisor. Halaman anda dialihkan ','link' => $lins,'data' => $u];
-            Aktivitas(Auth::user()->name.' Menyetujui laporan produksi '.$u->keterangan.'('.$u->from_date.'/'.$u->to_date.')');
+            $datas = ListLaporanProduksi::where("id",$request->id_list_laporan)->first();
+            $pesan = ['status' => TRUE,'title' => 'Data Terkirim' ,'pesan' => 'Data berhasil dikirim ke supervisor. Halaman anda dialihkan ','link' => $links,'data' => $u];
+            Aktivitas(Auth::user()->name.' Menyetujui laporan produksi '.$datas->keterangan.'('.$datas->from_date.'/'.$datas->to_date.')');
         }else if(Auth::user()->id_client == 8){
             $u = ListLaporanProduksi::find($request->id_list_laporan);
             if($request->status == 2 ) {
@@ -542,7 +546,7 @@ class ProdukController extends Controller
         }
 
 
-        return response()->json();
+        return response()->json($pesan);
     }
 
     // LAPORAN YUPI

@@ -2136,7 +2136,7 @@ class DatatableController extends Controller
             return $row->harga_produk_satuan == null ? 'Belum ditentukan' : "Rp ". number_format($row->harga_produk_satuan,2,',','.') ;
         })
         ->addColumn('satuan_produk', function($row) {
-            return "Kg";
+            return $row->satuan_produk;
         })
         ->addColumn('total_harga_produk', function($row) {
             return $row->total_harga_produk == null ? '' : "Rp ". number_format($row->total_harga_produk,2,',','.') ;

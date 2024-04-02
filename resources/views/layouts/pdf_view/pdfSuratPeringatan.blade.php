@@ -131,7 +131,7 @@
             <tr style="text-align: center">
                 <td width="80" >Nama Karyawan</td>
                 <td width="350"></td>
-                <td width="80">HRD Personalia</td>
+                <td width="80">Koordinator Lapangan</td>
             </tr>
         </table>
         <br>
@@ -140,7 +140,11 @@
             <tr style="text-align: center">
                 <td width="90" style="font-size: 80%">{{ $data->nama_karyawan }}</td>
                 <td width="340"></td>
-                <td width="90" style="font-size:80%">{{ $data->disetujui_oleh }}</td>
+                {{-- <td width="90" style="font-size:80%">{{ $data->disetujui_oleh }}</td> --}}
+                @php
+                    $nama_created = \App\Models\User::where('id_karyawan',$data->karyawan_id_pembuat)->first();
+                @endphp
+                <td width="90" style="font-size:80%">{{ $nama_created->name }}</td>
             </tr>
             <tr style="text-align: center">
                 <td width="90"></td>

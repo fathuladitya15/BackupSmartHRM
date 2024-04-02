@@ -15,6 +15,7 @@ class DetailLaporanProduksi extends Model
            'no_produk',
            'tipe_produk',
            'nama_produk',
+           'satuan_produk',
            'id_table_lap_period',
            'tanggal_1',
            'tanggal_2',
