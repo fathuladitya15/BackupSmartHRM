@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('ttd_pembuat');
             $table->string('nama_pembuat');
             $table->string('acc_surat')->nullable();
+            $table->string('acc_on')->nullable();
             $table->string('ttd_direktur')->nullable();
             $table->string('nama_direktur')->nullable();
             $table->string('status')->default(0);

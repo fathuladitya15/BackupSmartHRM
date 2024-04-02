@@ -130,6 +130,7 @@ class ReferensiKerjaController extends Controller
                 if($status == 2) {
                     $data->acc_surat = Auth::user()->name;
                     $data->no_surat  = $request->no_surat;
+                    $data->acc_on    = Carbon::now()->translatedFormat("l,d F Y");
                 }
                 $data->update();
                 $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Surat Berhasil disetujui!','data' => $request->all()];

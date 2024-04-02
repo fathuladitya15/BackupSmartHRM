@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('tipe_produk');
             $table->string('nama_produk');
             $table->string('id_table_lap_period');
+            $table->string('satuan_produk');
             $table->string('tanggal_1')->nullable();
             $table->string('tanggal_2')->nullable();
             $table->string('tanggal_3')->nullable();

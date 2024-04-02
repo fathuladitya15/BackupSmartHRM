@@ -1896,7 +1896,7 @@ class DatatableController extends Controller
             return $s;
         })
         ->addColumn('acc_on',function($row) {
-            return "";
+            return ;
         })
         ->addColumn('aksi', function($row) {
             $detail   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="detail_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';

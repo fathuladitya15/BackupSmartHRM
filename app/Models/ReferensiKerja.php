@@ -33,5 +33,6 @@ class ReferensiKerja extends Model
         'ttd_direktur',
         'nama_direktur',
         'status',
+        'acc_on'
     ];
 }

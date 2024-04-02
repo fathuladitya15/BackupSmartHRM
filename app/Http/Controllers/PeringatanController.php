@@ -117,7 +117,7 @@ class PeringatanController extends Controller
             $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Data berhasil dikirimkan '];
         }else if($role == 'spv-internal'){
             $data->status = 2;
-            $data->disetujui_pada = Carbon::now()->format('d m Y');
+            $data->disetujui_pada = Carbon::now()->translatedFormat('l, d F Y');
             $data->disetujui_oleh = Auth::user()->name;
             $data->update();
             $pesan = ['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Data telah disetujui '];
