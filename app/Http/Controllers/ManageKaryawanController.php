@@ -380,7 +380,7 @@ class ManageKaryawanController extends Controller
                 $this->upload_file($data_upload);
             }
 
-            Aktivitas("Melakukan Pembuatan Karyawan baru dengan nama : ".$request->name."-".$request->karyawan_id.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
+            Aktivitas(Auth::user()->name."(".Auth::user()->roles.") Melakukan Pembuatan Karyawan baru dengan nama : ".$request->name."-".$request->karyawan_id.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
 
             return redirect()->route('karyawan')->with('success','Berhasil menambahkan '.$request->name.'');
         }
@@ -491,7 +491,7 @@ class ManageKaryawanController extends Controller
                 $updateFile->update();
             }
             $nama_karyawan = $find->name;
-            Aktivitas("Melakukan pembaruan akun data Karyawan dengan nama : ".$find->name."-".$find->id_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
+            Aktivitas(Auth::user()->name."(".Auth::user()->roles.") Melakukan pembaruan akun data Karyawan dengan nama : ".$find->name."-".$find->id_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
         }else {
             if($request->type == 'data-diri') {
 
@@ -529,7 +529,7 @@ class ManageKaryawanController extends Controller
         $update_user->name  = $request->name;
         $update_user->update();
 
-        Aktivitas("Melakukan pembaruan data pribadi karyawan dengan nama : ".$find->nama_karyawan."-".$find->id_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
+        Aktivitas(Auth::user()->name."(".Auth::user()->roles.")Melakukan pembaruan data pribadi karyawan dengan nama : ".$find->nama_karyawan."-".$find->id_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
 
         return redirect()->route('karyawan')->with('success','Berhasil memperbarui karyawan '.$find->nama_karyawan.'');
     }
@@ -555,7 +555,7 @@ class ManageKaryawanController extends Controller
         $update_user->id_client     = $request->branch;
         $update_user->update();
 
-        Aktivitas("Melakukan pembaruan data perusahaan Karyawan dengan nama : ".$find->nama_karyawan."-".$find->id_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
+        Aktivitas(Auth::user()->name."(".Auth::user()->roles.")Melakukan pembaruan data perusahaan Karyawan dengan nama : ".$find->nama_karyawan."-".$find->id_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");
 
 
         return redirect()->route('karyawan')->with('success','Berhasil memperbarui karyawan '.$find->nama_karyawan.'');
@@ -733,7 +733,7 @@ class ManageKaryawanController extends Controller
                 $this->upload_file($data_upload);
             }
         }
-        Aktivitas("Melakukan pembaruan data dokumen karyawan dengan nama : ".$nama_karyawan."-".$nama_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y, H:I:s")."  ");
+        Aktivitas(Auth::user()->name."(".Auth::user()->roles.")Melakukan pembaruan data dokumen karyawan dengan nama : ".$nama_karyawan."-".$nama_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y, H:I:s")."  ");
 
         return redirect()->route('karyawan')->with('success','Berhasil memperbarui dokumen karyawan '.$nama_karyawan.'');
 
@@ -809,6 +809,22 @@ class ManageKaryawanController extends Controller
         $data->update();
 
         return response()->json(['status' => TRUE,'pesan' => $data->nama_karyawan.' berhasil disetujui','title' => "Sukses"]);
+    }
+
+    function setujui_karyawan(Request $request) {
+        // Lakukan pemrosesan data yang dipilih di sini
+        $selectedIds = $request->ids;
+        // Contoh: Menampilkan ID yang dipilih dalam bentuk JSON
+        foreach($selectedIds as $id) {
+            $u = [
+                'status' => 1,
+                'disetujui_oleh'  => Auth::user()->name.' ('.Auth::user()->roles.')',
+                'disetujui_pada' => Carbon::now()->translatedFormat('l, d F Y'),
+            ];
+            Karyawan::where('id_karyawan',$id)->update($u);
+        }
+        $pesan = ['status' => TRUE,'pesan' => 'Berhasil menyetujui Karyawan','title' => 'Sukses'];
+        return response()->json($pesan);
     }
 
 }

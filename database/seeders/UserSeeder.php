@@ -85,20 +85,20 @@ class UserSeeder extends Seeder
         ]);
 
         $spv_hrd = User::create([
-            'username'  => 'dwi',
-            'name'      => 'Dwi',
+            'username'  => 'spv_hrd',
+            'name'      => 'Supervisor HRD',
             'email'     => 'ack1asd23@gmail.com',
-            'password'  => Hash::make('password'),
+            'password'  => Hash::make('1234'),
             'roles'     => 'hrd',
             'id_client' => 1,
             'id_karyawan' => 'PFI1001'
         ]);
 
         $dirut_MPO = User::create([
-            'username'  => 'rommy',
+            'username'  => 'direktur_mpo',
             'name'      => 'Rommy Ghannny',
             'email'     => 'rmm12@gmail.com',
-            'password'  => Hash::make('password'),
+            'password'  => Hash::make('1234'),
             'roles'     => 'direktur',
             'id_client' => 1,
             'id_karyawan' => 'DR1001'
@@ -108,14 +108,14 @@ class UserSeeder extends Seeder
                 'username'  => 'direktur_hrd',
                 'name'      => 'Direktur HRD',
                 'email'     => 'testingmail@gmail.com',
-                'password'  => Hash::make('password'),
+                'password'  => Hash::make('1234'),
                 'roles'     => 'direktur',
                 'id_client' => 1,
                 'id_karyawan' => 'PFI18723'
         ]);
 
         $manager_Finance   =    User::create([
-            'username'  => 'manager_finance',
+            'username'  => 'mgr_fnc',
             'name'      => 'MANAGER FINANCE',
             'email'     => 'testingm12ail@gmail.com',
             'password'  => Hash::make('password'),
@@ -124,6 +124,77 @@ class UserSeeder extends Seeder
             'id_karyawan' => 'PFI18723111'
         ]);
 
+        $ga   =    User::create([
+            'username'  => 'ga',
+            'name'      => 'General Affair',
+            'email'     => 'ga1234@gmail.com',
+            'password'  => Hash::make('1234'),
+            'roles'     => 'general-affair',
+            'id_client' => 1,
+            'id_karyawan' => 'GA001'
+        ]);
+
+
+
+
+        // USER MENGASARI
+        $admin_mgs  = User::create([
+            'username' => 'adm_mgs',
+            'name' => 'Dwi Yuli Handayani',
+            'email' => 'dwi123@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'admin',
+            'id_client' => 2,
+            'id_karyawan' => 'MGS001'
+        ]);
+
+        $korlap_mgs  = User::create([
+            'username' => 'korlap_mgs',
+            'name' => 'Efi Yulfani',
+            'email' => 'efii2001@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'korlap',
+            'id_client' => 2,
+            'id_karyawan' => 'MGS002'
+        ]);
+        $spv_mgs  = User::create([
+            'username' => 'spv_mgs',
+            'name' => 'Supervisor Megasari',
+            'email' => 'spv_mgs@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'spv-internal',
+            'id_client' => 2,
+            'id_karyawan' => 'MGS003'
+        ]);
+
+        // SENTUL
+        $spv_aio_s  = User::create([
+            'username' => 'spvaio_sentul',
+            'name' => 'Supervisor Sentul',
+            'email' => 'spv_setnul@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'spv-internal',
+            'id_client' => 2,
+            'id_karyawan' => 'SNTL001'
+        ]);
+        $korlapaio_sentul  = User::create([
+            'username' => 'adminaio_sentul',
+            'name' => 'Deri Mauladan',
+            'email' => 'Derii123@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'korlap',
+            'id_client' => 2,
+            'id_karyawan' => 'SNTL002'
+        ]);
+        $adminaio_sentul  = User::create([
+            'username' => 'korlapaio_sentul',
+            'name' => 'Agus Gunawan',
+            'email' => 'admin_aioS@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'korlap',
+            'id_client' => 2,
+            'id_karyawan' => 'SNTL003'
+        ]);
 
 
     }

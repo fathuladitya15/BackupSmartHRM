@@ -179,8 +179,8 @@ class KaryawanSeeder extends Seeder
 
         // KARYAWAN PFI
 
-        Karyawan::create([
-            'nama_karyawan' => 'Dwi',
+        $spv_hrd = Karyawan::create([
+            'nama_karyawan' => 'Supervisor HRD',
             'id_karyawan'   => 'PFI1001',
             'no_hp'         => "0877912768863",
             'tanggal_lahir' => "2024-02-06",
@@ -206,7 +206,7 @@ class KaryawanSeeder extends Seeder
             'kategori'      => 'pusat',
 
         ]);
-        Karyawan::create([
+        $direktur_mpo = Karyawan::create([
             'nama_karyawan' => 'Rommy Ghannny',
             'id_karyawan'   => 'DR1001',
             'no_hp'         => "0877912761263",
@@ -233,7 +233,7 @@ class KaryawanSeeder extends Seeder
             'kategori'      => 'pusat',
 
         ]);
-        Karyawan::create([
+        $direktur_hrd = Karyawan::create([
             'nama_karyawan' => 'Direktur HRD',
             'id_karyawan'   => 'PFI18723',
             'no_hp'         => "0877122761263",
@@ -260,7 +260,7 @@ class KaryawanSeeder extends Seeder
             'kategori'      => 'pusat',
 
         ]);
-        Karyawan::create([
+        $manager_finance = Karyawan::create([
             'nama_karyawan' => 'MANAGER FINANCE',
             'id_karyawan'   => 'PFI18723111',
             'no_hp'         => "08771227612632",
@@ -286,6 +286,186 @@ class KaryawanSeeder extends Seeder
             'cuti'          => 0,
             'kategori'      => 'pusat',
 
+        ]);
+        $ga = Karyawan::create([
+            'nama_karyawan' => 'General Affair',
+            'id_karyawan'   => 'GA001',
+            'no_hp'         => "08771227612632",
+            'tanggal_lahir' => "2024-02-06",
+            'tempat_lahir'  => "JAKARTA",
+            'jenis_kelamin' => "L",
+            'nik'           => 3202901502010100,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 1,
+            'divisi'        => 2,
+            'jabatan'       => 4,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK BRI (BANK RAKYAT INDONESIA)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 002,
+            'norek_bank'    => 7125553,
+            'status'        => 0,
+            'cuti'          => 0,
+            'kategori'      => 'pusat',
+        ]);
+
+        // MEGASARI
+        $spv_mgs  = Karyawan::create([
+            'nama_karyawan' => 'Supervisor Megasari',
+            'id_karyawan'   => 'MGS003',
+            'no_hp'         => "088922543991102",
+            'tanggal_lahir' => "1993-10-10",
+            'tempat_lahir'  => "Subang",
+            'jenis_kelamin' => "L",
+            'nik'           => 2013015020108090,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 2,
+            'divisi'        => 1,
+            'jabatan'       => 2,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK SYARIAH INDONESIA (Eks BNI SYARIAH)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 427,
+            'norek_bank'    => 77987321,
+            'status'        => 0,
+            'kategori'      => 'pusat'
+        ]);
+        $admin_mgs  = Karyawan::create([
+            'nama_karyawan' => 'Dwi Yuli Handayani',
+            'id_karyawan'   => 'MGS001',
+            'no_hp'         => "0889225439911122",
+            'tanggal_lahir' => "1993-10-10",
+            'tempat_lahir'  => "Jakarta",
+            'jenis_kelamin' => "P",
+            'nik'           => 2013015020101290,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 2,
+            'divisi'        => 1,
+            'jabatan'       => 3,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK SYARIAH INDONESIA (Eks BNI SYARIAH)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 427,
+            'norek_bank'    => 77987321,
+            'status'        => 0,
+            'kategori'      => 'project'
+        ]);
+        $korlap_mgs  = Karyawan::create([
+            'nama_karyawan' => 'Efi Yulfani',
+            'id_karyawan'   => 'MGS002',
+            'no_hp'         => "0889225431222",
+            'tanggal_lahir' => "1993-10-10",
+            'tempat_lahir'  => "Jakarta",
+            'jenis_kelamin' => "P",
+            'nik'           => 2013015110101290,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 2,
+            'divisi'        => 1,
+            'jabatan'       => 13,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK SYARIAH INDONESIA (Eks BNI SYARIAH)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 427,
+            'norek_bank'    => 77987321,
+            'status'        => 0,
+            'kategori'      => 'project'
+        ]);
+
+        // SENTUL
+        $spv_sentul = $spv_mgs  = Karyawan::create([
+            'nama_karyawan' => 'Supervisor Sentul',
+            'id_karyawan'   => 'SNTL001',
+            'no_hp'         => "088922543991102",
+            'tanggal_lahir' => "1993-10-10",
+            'tempat_lahir'  => "Sukabumi",
+            'jenis_kelamin' => "L",
+            'nik'           => 2013015020108280,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 2,
+            'divisi'        => 1,
+            'jabatan'       => 2,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK SYARIAH INDONESIA (Eks BNI SYARIAH)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 427,
+            'norek_bank'    => 77987321,
+            'status'        => 0,
+            'kategori'      => 'pusat'
+        ]);
+        $korlapaio_sentul  = Karyawan::create([
+            'nama_karyawan' => 'Agus Gunawan',
+            'id_karyawan'   => 'SNTL003',
+            'no_hp'         => "08892239911122",
+            'tanggal_lahir' => "1993-10-10",
+            'tempat_lahir'  => "Jakarta",
+            'jenis_kelamin' => "L",
+            'nik'           => 2013020020101290,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 2,
+            'divisi'        => 1,
+            'jabatan'       => 13,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK SYARIAH INDONESIA (Eks BNI SYARIAH)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 427,
+            'norek_bank'    => 77987321,
+            'status'        => 0,
+            'kategori'      => 'project'
+        ]);
+        $korlap_mgs  = Karyawan::create([
+            'nama_karyawan' => 'Deri Mauladan',
+            'id_karyawan'   => 'SNTL002',
+            'no_hp'         => "088921431222",
+            'tanggal_lahir' => "1993-10-10",
+            'tempat_lahir'  => "Jakarta",
+            'jenis_kelamin' => "L",
+            'nik'           => 2013080110101290,
+            'no_kk'         => 0,
+            'alamat'        =>"Jakarta",
+            'alamat_domisili' => 'Jakarta',
+            'lokasi_kerja'  => 2,
+            'divisi'        => 1,
+            'jabatan'       => 3,
+            'join_date'     => "2023-10-10",
+            'end_date'      => "2027-10-10",
+            'gol_karyawan'  => 'PKWT',
+            'marital'       => "TK",
+            'nama_bank'     => "BANK SYARIAH INDONESIA (Eks BNI SYARIAH)",
+            'cabang_bank'   => "Jakarta",
+            'kd_bank'       => 427,
+            'norek_bank'    => 77987321,
+            'status'        => 0,
+            'kategori'      => 'project'
         ]);
 
     }

@@ -185,10 +185,24 @@ class DatatableController extends Controller
                 return "";
             })
             ->addColumn('photo',function($row) {
-                return "";
+                $count = Filemanager::where('id_karyawan',$row->id_karyawan)->where('slug','foto_profile')->count();
+                if($count >= 1 )
+                {
+                    $data_profile = Filemanager::where('id_karyawan',$row->id_karyawan)->where('slug','foto_profile')->first();
+                    $path = asset($data_profile->path.$data_profile->filename) ;
+                }else {
+                    $jk = $row->jenis_kelamin;
+                    if($jk == 'L') {
+                        $path = asset('assets/img/avatars/1.png');
+                    }else {
+                        $path = asset('assets/img/avatars/6.png');
+                    }
+                }
+                $image = '<img src='.$path.' alt="Gambar" class="circular_image" style="align-content: center" />';
+                return $image;
             })
-            ->addColumn('aksi',function($row) {
-                $edit   = '<a href="javascript:void(0)" onclick="acc_kr('.$row->id.')" id="acc_'.$row->id.'" class="btn btn-success btn-sm"  ><i class="bx bx-check-circle"></i>Setujui</a>';
+            ->addColumn('check_box',function($row) {
+                $edit   = '<input type="checkbox" class="select-checkbox" value="'.$row->id_karyawan.'">';
                 return $edit;
             })
             ->addColumn('status_karyawan',function($row) {
@@ -215,7 +229,7 @@ class DatatableController extends Controller
             ->addColumn('nama_jabatan',function($row) {
                 return Jabatan::find($row->jabatan)->nama_jabatan;
             })
-            ->rawColumns(['aksi','face_id','photo','status_karyawan','join_date','end_date','kategori'])
+            ->rawColumns(['check_box','face_id','photo','status_karyawan','join_date','end_date','kategori'])
             ->make(true);
 
         return $dataTable;

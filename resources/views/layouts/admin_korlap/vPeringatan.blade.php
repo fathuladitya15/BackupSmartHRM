@@ -143,7 +143,7 @@
                     </div>
                     <div class="row">
                         <div class="form-group col-md-6">
-                            <label class=" col-form-label" for="basic-default-name">Masa Berlaku</label>
+                            <label class=" col-form-label" for="basic-default-name">Berlaku mulai dari</label>
                             <span class="text-danger pl-1">*</span>
                             <input type="date" class="form-control"  name="mulai_dari" id="mulai_dari"  required="required">
 

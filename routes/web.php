@@ -224,6 +224,7 @@ Route::middleware('revalidate')->group(function() {
             Route::middleware(['role:spv-internal'])->group(function(){
                 Route::get('/surat-peringatan/data-spv',[DataTableController::class,'data_peringatan_spv'])->name('peringatan-data-spv');
                 Route::get('/karyawan/data/spv',[DataTableController::class,'data_karyawan_SPV'])->name('data-kr-spv');
+                Route::post('/karyawan/approved',[ManageKaryawanController::class,'setujui_karyawan'])->name('data-kr-acc');
                 Route::get('/izin-karyawan/spv',[DataTableController::class,'data_izin_supervisor'])->name('data-izin-spv');
 
 

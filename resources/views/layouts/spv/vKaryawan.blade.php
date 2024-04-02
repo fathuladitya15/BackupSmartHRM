@@ -62,9 +62,7 @@
                 <h5 class="mb-0">Data Karyawan</h5>
             </div>
             <div class="card-title" style="float: right;">
-                <a href="{{ route('karyawan-add') }}" class="btn btn-success" style="float: right;">
-                    <i class='bx bx-check'></i>Setujui Semua
-                </a>
+                <button id="setujuiBtn" class="btn btn-success" style="display:none;"><i class="bx bx-check-circle"></i> Setujui Karyawan</button>
             </div>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">
@@ -72,6 +70,7 @@
                         <thead>
                         <tr class="text-nowrap">
                             <th>No</th>
+                            <th>#</th>
                             <th>face id</th>
                             <th>id karyawan</th>
                             <th>photo</th>
@@ -85,7 +84,6 @@
                             <th>disetujui pada</th>
                             <th>disetujui </th>
                             <th>status akun</th>
-                            <th>Setujui</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -103,101 +101,164 @@
 <script>
     var url_data  = "{{ route('data-kr-spv') }}";
     var table  = $('#myTable').dataTable({
-    processing: true,
-    serverSide: true,
-    ajax: url_data,
-    columns: [
+        processing: true,
+        serverSide: true,
+        ajax: url_data,
+        columns: [
+            {
+            data: 'DT_RowIndex',
+            orderable: false,
+            searchable: false
+        },
         {
-        data: 'DT_RowIndex',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data:'face_id',
-        name:'face_id',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data:'id_karyawan',
-        name:'id_karyawan',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data:'photo',
-        name:'photo',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data: 'name',
-        name: 'name',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data: 'nama_divisi',
-        name: 'nama_divisi',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data: 'nama_jabatan',
-        name: 'nama_jabatan',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data: 'gol_karyawan',
-        name: 'gol_karyawan',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data: 'join_date',
-        name: 'join_date',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data: 'end_date',
-        name: 'end_date',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data: 'acc_on',
-        name: 'acc_on',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data: 'acc_by',
-        name: 'acc_by',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data: 'acc',
-        name: 'acc',
-        orderable: false,
-        searchable: false
-    },
-    {
-        data: 'status_karyawan',
-        name: 'status_karyawan',
-        orderable: false,
-        searchable: false
-    },
+            data : 'check_box',
+            name : 'check_box',
+            orderable : false,
+            searchable : false,
+        },
+        {
+            data:'face_id',
+            name:'face_id',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data:'id_karyawan',
+            name:'id_karyawan',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data:'photo',
+            name:'photo',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'name',
+            name: 'name',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'nama_divisi',
+            name: 'nama_divisi',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'nama_jabatan',
+            name: 'nama_jabatan',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'gol_karyawan',
+            name: 'gol_karyawan',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'join_date',
+            name: 'join_date',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'end_date',
+            name: 'end_date',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'disetujui_oleh',
+            name: 'disetujui_oleh',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'disetujui_pada',
+            name: 'disetujui_pada',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'acc',
+            name: 'acc',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'status_karyawan',
+            name: 'status_karyawan',
+            orderable: false,
+            searchable: false
+        }, ]
+    }) ;
 
-    {
-        data: 'aksi',
-        name: 'aksi',
-        orderable: false,
-        searchable: false
-    }, ]
-}) ;
+    // Handle checkbox change event
+    $('#myTable tbody').on('change', '.select-checkbox', function(){
+        if($(this).is(":checked")) {
+            $('#setujuiBtn').show(200);
+        } else {
+            if($('.select-checkbox:checked').length == 0) {
+                $('#setujuiBtn').hide(200);
+            }
+        }
+    });
+
+    $("#setujuiBtn").click(function() {
+        var selectedIds = [];
+        $('.select-checkbox:checked').each(function(){
+                selectedIds.push($(this).val());
+            });
+
+        // Send selectedIds to controller using Ajax
+        $.ajax({
+            url: "{{ route('data-kr-acc') }}",
+            type: "POST",
+            data: {ids: selectedIds},
+            beforeSend: function() {
+                Swal.fire({
+                    title: "Mohon Tunggu ... !",
+                    html: "Jangan Tinggalkan Halaman ini <b></b> ",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+            },
+            success: function(s){
+                if(s.status == true) {
+                    Swal.fire({
+                        title: s.title,
+                        text: s.pesan,
+                        icon: "success"
+                    });
+                }else {
+                    Swal.fire({
+                        title: "Terjadi Kesalahan",
+                        text: "Hubungi Tim IT",
+                        icon: "error"
+                    });
+                }
+            },error : function(e) {
+                var errors = '';
+                $.each(e.responseJSON.errors, function(key, value) {
+                    errors += value + '<br>'; // Membuat daftar pesan kesalahan
+                });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan!',
+                    html: errors
+                });
+            },complete: function() {
+                table.DataTable().ajax.reload();
+                $('#setujuiBtn').hide(0);
+            }
+        });
+    })
 
 </script>
 @endpush

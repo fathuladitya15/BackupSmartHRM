@@ -83,7 +83,7 @@
                                 <th>Absen Pulang</th>
                                 <th>Shift</th>
                                 <th>Lokasi Absen</th>
-                                <th>Aksi</th>
+                                <th>Catatan</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -45,7 +45,7 @@ class RoleSeeder extends Seeder
 
         Role::create([
             'name_role' => "General Affair",
-            'slug_role' => "ga",
+            'slug_role' => "general-affair",
         ]);
 
         Role::create([
@@ -63,10 +63,6 @@ class RoleSeeder extends Seeder
             'slug_role' => "admin",
         ]);
 
-        Role::create([
-            'name_role' => "General Affair",
-            'slug_role' => "ga",
-        ]);
         Role::create([
             'name_role' => "Manager",
             'slug_role' => "manajer",
