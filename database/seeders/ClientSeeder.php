@@ -23,7 +23,7 @@ class ClientSeeder extends Seeder
         ]);
 
         Clients::create([
-            'nama_client' => 'PT Megasari Makmur',
+            'nama_client' => 'PT Godrej Indonesia',
             'prov' => 'Jawa Barat',
             'kota' => 'Kab Bogor',
             'kec' => 'Gunung  Putri',

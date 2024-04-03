@@ -195,6 +195,63 @@ class UserSeeder extends Seeder
             'id_client' => 2,
             'id_karyawan' => 'SNTL003'
         ]);
+        // SKB
+        $spv_aio_s  = User::create([
+            'username' => 'spvaio_skb',
+            'name' => 'Supervisor Sukabumi',
+            'email' => 'spv_skb@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'spv-internal',
+            'id_client' => 3,
+            'id_karyawan' => 'SKB001'
+        ]);
+        $adminaio_skb  = User::create([
+            'username' => 'adminaio_skb',
+            'name' => 'Admin Sukabumi',
+            'email' => 'admskb231@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'admin',
+            'id_client' => 3,
+            'id_karyawan' => 'SKB002'
+        ]);
+        $korlapaio_skb  = User::create([
+            'username' => 'korlapaio_skb',
+            'name' => 'Korlap Sukabumi',
+            'email' => 'kr_skbS@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'korlap',
+            'id_client' => 3,
+            'id_karyawan' => 'SKB003'
+        ]);
+        // YUPI
+        // SKB
+        $spv_yupi  = User::create([
+            'username' => 'spv_yupi',
+            'name' => 'Supervisor Yupi',
+            'email' => 'spv_yqwekasd@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'spv-internal',
+            'id_client' => 8,
+            'id_karyawan' => 'YUPI001'
+        ]);
+        $adm_yupi  = User::create([
+            'username' => 'adm_yupi',
+            'name' => 'Admin Yupi',
+            'email' => 'admskb2asd31@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'admin',
+            'id_client' => 8,
+            'id_karyawan' => 'YUPI002'
+        ]);
+        $korlap_yupi  = User::create([
+            'username' => 'korlap_yupi',
+            'name' => 'Korlap Yupi',
+            'email' => 'kr_skassbS@gmail.com',
+            'password' => Hash::make('1234'),
+            'roles' => 'korlap',
+            'id_client' => 8,
+            'id_karyawan' => 'YUPI003'
+        ]);
 
 
     }

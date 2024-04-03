@@ -70,7 +70,7 @@ class IzinController extends Controller
                 return view('layouts.spv.vIzinDefault');
                 // dd($role);
             }
-            else if($role == 'spv-internal') {
+            else  {
                 abort(404);
             }
         }
@@ -332,8 +332,15 @@ class IzinController extends Controller
 
     function data_izin_accept(Request $request) {
         $data = Izin::find($request->id);
-        $data->status = 4;
-        $data->update();
+        if(Auth::user()->id_client == 3) {
+            $data->status = 3;
+            $data->disetujui_pada = Carbon::now()->translatedFormat('l,d F Y');
+            $data->disetujui_oleh  = Auth::user()->name.' (Supervisor)';
+            $data->update();
+        }else {
+            $data->status = 4;
+            $data->update();
+        }
         Aktivitas(Auth::user()->name."( ".Auth::user()->roles." ) Menyetujui pengajuan izin atas nama karyawan : ".$data->nama_karyawan."-".$data->id_karyawan);
 
         return response()->json(['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Form pengajuan izin '.$data->nama_karyawan.' telah disetujui']);

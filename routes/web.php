@@ -230,6 +230,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('/data-lembur/{karyawan}',[LemburController::class,'lembur_karyawan'])->name('data-lembur-karyawan');
                 Route::get('/data-lembur/data/ajax',[LemburController::class,'lembur_karyawan_data'])->name('data-lembur-karyawan-data');
                 Route::post('/data-lembur/update',[LemburController::class,'update_status'])->name('data-lembur-update');
+                Route::post('/acc-izin/spv',[IzinController::class,'acc_izin'])->name('acc-spv');
 
 
             });

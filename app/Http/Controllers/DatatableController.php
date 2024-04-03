@@ -1096,7 +1096,12 @@ class DatatableController extends Controller
     }
     // DATA IZIN SUERVISOR
     function data_izin_supervisor(Request $request) {
-        $data = Izin::where('id_client',Auth::user()->id_client)->where('status',1)->get();
+        if(Auth::user()->id_client == 3) {
+            $data = Izin::where('id_client',Auth::user()->id_client)->where('status','>=',2)->get();
+        }else {
+            $data = Izin::where('id_client',Auth::user()->id_client)->where('status',1)->get();
+
+        }
 
         $dt = DataTables::of($data)
             ->addIndexColumn()
@@ -1136,16 +1141,18 @@ class DatatableController extends Controller
                 }else {
                     $download  = '<a href="'.route("izin-download",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm"  ><i class="bx bx-download"></i>Download</a>';
                     $view_file = '<a href="javascript:void(0)" onclick="view('.$row->id.')" class="btn btn-info btn-sm" id="view_'.$row->id.'"><i class="menu-icon tf-icons bx bx-folder-open"></i> Lihat File</a> &nbsp;';
+                    $acc       = '<a href="javascript:void(0)" style="padding-right:15px;" onclick="approved('.$row->id.')"  class="approdved btn btn-success btn-actions btn-sm" id="approve_'.$row->id.'" ><i class="menu-icon tf-icons bx bx-check"></i> Setujui</a> &nbsp;';
                     $upload    = '<a href="javascript:void(0)" class="btn btn-info btn-sm" id="upload_'.$row->id.'" onclick="upload('.$row->id.')" ><i class="bx bx-upload" ></i>Upload</a>';
                     if($row->status == 1) {
                         $btn = $download.'&nbsp;'.$upload;
                     }else if($row->status == 2){
-                        $btn = $download.'&nbsp;'.$upload.'&nbsp;'.$view_file;
+                        $btn = $acc.'&nbsp;'.$view_file;
 
+                    }else if($row->status == 3) {
+                        $btn = $view_file;
                     }
-
                     else {
-                        $btn = $edit;
+                        $btn ="";
                     }
                 }
 

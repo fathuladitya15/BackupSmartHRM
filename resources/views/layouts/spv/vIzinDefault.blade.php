@@ -94,6 +94,29 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="modalView" role="dialog"  >
+    <div class="modal-dialog  modal-lg" role="document" >
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="" style="color: black">File Izin </h5>
+            <button type="button" class="btn btn-default close-ttd" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form >
+                    <div class="col-lg-12" style="text-align: center;">
+                        <img src="" alt="" id="image_file_izin" style="width: 50%">
+                    </div>
+                    <div class="col-lg-12">
+                        <iframe src="" width="100%" height="500px" id="pdf_file_izin" frameborder="0"></iframe>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('js')
@@ -105,7 +128,85 @@
     var url_save    = "{{ route('izin-save') }}";
     var url_detail  = "{{ route('izin-detail') }}";
     var assets      = "{{ asset('') }}";
+    var url_files   = "{{ route('izin-file') }}";
+    var url_acc     = "{{ route('izin-acc') }}";
 </script>
 <script src="{{ asset('assets/js/supervisor/izin_default.js') }}"></script>
+<script>
+    function view(id) {
+        const detail  = document.getElementById("view_"+id+"");
+        const stoploading = '<i class="menu-icon tf-icons bx bx-folder-open"></i> Lihat File';
+        const loading = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+        $.ajax({
+            url : url_files,
+            type :  "POST",
+            data : {id : id },
+            beforeSend : function () {
+                detail.innerHTML = loading;
+                detail.disabled  = true;
+            },success : function(s) {
+                if(s.status == true) {
+                    if(s.type_file == 'pdf') {
+                        document.getElementById("pdf_file_izin").style.display = "block";
+                        document.getElementById("pdf_file_izin").src =  s.links ;
+                    }else {
+                        document.getElementById("pdf_file_izin").style.display = "none";
+                        document.getElementById("image_file_izin").src =  s.links ;
+                    }
+                    $("#modalView").modal("show");
+                    detail.innerHTML = stoploading;
+                    detail.disabled = false;
+                }
+            }, error : function(e) {
+                Swal.fire({
+                    title: "Terjadi Kesalahan !",
+                    text: "Hubungi Tim IT !",
+                    icon: "error"
+                });
+            }, complete :  function() {
+                detail.innerHTML = stoploading;
+                detail.disabled = false;
+            }
+        })
+    }
+
+    $('#modalView').on('hidden.bs.modal', function () {
+        document.getElementById("pdf_file_izin").style.display = "none";
+        document.getElementById("pdf_file_izin").src = "";
+        document.getElementById("image_file_izin").src = "";
+    });
+
+    function approved(id) {
+        $.ajax({
+            url : url_acc,
+            data: {id:id},
+            type : 'POST',
+            beforeSend: function() {
+                Swal.fire({
+                    title: "Mohon Tunggu ... !",
+                    html: "Jangan Tinggalkan Halaman ini <b></b> ",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+            },success: function(s) {
+                console.log(s);
+                if(s.status == true) {
+                    Swal.fire(s.title, s.pesan, "success");
+                }else {
+                    Swal.fire('Terjadi Kesalahan',"", "error");
+                }
+            },error : function(e) {
+                console.log(e);
+                Swal.fire('Terjadi Kesalahan',"", "error");
+
+            },complete: function() {
+                table.DataTable().ajax.reload();
+            }
+        })
+    }
+</script>
 @endpush
 
