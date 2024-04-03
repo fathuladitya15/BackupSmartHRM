@@ -168,3 +168,46 @@ function detail(id) {
         }
     })
 }
+
+function view(id) {
+    const detail  = document.getElementById("view_"+id+"");
+    const stoploading = '<i class="menu-icon tf-icons bx bx-folder-open"></i> Lihat File';
+    const loading = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+    $.ajax({
+        url : url_files,
+        type :  "POST",
+        data : {id : id },
+        beforeSend : function () {
+            detail.innerHTML = loading;
+            detail.disabled  = true;
+        },success : function(s) {
+            if(s.status == true) {
+                if(s.type_file == 'pdf') {
+                    document.getElementById("pdf_file_izin").style.display = "block";
+                    document.getElementById("pdf_file_izin").src =  s.links ;
+                }else {
+                    document.getElementById("pdf_file_izin").style.display = "none";
+                    document.getElementById("image_file_izin").src =  s.links ;
+                }
+                $("#modalView").modal("show");
+                detail.innerHTML = stoploading;
+                detail.disabled = false;
+            }
+        }, error : function(e) {
+            Swal.fire({
+                title: "Terjadi Kesalahan !",
+                text: "Hubungi Tim IT !",
+                icon: "error"
+            });
+        }, complete :  function() {
+            detail.innerHTML = stoploading;
+            detail.disabled = false;
+        }
+    })
+}
+
+$('#modalView').on('hidden.bs.modal', function () {
+    document.getElementById("pdf_file_izin").style.display = "none";
+    document.getElementById("pdf_file_izin").src = "";
+    document.getElementById("image_file_izin").src = "";
+});

@@ -870,7 +870,7 @@ class DatatableController extends Controller
                 return Carbon::parse($row->tanggal_pembuatan)->translatedFormat('d F Y');
             })
             ->addColumn("disetujui_oleh",function($row) {
-                if($row->status == 4) {
+                if(in_array($row->status,[3,4])) {
                     $sts = $row->disetujui_oleh;
                 }else {
                     $sts = "";
@@ -913,7 +913,11 @@ class DatatableController extends Controller
                             $btn = $edit;
                         }
                     }else {
-                        $btn = "";
+                        if($row->status == 3) {
+                            $btn = $view_file;
+                        }else {
+                            $btn = "";
+                        }
                     }
                 }
 
@@ -944,8 +948,6 @@ class DatatableController extends Controller
                             $st = $acc;
                         }
                     }
-
-
                 }else {
                     if(in_array(Auth::user()->roles,['kr-project','kr-pusat'])) {
                         if($row->status == 0 ) {
@@ -1039,10 +1041,10 @@ class DatatableController extends Controller
                     }else if($row->status == 2){
                         $btn = $download.'&nbsp;'.$upload.'&nbsp;'.$view_file;
 
-                    }
-
-                    else {
-                        $btn = $edit;
+                    }else if($row->status == 3) {
+                        $btn = $view_file;
+                    }else {
+                        $btn = "";
                     }
                 }
 
@@ -1086,7 +1088,7 @@ class DatatableController extends Controller
                 if($row->status == 1) {
                     return "<span class='badge bg-danger'>File belum diupload</span>";
                 }else {
-                    return "";
+                    return $row->disetujui_oleh;
                 }
             })
             ->rawColumns(['no_surat','aksi','status','nama_karyawan','approved','tanggal_pembuatan'])

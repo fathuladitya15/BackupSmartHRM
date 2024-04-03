@@ -245,6 +245,29 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="modalView" role="dialog"  >
+    <div class="modal-dialog  modal-lg" role="document" >
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="" style="color: black">Upload File Izin </h5>
+            <button type="button" class="btn btn-default close-ttd" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form >
+                    <div class="col-lg-12" style="text-align: center;">
+                        <img src="" alt="" id="image_file_izin" style="width: 50%">
+                    </div>
+                    <div class="col-lg-12">
+                        <iframe src="" width="100%" height="500px" id="pdf_file_izin" frameborder="0"></iframe>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('js')
@@ -256,6 +279,8 @@
     var url_save    = "{{ route('izin-save') }}";
     var url_detail  = "{{ route('izin-detail') }}";
     var assets      = "{{ asset('') }}";
+    var url_files   = "{{ route('izin-file') }}";
+
 </script>
 <script src="{{ asset('assets/js/izin_aio.js') }}"></script>
 @endpush
