@@ -31,6 +31,7 @@ use App\Http\Controllers\PeringatanController;
 use App\Http\Controllers\ReferensiKerjaController;
 use App\Http\Controllers\ManageKaryawanController;
 use App\Http\Controllers\GeneralAffairController;
+use App\Http\Controllers\DirekturController;
 
 /*
 |--------------------------------------------------------------------------
@@ -226,6 +227,9 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('/karyawan/data/spv',[DataTableController::class,'data_karyawan_SPV'])->name('data-kr-spv');
                 Route::post('/karyawan/approved',[ManageKaryawanController::class,'setujui_karyawan'])->name('data-kr-acc');
                 Route::get('/izin-karyawan/spv',[DataTableController::class,'data_izin_supervisor'])->name('data-izin-spv');
+                Route::get('/data-lembur/{karyawan}',[LemburController::class,'lembur_karyawan'])->name('data-lembur-karyawan');
+                Route::get('/data-lembur/data/ajax',[LemburController::class,'lembur_karyawan_data'])->name('data-lembur-karyawan-data');
+                Route::post('/data-lembur/update',[LemburController::class,'update_status'])->name('data-lembur-update');
 
 
             });
@@ -275,6 +279,7 @@ Route::middleware('revalidate')->group(function() {
             Route::middleware(['role:hrd'])->group(function() {
                 Route::get('/karyawan/data-hrd',[DatatableController::class,'data_karyawan_hrd'])->name('data-kr-hrd');
                 Route::get('/cuti/data-hrd',[DatatableController::class,'data_cuti_hrd'])->name('data-cuti-hrd');
+                Route::get('/lembur/data/hrd',[Lemburcontroller::class,'lembur_hrd_data'])->name('lembur-data-hrd');
             });
 
             Route::middleware(['role:korlap:admin:hrd'])->group(function() {
@@ -283,12 +288,13 @@ Route::middleware('revalidate')->group(function() {
 
             Route::middleware(['role:direktur'])->group(function() {
                 Route::get('/referensi-kerja-direktur/{nama_client}/{id}',[ReferensiKerjaController::class,'index_direktur'])->name('direktur-rf-index');
-
+                Route::get('/data-lembur',[DirekturController::class,'index_lembur_direktur_hrd'])->name('lembur-direktur');
+                Route::get('/data-lembur/data-ajax',[DirekturController::class,'data_lembur_dir_hrd'])->name('lembur-direktur-data');
                 Route::get('/pre-order-direktur/{nama_client}/{id}', function($c,$id) {
-                    // dd($c,$id);
                     abort(500);
-
                 })->name('direktur-pre-order-index');
+
+
             });
 
             // Route::get('/pre-order/{nama_client}/referensi-kerja/{id}',[ReferensiKerjaController::class,'index_direktur'])->name('direktur-rf-index');

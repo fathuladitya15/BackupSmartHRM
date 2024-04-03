@@ -70,7 +70,7 @@
                         <thead>
                         <tr class="text-nowrap">
                             <th>No</th>
-                            <th>#</th>
+                            <th><input type="checkbox" class="check-all"></th>
                             <th>face id</th>
                             <th>id karyawan</th>
                             <th>photo</th>
@@ -259,6 +259,18 @@
             }
         });
     })
+
+    $(".check-all").change(function() {
+        $(".select-checkbox").prop('checked', $(this).prop("checked"));
+        if($(this).is(':checked')){
+            $('#setujuiBtn').show(200);
+        }else {
+            $('#setujuiBtn').hide(200);
+        }
+    })
+
+    // Add event listener to the "check all" checkbox
+    // checkAll.addEventListener('change',alert("TES"));
 
 </script>
 @endpush

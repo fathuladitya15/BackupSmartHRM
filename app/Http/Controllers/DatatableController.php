@@ -472,6 +472,8 @@ class DatatableController extends Controller
                 $data =  Lembur::where('divisi','MPO')->where('status','>=','0')->get();
             }else {
                 $data = Lembur::where('status','>=','2')->get();
+                $dt = $this->data_lembur_dir_hrd();
+                return $dt;
             }
         }
         else {
@@ -513,6 +515,8 @@ class DatatableController extends Controller
                     }else if($role == 'direktur') {
                         $dataKaryawan   = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first();
                         $divisi         = Divisi::find($dataKaryawan->divisi)->nama_divisi;
+                        $divisi_kr      = Karyawan::where('id_karyawan',$row->id_karyawan)->first()->divisi;
+                        $n_divisi_kr    = Divisi::find($divisi_kr)->nama_divisi;
                         if($divisi == 'MPO'){
                             if($row->status != 2) {
                                 return "";
@@ -520,13 +524,26 @@ class DatatableController extends Controller
                                 return $edit;
                             };
                         }else {
-                            if($row->status == 2) {
-                                return $edit;
-                            }else if($row->status == 3) {
-                                return $acc;
-                            }
-                            else if($row->status == 4) {
-                                return $file;
+                            if($n_divisi_kr == 'MPO') {
+                                if($row->status == 3) {
+                                    return $edit;
+                                }else if($row->status == 4) {
+                                    return $acc;
+                                }
+                                else if($row->status == 5) {
+                                    return $file;
+                                }
+
+                            }else {
+                                if($row->status == 2) {
+                                    return $edit;
+                                }else if($row->status == 3) {
+                                    return $acc;
+                                }
+                                else if($row->status == 4) {
+                                    return $file;
+                                }
+
                             }
 
                         }
@@ -622,6 +639,91 @@ class DatatableController extends Controller
             return $dt;
     }
 
+    // DATA LEMBUR KARYAWAN PFI UNTUK DIREKTUR HRD
+    function data_lembur_dir_hrd() {
+        $data = Lembur::where('id_client',Auth::user()->id_client)->get();
+
+        $dt = DataTables::of($data)
+        ->addIndexColumn()
+        ->addColumn('aksi', function($row) {
+            $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+            $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+            $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
+
+            if($row->divisi == 'MPO') {
+                if($row->status == 3){
+                    return $edit;
+                }
+                else if($row->status == 4) {
+                    return $file;
+                }else {
+                    return "";
+                }
+            }else {
+                if($row->status == 1) {
+                    return $edit;
+
+                }
+                else if($row->status == 4){
+                    return $file;
+                }
+                else {
+                    return "";
+                }
+            }
+        })
+        ->addColumn('status', function($row) {
+            if($row->divisi == 'MPO') {
+                $acc_spv        =   "<span class='badge bg-warning'> Menuggu Persetujuan Supervisor </span>";
+                $manager_divisi =   "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
+                $spv_hrd        =   "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
+                $dir_hrd        =   "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+                $acc            =   "<span class='badge bg-success'> Telah disetujui </span>";
+                if($row->status == 0 ) {
+                    $st = $acc_spv;
+                }else if($row->status == 1 ) {
+                    $st = $manager_divisi;
+                }else if($row->status == 2) {
+                    $st = $spv_hrd;
+                }else if($row->status == 3) {
+                    $st =  $dir_hrd  ;
+                }else if($row->status == 4) {
+                    $st = $acc;
+                }
+                else {
+                    $st = "<span class='badge bg-danger'> Error Status </span>";
+
+                }
+
+            }else {
+                $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
+                $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
+                $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+                if($row->status == 0 ) {
+                    $st = $wait;
+                }else if($row->status == 1 ) {
+                    $st = $waitHRD;
+                }else if($row->status == 2) {
+                    $st = $waitDirektur;
+                }else if($row->status == 3) {
+                    $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
+
+                }else {
+                    $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
+                }
+            }
+            return $st;
+        })
+        ->addColumn("tanggal_lembur", function($row) {
+            return Carbon::parse($row->tanggal_lembur)->translatedFormat('d F Y');
+        })
+        ->rawColumns(['aksi','status','disetujui_oleh'])
+        ->make(true);
+
+        return $dt;
+    }
+
     // DATA LEMBUR UNTUK SUPERVISOR
     function data_lembur_karyawan_spv(Request $request) {
         $dataMaster = Lembur::where('id_client',Auth::user()->id_client);
@@ -673,42 +775,76 @@ class DatatableController extends Controller
 
     // DATA LEMBUR UNTUK MANAGER
     function data_lembur_karyawan_manajer(Request $request) {
+        $divisi  = karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first()->divisi;
+        $nama_divisi   = Divisi::find($divisi);
+        // dd($nama_divisi->nama_divisi);
+
         $data = DB::table('table_lembur as tl')->select('tl.*')
         ->join('table_karyawan as tk','tk.id_karyawan','=','tl.id_karyawan')
         ->whereIn('tk.kategori',['project','pusat'])
         ->get();
-        // dd($data);
         if($request->filled('from_date') || $request->filled('to_date')){
             $data = $data->whereBetween('tanggal_lembur', [$request->from_date, $request->to_date]);
         }
         $dt = DataTables::of($data)
             ->addIndexColumn()
-            ->addColumn('aksi', function($row) {
+            ->addColumn('aksi', function($row) use ($nama_divisi) {
                 $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
                 $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
-                if($row->status == 0) {
-                    return $edit;
+                if($nama_divisi->nama_divisi == 'MPO') {
+                    if($row->status == 1) {
+                        return $edit;
+                    }else {
+                        return "";
+                    };
                 }else {
-                    return "";
-                };
-                // return $edit;
+                    if($row->status == 0) {
+                        return $edit;
+                    }else {
+                        return "";
+                    };
+                }
+
             })
-            ->addColumn('status', function($row) {
-                $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
-                $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
-                $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
-                if($row->status == 0 ) {
-                    $st = $wait;
-                }else if($row->status == 1 ) {
-                    $st = $waitHRD;
-                }else if($row->status == 2) {
-                    $st = $waitDirektur;
-                }else if($row->status == 3) {
-                    $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
+            ->addColumn('status', function($row) use  ($nama_divisi) {
+                if($nama_divisi->nama_divisi) {
+                    $acc_spv        =   "<span class='badge bg-warning'> Menuggu Persetujuan Supervisor </span>";
+                    $manager_divisi =   "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
+                    $spv_hrd        =   "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
+                    $dir_hrd        =   "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+                    $acc            =   "<span class='badge bg-success'> Telah disetujui </span>";
+                    if($row->status == 0 ) {
+                        $st = $acc_spv;
+                    }else if($row->status == 1 ) {
+                        $st = $manager_divisi;
+                    }else if($row->status == 2) {
+                        $st = $spv_hrd;
+                    }else if($row->status == 3) {
+                        $st =  $dir_hrd  ;
+                    }else if($row->status == 4) {
+                        $st = $acc;
+                    }
+                    else {
+                        $st = "<span class='badge bg-danger'> Error Status </span>";
 
+                    }
                 }else {
-                    $st = "<span class='badge bg-success'> Telah disetujui </span>";
+                    $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
+                    $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
+                    $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+                    if($row->status == 0 ) {
+                        $st = $wait;
+                    }else if($row->status == 1 ) {
+                        $st = $waitHRD;
+                    }else if($row->status == 2) {
+                        $st = $waitDirektur;
+                    }else if($row->status == 3) {
+                        $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
 
+                    }else {
+                        $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
+                    }
                 }
                 return $st;
             })

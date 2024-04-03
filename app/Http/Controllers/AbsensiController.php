@@ -41,7 +41,13 @@ class AbsensiController extends Controller
         }else if($role == 'spv-internal') {
             $karyawan = User::where('id_client',Auth::user()->id_client)->where('roles',['karyawan','admin','korlap'])->get();
             $route_data_table = route('absensi-korlap',['gol_karyawan' =>$kr]);
-            return view('layouts.spv.vAbsensiMegasari',compact('kr','karyawan','route_data_table'));
+            if($kr == 'pusat') {
+
+                $view = 'layouts.spv.vAbsensiKaryawanPusat';
+            }else if($kr == 'project') {
+                $view = 'layouts.spv.vAbsensiKaryawanProject';
+            }
+            return view($view,compact('kr','karyawan','route_data_table'));
         }
     }
 

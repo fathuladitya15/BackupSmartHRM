@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use DB;
 use PDF;
 use Auth;
+use DataTables;
 use Validator;
 use Carbon\Carbon;
 use App\Models\User;
@@ -31,6 +32,7 @@ class LemburController extends Controller
         $name_divisi = Divisi::find($cek_divisi)->nama_divisi;
 
         if(in_array(Auth::user()->roles,['hrd'])) {
+
             $daftar_kr = User::where('roles','kr-pusat')->orWhere('roles','kr-project')->where('id_client',Auth::user()->id_client)->get();
             $total_jam = DB::table('table_lembur')
                 ->selectRaw('SUM(CAST(total_jam as int)) as jam')
@@ -47,7 +49,7 @@ class LemburController extends Controller
             if($name_divisi == 'MPO'){
                 return view('layouts.manajer.vLembur');
             }else {
-                return view('layouts.direktur.vLembur');
+                return redirect()->route('lembur-direktur');
             }
         }
         else if(in_array(Auth::user()->roles,['kr-pusat','kr-project'])) {
@@ -139,7 +141,7 @@ class LemburController extends Controller
                     'group'                 => $request->group,
                     'status'                => 0,
                     'tanggal_lembur'        => $request->tanggal_lembur,
-                    'id_client'             => Auth::user()->id_client,
+                    'id_client'             => 1,
                     'ttd_karyawan'          => $ttd->path,
                 ];
                 Lembur::create($data);
@@ -158,7 +160,7 @@ class LemburController extends Controller
 
                 if($divisi != 'MPO'){
                     $dataUpdate = [
-                        'status'    => 3,
+                        'status'    => 4,
                         'ttd_direktur' => $ttd->path,
                     ];
 
@@ -166,21 +168,30 @@ class LemburController extends Controller
                 }
                 else {
                     $data = [
-                        'status' => 1,
+                        'status' => 2,
                         'ttd_manager' => $ttd->path,
                     ];
                     return $this->update($request->id_lembur,$data);
-                    // return response()->json($data);
                 }
             }
             else if($role == 'hrd'){
                 $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where('slug','signature')->first();
+                $divisi = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi;
+                $nama_divisi = Divisi::find($divisi)->nama_divisi;
+                if($nama_divisi == 'MPO') {
+                    $dataUpdate = [
+                        'status'    => 3,
+                        'ttd_admin_korlap' => $ttd->path,
+                    ];
+                }else {
+                    $dataUpdate = [
+                        'status'    => 2,
+                        'ttd_admin_korlap' => $ttd->path,
+                    ];
 
-                $dataUpdate = [
-                    'status'    => 2,
-                    'ttd_admin_korlap' => $ttd->path,
-                ];
+                }
                 return $this->update($request->id_lembur,$dataUpdate);
+                // return response($nama_divisi);
             }
             else if($role == 'karyawan') {
                 if(in_array(Auth::user()->id_client,[1,2])){
@@ -255,10 +266,6 @@ class LemburController extends Controller
 
 
         return response()->json($status);
-
-    }
-
-    function save_data($data) {
 
     }
 
@@ -467,6 +474,169 @@ class LemburController extends Controller
 
         return response()->json(['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Form pengajuan izin '.$data->nama_karyawan.' telah disetujui']);
 
+
+    }
+
+    function lembur_karyawan($tipe_karyawan) {
+        $datakr         = Karyawan::where('id_karyawan',Auth::user()->id_karyawan)->first();
+        $jabatan        = Jabatan::find($datakr->jabatan)->nama_jabatan;
+        $divisi         = Divisi::find($datakr->divisi)->nama_divisi;
+        $lokasi_kerja   = Clients::find(Auth::user()->id_client)->nama_client;
+        if($tipe_karyawan == 'pusat') {
+            return view('layouts.spv.vLemburPusat',compact('lokasi_kerja','divisi','jabatan'));
+        }else if($tipe_karyawan == 'project') {
+            return view('layouts.spv.vLemburProject',compact('lokasi_kerja','divisi','jabatan'));
+        }else  {
+            abort(404);
+        }
+    }
+
+    function lembur_karyawan_data(Request $request) {
+        $data = Lembur::where('divisi','MPO')->where('id_client',Auth::user()->id_client)->get();
+        if($request->filled('from_date') || $request->filled('to_date')){
+            $data = $data->whereBetween('tanggal_lembur', [$request->from_date, $request->to_date]);
+        }
+        $dt = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('aksi', function($row) {
+                $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="acc_'.$row->id.'" onclick="acc('.$row->id.')"  ><i class="bx bx-check-circle"></i>Setujui</a>';
+                $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+                if($row->status == 0) {
+                    return $edit;
+                }else {
+                    return "";
+                };
+            })
+            ->addColumn('status', function($row) {
+                $acc_spv        =   "<span class='badge bg-warning'> Menuggu Persetujuan Supervisor </span>";
+                $manager_divisi =   "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
+                $spv_hrd        =   "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
+                $dir_hrd        =   "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+                $acc            =   "<span class='badge bg-success'> Telah disetujui </span>";
+                if($row->status == 0 ) {
+                    $st = $acc_spv;
+                }else if($row->status == 1 ) {
+                    $st = $manager_divisi;
+                }else if($row->status == 2) {
+                    $st = $spv_hrd;
+                }else if($row->status == 3) {
+                    $st =  $dir_hrd  ;
+                }else if($row->status == 4) {
+                    $st = $acc;
+                }
+                else {
+                    $st = "<span class='badge bg-danger'> Error Status </span>";
+
+                }
+                return $st;
+            })
+            ->addColumn("tanggal_lembur", function($row) {
+                return Carbon::parse($row->tanggal_lembur)->translatedFormat('d F Y');
+            })
+            ->rawColumns(['aksi','status','disetujui_oleh'])
+            ->make(true);
+
+            return $dt;
+
+
+    }
+
+    function lembur_hrd_data(Request $request) {
+        $data = Lembur::where('id_client',1)->get();
+
+        $dt = DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('aksi', function($row) {
+                $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$row->id.'" onclick="detail('.$row->id.')"  ><i class="bx bx-edit-alt"></i>Detail</a>';
+                $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+                $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
+
+                if($row->divisi == 'MPO') {
+                    if($row->status == 2){
+                        return $edit;
+                    }
+                    else if($row->status == 4) {
+                        return $file;
+                    }else {
+                        return "";
+                    }
+                }else {
+                    if($row->status == 1) {
+                        return $edit;
+
+                    }
+                    else if($row->status == 4){
+                        return $file;
+                    }
+                    else {
+                        return "";
+                    }
+                }
+            })
+            ->addColumn('status', function($row) {
+                if($row->divisi == 'MPO') {
+                    $acc_spv        =   "<span class='badge bg-warning'> Menuggu Persetujuan Supervisor </span>";
+                    $manager_divisi =   "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
+                    $spv_hrd        =   "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
+                    $dir_hrd        =   "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+                    $acc            =   "<span class='badge bg-success'> Telah disetujui </span>";
+                    if($row->status == 0 ) {
+                        $st = $acc_spv;
+                    }else if($row->status == 1 ) {
+                        $st = $manager_divisi;
+                    }else if($row->status == 2) {
+                        $st = $spv_hrd;
+                    }else if($row->status == 3) {
+                        $st =  $dir_hrd  ;
+                    }else if($row->status == 4) {
+                        $st = $acc;
+                    }
+                    else {
+                        $st = "<span class='badge bg-danger'> Error Status </span>";
+
+                    }
+
+                }else {
+                    $wait           = "<span class='badge bg-warning'> Menuggu Ditandatangani Manager Divisi </span>";
+                    $waitHRD        = "<span class='badge bg-warning'> Menuggu Ditandatangani HRD </span>";
+                    $waitDirektur   = "<span class='badge bg-warning'> Menuggu Ditandatangani Direktur HRD </span>";
+                    if($row->status == 0 ) {
+                        $st = $wait;
+                    }else if($row->status == 1 ) {
+                        $st = $waitHRD;
+                    }else if($row->status == 2) {
+                        $st = $waitDirektur;
+                    }else if($row->status == 3) {
+                        $st = "<span class='badge bg-warning'> Menunggu Persetujuan </span>";
+
+                    }else {
+                        $st = "<span class='badge bg-success'> Telah disetujui </span>";
+
+                    }
+                }
+                return $st;
+            })
+            ->addColumn("tanggal_lembur", function($row) {
+                return Carbon::parse($row->tanggal_lembur)->translatedFormat('d F Y');
+            })
+            ->rawColumns(['aksi','status','disetujui_oleh'])
+            ->make(true);
+
+            return $dt;
+
+    }
+
+    function update_status(Request $request) {
+        $id = $request->id;
+        $update = Lembur::find($id);
+        $update->status = $request->status;
+        $update->update();
+        Aktivitas(Auth::user()->name.' ('.Auth::user()->roles.').  Menyetujui permintaan lembur '.$update->nama_karyawan);
+        return response()->json([
+            'status' => TRUE,
+            'title' => 'Sukses',
+            'pesan' => $update->nama_karyawan.' telah disetujui'
+        ]);
 
     }
 

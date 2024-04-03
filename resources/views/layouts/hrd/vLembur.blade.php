@@ -365,7 +365,7 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="{{ asset("assets/js/jquery.signature.js") }}"></script>
 <script>
-    var url_data    = "{{ route('lembur-admin-korlap',['hash' => HashVariable(Auth::user()->id_karyawan)]) }}";
+
     var url_detail  = "{{ route('lembur-detail') }}";
     var url_save    = "{{ route('lembur-save') }}";
 </script>
@@ -373,10 +373,14 @@
     @if (in_array(Auth::user()->roles,['hrd','direktur','manajer']))
         <script>
             var url_acc = "{{ route('lembur-acc') }}";
+            var url_data = "{{ route('lembur-data-hrd') }}";
         </script>
         <script src="{{ asset('assets/js/hrd/data_lembur.js') }}"></script>
     @endif
 @else
+<script>
+    var url_data    = "{{ route('lembur-admin-korlap',['hash' => HashVariable(Auth::user()->id_karyawan)]) }}";
+</script>
     <script src="{{ asset('assets/js/admin_korlap/data_lembur.js') }}"></script>
 @endif
 

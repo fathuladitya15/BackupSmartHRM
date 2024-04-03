@@ -161,7 +161,7 @@
 
 
                     @if ($jabatan != 'Manager' && $jabatan != 'Head')
-                        <li class="menu-item {{ menuOpen(['lembur','lembur-self']) }}">
+                        <li class="menu-item {{ menuOpen(['lembur','lembur-self','data-lembur-karyawan']) }}">
                             <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-time"></i>
                             <div data-i18n="Authentications">Lembur </div>
@@ -184,6 +184,23 @@
                                         <div data-i18n="Basic">Data Lembur Anda </div>
                                         </a>
                                     </li>
+                                </ul>
+                            @elseif(Auth::user()->roles == 'spv-internal')
+                                <ul class="menu-sub">
+                                    <li class="menu-item {{ Request::segment(2) == 'pusat' ? 'active' : '' }}">
+                                        <a href="{{ route('data-lembur-karyawan',['karyawan' => 'pusat']) }}" class="menu-link" >
+                                        <div data-i18n="Basic">Data Lembur Admin </div>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                                <ul class="menu-sub">
+                                    <li class="menu-item {{ Request::segment(2) == 'project' ? 'active' : '' }}  ">
+                                        <a href="{{ route('data-lembur-karyawan',['karyawan' => 'project']) }}" class="menu-link" >
+                                        <div data-i18n="Basic">Data Lembur Project </div>
+                                        </a>
+                                    </li>
+
                                 </ul>
                             @else
                                 <ul class="menu-sub">
