@@ -22,6 +22,17 @@
     // $foto_profile =
 @endphp
 @endif
+<style>
+    .notif {
+  position: absolute;
+  top: 0px;
+  right: -3px;
+  padding: 4px 6px;
+  border-radius: 50%;
+  background-color: red;
+  color: white;
+}
+</style>
 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"id="layout-navbar">
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
       <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
@@ -51,11 +62,7 @@
         </div>
         <ul class="navbar-nav flex-row align-items-center ms-auto">
             <!-- Place this tag where you want the button to render. -->
-            <li class="nav-item navbar-dropdown dropdown-karyawan dropdown">
-                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <i class='bx bxs-bell'></i>
-                </a>
-                @php
+            @php
                     $thirtyDaysFromNow = now()->addDays(30);
                     $sevenDaysFromNow = now()->addDays(7);
                     if(in_array(Auth::user()->roles,['spv-internal','admin','korlap'])){
@@ -68,6 +75,13 @@
                         $karyawan_pkwt = \App\Models\Karyawan::where("gol_karyawan",'PKWT')->where('kategori','pusat')->orWhere('kategori','project')->where('end_date','<=',$thirtyDaysFromNow)->count();
                     }
                 @endphp
+            <li class="nav-item navbar-dropdown dropdown-karyawan dropdown">
+
+                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <i class='bx bxs-bell'></i>
+                    <span class="badge">{{ $karyawan_khl + $karyawan_pkwt  }}</span>
+                </a>
+
                 <ul class="dropdown-menu dropdown-menu-end">
 
                     <li class="dropdown-item">
