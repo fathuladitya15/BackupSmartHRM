@@ -37,7 +37,7 @@ class CutiController extends Controller
                                 ->where('tahun',$tahun_ini)
                                 ->selectRaw('SUM(CAST(cuti_get AS INT)) as cuti_yang_diambil')->first();
             $sisa_cuti     = 12 -  $total_semua_cuti->cuti_yang_diambil;
-            dd($sisa_cuti);
+            // dd($sisa_cuti);
             return view('layouts.karyawan.vCuti',compact('kategori_cuti','divisi','jabatan','periode_cuti','sisa_cuti'));
 
         }
