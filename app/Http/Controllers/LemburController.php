@@ -26,7 +26,6 @@ class LemburController extends Controller
     }
 
     function index() {
-        // dd(Auth::user()->roles);
 
         $cek_divisi = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first()->divisi;
         $name_divisi = Divisi::find($cek_divisi)->nama_divisi;
@@ -637,6 +636,10 @@ class LemburController extends Controller
             'title' => 'Sukses',
             'pesan' => $update->nama_karyawan.' telah disetujui'
         ]);
+
+    }
+
+    function DataTableByKaryawan(Request $request) {
 
     }
 

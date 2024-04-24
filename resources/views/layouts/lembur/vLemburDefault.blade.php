@@ -49,7 +49,7 @@
     <div class="col-xxl">
         <div class="card mb-4">
             <div class="card-header d-flex align-items-center justify-content-between" >
-                <h5 class="mb-0">Data Lembur</h5>
+                <h5 class="mb-0">Data Lembur </h5>
             </div>
             <div class="card-title">
                 <button class="btn btn-primary" style="float: right;" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">Tambah Lembur</button>
@@ -231,6 +231,65 @@
     var url_detail  = "{{ route('lembur-detail') }}";
     var assets      = "{{ asset('') }}";
 
+</script>
+<script>
+    var table  = $('#myTable').dataTable({
+        processing: true,
+        serverSide: true,
+        ajax: url_data,
+        columns: [{
+            data: 'DT_RowIndex',
+            orderable: false,
+            searchable: false
+        },{
+            data: 'tanggal_lembur',
+            name: 'tanggal_lembur',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'tugas',
+            name: 'tugas',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'jam_mulai',
+            name: 'jam_mulai',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'jam_selesai',
+            name: 'jam_selesai',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'total_jam',
+            name: 'total_jam',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'status',
+            name: 'status',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'disetujui_oleh',
+            name: 'disetujui_oleh',
+            orderable: false,
+            searchable: false
+        },
+        {
+            data: 'aksi',
+            name: 'aksi',
+            orderable: false,
+            searchable: false
+        }, ]
+    }) ;
 </script>
 <script src="{{ asset('assets/js/lembur.js') }}"></script>
 

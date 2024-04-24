@@ -288,7 +288,7 @@ class ManageKaryawanController extends Controller
             if($request->hasFile('profile_pictures')){
                 $file       = $request->profile_pictures;
                 $filename   = "PP_".date("YmdHi").'.'.$file->getClientOriginalExtension();
-                $path       = '/filemanager/photo_profile/';
+                $path       = '/filemanager/photo_profile/'.$filename;
                 $move_folder= $path.$filename;
 
                 $data_upload = [
@@ -460,7 +460,6 @@ class ManageKaryawanController extends Controller
     }
 
     function update_data(Request $request,$hash) {
-        // dd($request->all());
         $type = $request->id_users != null ? 'db-user' : 'db-karyawan';
 
         if($type == 'db-user') {
@@ -475,20 +474,49 @@ class ManageKaryawanController extends Controller
 
             if($request->hasfile('foto')) {
                 $getFilemanager     = Filemanager::where('id_karyawan',$find->id_karyawan)->where('slug','foto_profile')->first();
-                $path_old           = public_path().$getFilemanager->path.$getFilemanager->filename;
-                unlink($path_old);
+                if($getFilemanager) {
+                    $pathFile       = $getFilemanager->path;
+                    $unLink         = public_path().$pathFile;
+                    unlink($unLink);
+                    $filenew        = $request->foto;
+                    $filename       = "PP_".date("YmdHi").$find->id_karyawan.'.'.$filenew->getClientOriginalExtension();
+                    $urlPath        = '/filemanager/photo_profile/'.$filename;
+                    $filenew->move(public_path('/filemanager/photo_profile'),$filename);
+
+                    $updatePP       = Filemanager::find($getFilemanager->id);
+                    $updatePP->path = $urlPath;
+                    $updatePP->filename = $filename;
+                    $updatePP->extension = $filenew->getClientOriginalExtension();
+                    $updatePP->update();
+                }else {
+                    $filenew        = $request->foto;
+                    $filename       = "PP_".date("YmdHi").$find->id_karyawan.'.'.$filenew->getClientOriginalExtension();
+                    $urlPath        = '/filemanager/photo_profile/'.$filename;
+                    $filenew->move(public_path('/filemanager/photo_profile'),$filename);
+                    $crete = [
+                        'filename'  => $filename,
+                        'id_karyawan' => $find->id_karyawan,
+                        'keterangan' => 'Foto Profile '.$find->name,
+                        'path'  => $urlPath,
+                        'extension' => $filenew->getClientOriginalExtension(),
+                        'slug'      => 'foto_profile',
+                    ];
+                    Filemanager::create($crete);
+                }
+                // $path_old           = public_path().$getFilemanager->path.$getFilemanager->filename;
+                // unlink($path_old);
 
 
-                $filenew        = $request->foto;
-                $filename       = "PP_".date("YmdHi").'.'.$filenew->getClientOriginalExtension();
-                $path           = '/filemanager/photo_profile/';
-                $move_folder    = $path.$filename;
-                $filenew->move(public_path($path),$filename);
-                $updateFile = Filemanager::find($getFilemanager->id);
-                $updateFile->filename   = $filename;
-                $updateFile->path       = $path;
-                $updateFile->extension  = $filenew->getClientOriginalExtension();
-                $updateFile->update();
+                // $filenew        = $request->foto;
+                // $filename       = "PP_".date("YmdHi").'.'.$filenew->getClientOriginalExtension();
+                // $path           = '/filemanager/photo_profile/';
+                // $move_folder    = $path.$filename;
+                // $filenew->move(public_path($path),$filename);
+                // $updateFile = Filemanager::find($getFilemanager->id);
+                // $updateFile->filename   = $filename;
+                // $updateFile->path       = $path;
+                // $updateFile->extension  = $filenew->getClientOriginalExtension();
+                // $updateFile->update();
             }
             $nama_karyawan = $find->name;
             Aktivitas(Auth::user()->name."(".Auth::user()->roles.") Melakukan pembaruan akun data Karyawan dengan nama : ".$find->name."-".$find->id_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y")."  ");

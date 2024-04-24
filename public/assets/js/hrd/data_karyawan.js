@@ -16,8 +16,6 @@ var table  = $('#myTable').dataTable({
     {
         data:'id_karyawan',
         name:'id_karyawan',
-        orderable: false,
-        searchable: false
     },
     {
         data:'photo',
@@ -28,8 +26,6 @@ var table  = $('#myTable').dataTable({
     {
         data: 'name',
         name: 'name',
-        orderable: false,
-        searchable: false
     },
     {
         data: 'nama_divisi',

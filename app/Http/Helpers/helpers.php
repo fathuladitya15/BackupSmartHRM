@@ -4,6 +4,9 @@
 use Carbon\Carbon;
 use App\Models\Aktifitas;
 use Illuminate\Support\Facades\Crypt;
+use App\Models\User;
+use App\Models\Filemanager;
+use App\Models\Karyawan;
 
 
 if (!function_exists('getIpInfo')) {
@@ -190,6 +193,29 @@ if(!function_exists('Aktivitas')) {
             'aktivitas' => $data,
             'id_client' => Auth::user()->id_client,
         ]);
+    }
+}
+
+if(!function_exists('foto_profile')) {
+    function foto_profile($id_karyawan) {
+        $dataUser       = User::where("id_karyawan",$id_karyawan)->first();
+        $roles          = $dataUser->roles;
+        if($roles == 'superadmin') {
+            $foto_profile = asset('assets/img/avatars/1.png');
+        }else {
+            $dataKaryawan   = Karyawan::where('id_karyawan',$id_karyawan)->first();
+            $jenisKelamin   = $dataKaryawan->jenis_kelamin == 'L' ? 1 : 6 ;
+
+            $cekPath        = Filemanager::where("id_karyawan",$id_karyawan)->where('slug','foto_profile')->first();
+            if($cekPath) {
+                $foto_profile = asset($cekPath->path);
+            }else {
+                $foto_profile = asset('assets/img/avatars/'.$jenisKelamin.'.png');
+
+            }
+
+        }
+        return $foto_profile;
     }
 }
 

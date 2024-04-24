@@ -78,6 +78,7 @@ class HomeController extends Controller
             $kr_internal    = Karyawan::where('lokasi_kerja',Auth::user()->id_client)->where('kategori','project')->count();
             $view           = 'layouts.Dashboard.vSupervisorInternal';
             $riwayat        = Aktifitas::where("id_client",Auth::user()->id_client)->get();
+            $suratPeringatan= Peringatan::where('lokasi_kerja',Auth::user()->id_client)->where('status',1)->count();
             array_push($data,'kr_project','kr_internal','riwayat');
         }
         elseif (Auth::user()->roles == 'karyawan') {
@@ -146,7 +147,7 @@ class HomeController extends Controller
         return response()->json($status);
     }
 
-    function save_tanda_tangan(Request $request) {
+    function  save_tanda_tangan  (Request $request) {
         ob_start();
             $request->svg;
         $ttd = ob_get_clean();

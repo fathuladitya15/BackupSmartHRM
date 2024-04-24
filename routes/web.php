@@ -220,6 +220,7 @@ Route::middleware('revalidate')->group(function() {
 
             Route::middleware(['role:karyawan'])->group(function(){
                 Route::get('/surat-peringatan/data-karyawan',[DatatableController::class,"data_peringatan_karyawan"])->name('peringatan-data-kr');
+                // Route::get
             });
 
             Route::middleware(['role:spv-internal'])->group(function(){
