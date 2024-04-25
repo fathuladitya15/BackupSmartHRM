@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\CutiController;
 use App\Http\Controllers\Api\IzinController;
 use App\Http\Controllers\Api\AbsensiController;
+use App\Http\Controllers\Api\UploadImageController;
 use App\Models\Filemanager;
 use App\Models\Bank;
 use App\Models\Karyawan;
@@ -94,6 +95,9 @@ Route::prefix('absensi')->group(function() {
     Route::get('data-clients',[AbsensiController::class,'get_data_client']);
     Route::get('cek-absen',[AbsensiController::class,'cek_absensi']);
     route::get('absen',[AbsensiController::class,'absensi']);
+});
+route::prefix('upload')->group(function() {
+    Route::post('image',[UploadImageController::class,'upload']);
 });
 
 Route::post('save-ttd',[AbsensiController::class,'save_ttd_mobile']);
