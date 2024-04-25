@@ -27,7 +27,8 @@ class User extends Authenticatable
         'roles',
         'id_karyawan',
         'id_client',
-        'token'
+        'token',
+        'device_token'
     ];
 
     /**

@@ -136,6 +136,16 @@
         </div>
     </div>
 
+    <div class="row">
+        <button class="btn btn-success" onclick="sendNotification()">Test Notif</button>
+        <form action="{{ route('send-notif') }}" method="POST">
+            @csrf
+            <input type="text" name="title">
+            <input type="text" name="body">
+            <button class="btn btn-primary" type="submit">Test Notifikasi</button>
+        </form>
+    </div>
+
 </div>
 
 @endsection

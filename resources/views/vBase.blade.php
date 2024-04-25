@@ -169,6 +169,10 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="http://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {{-- <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js" defer></script>
+    <script type="module"  src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging.js" defer></script> --}}
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
@@ -283,6 +287,103 @@
 
 
     </script>
+
+<script>
+
+
+    // function initializeFirebase() {
+
+        const firebaseConfig = {
+
+            apiKey: 'AIzaSyA_T_z7YTOWgcVqgGZYCQWcySxNtgkOsKw',
+            authDomain: 'pushnotification-52987.firebaseapp.com',
+            projectId: 'pushnotification-52987',
+            storageBucket: 'pushnotification-52987.appspot.com',
+            messagingSenderId: '773466760609',
+            appId: '1:773466760609:web:6c689b798f25081ac157e0',
+            measurementId: 'G-NYL0QLL715',
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Inisialisasi Firebase Messaging
+        const messaging = firebase.messaging();
+        // var pathSW = "{{ asset('assets/js/firebase/firebase-messaging-sw.js') }}";
+        // // Mengatur Service Worker
+        // if ('serviceWorker' in navigator) {
+        //     navigator.serviceWorker.register(pathSW)
+        //         .then(registration => {
+        //             console.log('Service Worker registered:', registration);
+
+        //             // Mengatur messaging untuk menggunakan Service Worker yang sudah didaftarkan
+        //             messaging.useServiceWorker(registration);
+
+        //             // Mendapatkan token
+        //             messaging.getToken({ vapidKey: 'YOUR_VAPID_KEY' })
+        //                 .then(currentToken => {
+        //                     if (currentToken) {
+        //                         console.log('Token:', currentToken);
+        //                         // Kirim token ke server jika diperlukan
+        //                     } else {
+        //                         console.log('No registration token available.');
+        //                     }
+        //                 })
+        //                 .catch(error => {
+        //                     console.log('An error occurred while retrieving token. ', error);
+        //                 });
+        //         })
+        //         .catch(error => {
+        //             console.log('Service Worker registration failed:', error);
+        //         });
+        // }
+    // }
+    // Konfigurasi Firebase
+    // initializeFirebase();
+
+    function sendNotification() {
+        messaging.requestPermission().then(function(value) {
+            return messaging.getToken()
+        }).then(function(value) {
+            $.ajax({
+                url: "{{ route('saveToken') }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-TOKEN' : "{{ csrf_token() }}"
+                },
+                data: {
+                    not_token : value
+                },success: function(res) {
+                    alert(res)
+                }
+            }).catch(function(error) {
+                alert(error);
+            })
+        })
+    }
+
+    // function sendNotification() {
+    //     fetch('/send-notification', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    //         },
+    //         body: JSON.stringify({})
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if (data.success) {
+    //             alert('Notifikasi berhasil dikirim!');
+    //         } else {
+    //             alert('Gagal mengirim notifikasi: ' + data.error);
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error('Error:', error);
+    //     });
+    // }
+</script>
 
   </body>
 </html>

@@ -32,6 +32,7 @@ use App\Http\Controllers\ReferensiKerjaController;
 use App\Http\Controllers\ManageKaryawanController;
 use App\Http\Controllers\GeneralAffairController;
 use App\Http\Controllers\DirekturController;
+use App\Http\Controllers\FirebaseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -338,8 +339,11 @@ Route::middleware('revalidate')->group(function() {
                 });
             });
         });
-
-
     });
 
+
+
 });
+
+Route::post('saveToken',[FirebaseController::class,'saveToken'])->name('saveToken');
+Route::post('/send-notification', [FirebaseController::class, 'sendNotification'])->name('send-notif');

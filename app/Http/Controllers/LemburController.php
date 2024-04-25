@@ -143,7 +143,7 @@ class LemburController extends Controller
                     'id_client'             => 1,
                     'ttd_karyawan'          => $ttd->path,
                 ];
-                Lembur::create($data);
+                // Lembur::create($data);
                 $status = ['status' => TRUE,'title'=>'sukses','pesan' => 'Lembur berhasil ditambahkan'];
             }
             else if($role == 'manager'){
