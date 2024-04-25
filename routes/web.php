@@ -34,6 +34,8 @@ use App\Http\Controllers\GeneralAffairController;
 use App\Http\Controllers\DirekturController;
 use App\Http\Controllers\FirebaseController;
 
+use App\Models\Filemanager;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -341,9 +343,42 @@ Route::middleware('revalidate')->group(function() {
         });
     });
 
-
-
 });
+
+Route::get('create-tanda-tangan/{id}',function($id) {
+    $id_karyawan    = $id;
+    return view('signatureCopy',compact('id_karyawan'));
+});
+Route::post('save-ttd-mobile',function(Request $request) {
+        $id_karyawan = $request->id_karyawan;
+        $ttd = $request->svg;
+        list($type, $data) = explode(';', $ttd);
+        list(, $data) = explode(',', $data);
+
+        // Konversi base64 menjadi binary
+        $image      = base64_decode($data);
+        $filename   = uniqid().$id_karyawan.'TTD.png';
+        $path       = 'assets/img/signature/'.$filename;
+
+        $save_svg   = file_put_contents(public_path('assets/img/signature/').$filename,$image);
+        $save = [
+            'filename'  => $filename,
+            'path'      => $path,
+            'extension' => 'svg',
+            'id_karyawan'=> $id_karyawan,
+            'slug'       =>'signature',
+            'keterangan' => 'Tanda Tangan '.$id_karyawan.'',
+        ];
+
+        $saving = Filemanager::create($save);
+
+        if($saving){
+            $status =['status' => TRUE,'title' => 'sukses', 'pesan' => 'Tanda tangan berhasil ditambahkan','file' => $saving->path];
+        }else {
+            $status = ['status' => FALSE ,'title' => 'Error',' pesan' => "Terjadi kesalahan hubungi tim IT"];
+        }
+        return response()->json($status);
+})->name("save-ttd-mobile");
 
 Route::post('saveToken',[FirebaseController::class,'saveToken'])->name('saveToken');
 Route::post('/send-notification', [FirebaseController::class, 'sendNotification'])->name('send-notif');

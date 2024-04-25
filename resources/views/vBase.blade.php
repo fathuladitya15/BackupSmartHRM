@@ -50,11 +50,11 @@
 
     @stack('css')
     <style>
-        .kbw-signature {
-            width: 750px;
+        #sig {
+            width: 200px;
             height: 200px;
+            border: 1px solid #ccc;
         }
-
     </style>
   </head>
 
@@ -81,7 +81,7 @@
                 @yield('content')
 
                 <div class="modal fade" id="modalTTD" role="dialog"  data-bs-backdrop="static" >
-                    <div class="modal-dialog  modal-lg" role="document" >
+                    <div class="modal-dialog " role="document" >
                         <div class="modal-content">
                             <div class="modal-header">
                             <h5 class="modal-title" id="" style="color: black">Buat Tanda Tangan </h5>
@@ -89,8 +89,8 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             </div>
-                            <div class="modal-body">
-                                <form id="formTandaTangan">
+                            <form id="formTandaTangan">
+                                <div class="modal-body">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-12">
@@ -98,21 +98,20 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-12">
+                                        <div class="col-md-12" style="text-align: center;">
                                             <div id="sig" class="form-control"></div>
                                         </div>
                                     </div>
                                     <br><br>
                                     <div class="row">
-                                        <div class="col-md-2">
-                                            <button type="submit" class="btn btn-primary">Simpan</button>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <a href="javascript:void(0)"  id="clear" class="btn btn-danger">Reset</a>
-                                        </div>
+                                        <p><label for="">*) Mohon pastikan anda membuat tanda tangan di tengah kotak</label></p>
                                     </div>
-                                </form>
-                            </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                    <a href="javascript:void(0)"  id="clear" class="btn btn-danger">Reset</a>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -184,7 +183,13 @@
     @stack('js')
 
     <script>
-        var sig         = $('#sig').signature({syncField: '#signature', syncFormat: 'PNG'});
+        var sig         = $('#sig').signature(
+                {
+                    syncField: '#signature',
+                    syncFormat: 'PNG' ,
+                    bgColour: 'transparent'
+                }
+            );
         var url_cek_ttd = "{{ route('check-tanda-tangan') }}";
         var url_save_ttd= "{{ route('save-tanda-tangan') }}";
         var assets      = "{{ asset('') }}";
@@ -226,6 +231,7 @@
                                 document.getElementById("button_ttd").style.display = "none";
                             }else {
                                 $("#modalTTD").modal("show");
+                                Swal.close()
                             }
 
                         }, error : function(e) {
@@ -237,7 +243,7 @@
                             });
 
                         },complete: function() {
-                            Swal.hideLoading()
+                            Swal.hideLoading();
                         }
                     })
 
@@ -246,7 +252,8 @@
         }
 
         $("#formTandaTangan").submit(function(e) {
-            var svg         = sig.signature('toSVG');
+            var svg         = sig.signature('toDataURL');
+            console.log(sig);
             e.preventDefault();
             $.ajax({
                 url: url_save_ttd,
@@ -273,6 +280,7 @@
                         $("#ttd").val(1);
                     }
                 },error: function(e) {
+                    // console.log(e);
                     Swal.fire({
                         title: "Terjadi kesalahan",
                         text: "Hubungi tim IT",
@@ -284,106 +292,110 @@
                 }
             })
         })
+        $(document).on('click','#clear', function() {
+            $('#sig').signature('clear');
+
+        })
 
 
     </script>
 
-<script>
+    <script>
 
 
-    // function initializeFirebase() {
+        // function initializeFirebase() {
 
-        const firebaseConfig = {
+            const firebaseConfig = {
 
-            apiKey: 'AIzaSyA_T_z7YTOWgcVqgGZYCQWcySxNtgkOsKw',
-            authDomain: 'pushnotification-52987.firebaseapp.com',
-            projectId: 'pushnotification-52987',
-            storageBucket: 'pushnotification-52987.appspot.com',
-            messagingSenderId: '773466760609',
-            appId: '1:773466760609:web:6c689b798f25081ac157e0',
-            measurementId: 'G-NYL0QLL715',
-        };
+                apiKey: 'AIzaSyA_T_z7YTOWgcVqgGZYCQWcySxNtgkOsKw',
+                authDomain: 'pushnotification-52987.firebaseapp.com',
+                projectId: 'pushnotification-52987',
+                storageBucket: 'pushnotification-52987.appspot.com',
+                messagingSenderId: '773466760609',
+                appId: '1:773466760609:web:6c689b798f25081ac157e0',
+                measurementId: 'G-NYL0QLL715',
+            };
 
-        // Inisialisasi Firebase
-        firebase.initializeApp(firebaseConfig);
+            // Inisialisasi Firebase
+            firebase.initializeApp(firebaseConfig);
 
-        // Inisialisasi Firebase Messaging
-        const messaging = firebase.messaging();
-        // var pathSW = "{{ asset('assets/js/firebase/firebase-messaging-sw.js') }}";
-        // // Mengatur Service Worker
-        // if ('serviceWorker' in navigator) {
-        //     navigator.serviceWorker.register(pathSW)
-        //         .then(registration => {
-        //             console.log('Service Worker registered:', registration);
+            // Inisialisasi Firebase Messaging
+            const messaging = firebase.messaging();
+            // var pathSW = "{{ asset('assets/js/firebase/firebase-messaging-sw.js') }}";
+            // // Mengatur Service Worker
+            // if ('serviceWorker' in navigator) {
+            //     navigator.serviceWorker.register(pathSW)
+            //         .then(registration => {
+            //             console.log('Service Worker registered:', registration);
 
-        //             // Mengatur messaging untuk menggunakan Service Worker yang sudah didaftarkan
-        //             messaging.useServiceWorker(registration);
+            //             // Mengatur messaging untuk menggunakan Service Worker yang sudah didaftarkan
+            //             messaging.useServiceWorker(registration);
 
-        //             // Mendapatkan token
-        //             messaging.getToken({ vapidKey: 'YOUR_VAPID_KEY' })
-        //                 .then(currentToken => {
-        //                     if (currentToken) {
-        //                         console.log('Token:', currentToken);
-        //                         // Kirim token ke server jika diperlukan
-        //                     } else {
-        //                         console.log('No registration token available.');
-        //                     }
-        //                 })
-        //                 .catch(error => {
-        //                     console.log('An error occurred while retrieving token. ', error);
-        //                 });
-        //         })
-        //         .catch(error => {
-        //             console.log('Service Worker registration failed:', error);
-        //         });
+            //             // Mendapatkan token
+            //             messaging.getToken({ vapidKey: 'YOUR_VAPID_KEY' })
+            //                 .then(currentToken => {
+            //                     if (currentToken) {
+            //                         console.log('Token:', currentToken);
+            //                         // Kirim token ke server jika diperlukan
+            //                     } else {
+            //                         console.log('No registration token available.');
+            //                     }
+            //                 })
+            //                 .catch(error => {
+            //                     console.log('An error occurred while retrieving token. ', error);
+            //                 });
+            //         })
+            //         .catch(error => {
+            //             console.log('Service Worker registration failed:', error);
+            //         });
+            // }
         // }
-    // }
-    // Konfigurasi Firebase
-    // initializeFirebase();
+        // Konfigurasi Firebase
+        // initializeFirebase();
 
-    function sendNotification() {
-        messaging.requestPermission().then(function(value) {
-            return messaging.getToken()
-        }).then(function(value) {
-            $.ajax({
-                url: "{{ route('saveToken') }}",
-                type: "POST",
-                headers: {
-                    'X-CSRF-TOKEN' : "{{ csrf_token() }}"
-                },
-                data: {
-                    not_token : value
-                },success: function(res) {
-                    alert(res)
-                }
-            }).catch(function(error) {
-                alert(error);
+        function sendNotification() {
+            messaging.requestPermission().then(function(value) {
+                return messaging.getToken()
+            }).then(function(value) {
+                $.ajax({
+                    url: "{{ route('saveToken') }}",
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN' : "{{ csrf_token() }}"
+                    },
+                    data: {
+                        not_token : value
+                    },success: function(res) {
+                        alert(res)
+                    }
+                }).catch(function(error) {
+                    alert(error);
+                })
             })
-        })
-    }
+        }
 
-    // function sendNotification() {
-    //     fetch('/send-notification', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-    //         },
-    //         body: JSON.stringify({})
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         if (data.success) {
-    //             alert('Notifikasi berhasil dikirim!');
-    //         } else {
-    //             alert('Gagal mengirim notifikasi: ' + data.error);
-    //         }
-    //     })
-    //     .catch(error => {
-    //         console.error('Error:', error);
-    //     });
-    // }
-</script>
+        // function sendNotification() {
+        //     fetch('/send-notification', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //         },
+        //         body: JSON.stringify({})
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         if (data.success) {
+        //             alert('Notifikasi berhasil dikirim!');
+        //         } else {
+        //             alert('Gagal mengirim notifikasi: ' + data.error);
+        //         }
+        //     })
+        //     .catch(error => {
+        //         console.error('Error:', error);
+        //     });
+        // }
+    </script>
 
   </body>
 </html>

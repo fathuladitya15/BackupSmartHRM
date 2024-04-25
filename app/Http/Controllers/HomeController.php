@@ -17,6 +17,9 @@ use App\Models\Aktifitas;
 use Illuminate\Http\Request;
 use App\Notifications\NotifikasiSelesaiKontrak;
 
+use Illuminate\Support\Facades\Storage;
+// use Intervention\Image\ImageManagerStatic as Image;
+
 
 class HomeController extends Controller
 {
@@ -148,13 +151,16 @@ class HomeController extends Controller
     }
 
     function  save_tanda_tangan  (Request $request) {
-        ob_start();
-            $request->svg;
-        $ttd = ob_get_clean();
+        $ttd = $request->svg;
+        list($type, $data) = explode(';', $ttd);
+        list(, $data) = explode(',', $data);
 
-        $filename   = Auth::user()->id_karyawan.'TTD.svg';
+        // Konversi base64 menjadi binary
+        $image      = base64_decode($data);
+        $filename   = uniqid().Auth::user()->id_karyawan.'TTD.png';
         $path       = 'assets/img/signature/'.$filename;
-        $save_svg   = file_put_contents(public_path('assets/img/signature/').$filename,$request->svg);
+
+        $save_svg   = file_put_contents(public_path('assets/img/signature/').$filename,$image);
         $save = [
             'filename'  => $filename,
             'path'      => $path,

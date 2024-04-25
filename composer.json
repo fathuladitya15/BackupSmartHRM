@@ -9,6 +9,7 @@
         "andes2912/indobank": "^0.9.0",
         "barryvdh/laravel-dompdf": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
+        "intervention/image-laravel": "^1.2",
         "kreait/laravel-firebase": "^5.8",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
