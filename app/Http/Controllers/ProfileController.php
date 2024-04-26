@@ -136,8 +136,6 @@ class ProfileController extends Controller
         return response()->json($pesan);
     }
 
-
-
     function upload_files(Request $request) {
         $cek_files = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug',$request->jenis_file)->count();
 
