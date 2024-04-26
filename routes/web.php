@@ -105,6 +105,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('index',[ManageKaryawanController::class,'index'])->name('karyawan');
                 Route::get('add',[ManageKaryawanController::class,'create'])->name('karyawan-add');
                 Route::post('process',[ManageKaryawanController::class,'store'])->name('karyawan-saving');
+                Route::delete('delete-data/{id}',[ManageKaryawanController::class,'delete_karyawan'])->name('karyawan-delete');
                 Route::get('detail/{hash}',[ManageKaryawanController::class,'edit'])->name('karyawan-edit');
                 Route::get('detail/{hash}/data-pribadi',[ManageKaryawanController::class,'pribadi'])->name('karyawan-pribadi');
                 Route::get('detail/{hash}/data-perusahaan',[ManageKaryawanController::class,'client'])->name('karyawan-client');

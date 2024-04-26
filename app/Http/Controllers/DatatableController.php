@@ -277,7 +277,7 @@ class DatatableController extends Controller
                 if($count >= 1 )
                 {
                     $data_profile = Filemanager::where('id_karyawan',$row->id_karyawan)->where('slug','foto_profile')->first();
-                    $path = asset($data_profile->path.$data_profile->filename) ;
+                    $path = asset($data_profile->path) ;
                 }else {
                     $jk = $row->jenis_kelamin;
                     if($jk == 'L') {
@@ -291,7 +291,8 @@ class DatatableController extends Controller
             })
             ->addColumn('aksi',function($row) {
                 $edit   = '<a href="'.route('karyawan-edit',['hash' => HashVariable($row->id_karyawan)]).'" class="btn btn-primary btn-sm"  ><i class="bx bx-edit-alt"></i>Edit</a>';
-                $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$row->id.'" onclick="hapus('.$row->id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+                $hapus  = '<button class="btn btn-danger btn-sm hapus-data" data-nama_karyawan="'.$row->nama_karyawan.'" data-id_karyawan="'.$row->id_karyawan.'" id="hapus_'.$row->id.'" ><i class="bx bxs-trash" ></i>Hapus</button>';
+
                 return $edit.'&nbsp;'.$hapus;
             })
             ->addColumn('nama_divisi',function($row) {

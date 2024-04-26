@@ -219,3 +219,10 @@ if(!function_exists('foto_profile')) {
     }
 }
 
+if(!function_exists('getPathFile')){
+    function getPathFile($idKaryawan,$slug) {
+        $data       = Filemanager::where('id_karyawan',$idKaryawan)->where("slug",$slug)->first();
+        $path       = $data->path.$data->filename;
+        return $path;
+    }
+}

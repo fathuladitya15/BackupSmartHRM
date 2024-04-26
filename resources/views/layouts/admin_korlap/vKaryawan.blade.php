@@ -221,6 +221,68 @@
         toggleButtonVisibility();
     });
 
+    $(document).on("click",".hapus-data", function() {
+        var idKaryawan  = $(this).data('id_karyawan');
+        var NamaKaryawan  = $(this).data('nama_karyawan');
+        var url_delete  = "delete-data/"+idKaryawan;
+        console.log("ini adalah ID Karyawan: " + idKaryawan);
+        console.log("ini adalah Url Hapus data : " + url_delete);
+        Swal.fire({
+            title: "Hapus karyawan : "+NamaKaryawan+" ?",
+            text: "Anda akan kehilangan semua data dari karyawan ini ",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            cancelButtonText: "Kembali",
+            confirmButtonText: "Ya hapus!"
+            }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url :url_delete,
+                    data :{ id : idKaryawan},
+                    type : "DELETE",
+                    beforeSend: function() {
+                        Swal.fire({
+                            title: "Sedang menghapus!",
+                            html: "Mohon tunggu ",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            },
+                        });
+                    },success: function(s) {
+                        if(s.status == true) {
+                            Swal.fire({
+                                title: "Sukses!",
+                                text: "Karyawan berhasil dihapus.",
+                                icon: "success"
+                            });
+                        }else{
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Karyawan gagal dihapus",
+                                icon: "error"
+                            });
+                            console.log(s);
+                        }
+                    },error : function(e) {
+                        Swal.fire({
+                                title: "Error!",
+                                text: "Hubungi Tim IT.",
+                                icon: "error"
+                            });
+                        console.log(e);
+                    },complete: function() {
+                        $("#myTable").DataTable().ajax.reload();
+                    }
+                });
+            }
+        });
+
+    })
+
 </script>
 @endpush
 @endsection

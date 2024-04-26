@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+use File;
 use Auth;
 use Validator;
 use Carbon\Carbon;
@@ -288,7 +289,7 @@ class ManageKaryawanController extends Controller
             if($request->hasFile('profile_pictures')){
                 $file       = $request->profile_pictures;
                 $filename   = "PP_".date("YmdHi").'.'.$file->getClientOriginalExtension();
-                $path       = '/filemanager/photo_profile/'.$filename;
+                $path       = '/filemanager/photo_profile/';
                 $move_folder= $path.$filename;
 
                 $data_upload = [
@@ -771,12 +772,12 @@ class ManageKaryawanController extends Controller
         $getFile = Filemanager::where('id_karyawan',$request->id_karyawan)->where("slug",$request->tipe_file)->count();
 
         if($getFile != 0) {
-            $data = Filemanager::where('id_karyawan',$request->id_karyawan)->where("slug",$request->tipe_file)->first();
-
+            $data       = Filemanager::where('id_karyawan',$request->id_karyawan)->where("slug",$request->tipe_file)->first();
+            $pathFile   = getPathFile($request->id_karyawan,$request->tipe_file);
             $res = [
                 'status'    => TRUE,
                 'alt'       => $data->keterangan,
-                'path'      => asset($data->path),
+                'path'      => $pathFile,
                 'extension' => $data->extension,
             ];
         }else {
@@ -853,6 +854,37 @@ class ManageKaryawanController extends Controller
         }
         $pesan = ['status' => TRUE,'pesan' => 'Berhasil menyetujui Karyawan','title' => 'Sukses'];
         return response()->json($pesan);
+    }
+
+    function delete_karyawan($id_karyawan){
+        $idFilemanager      = [];
+        $findDataKaryawan   = Karyawan::where('id_karyawan',$id_karyawan)->first();
+        $findUser           = User::where('id_karyawan',$id_karyawan)->first();
+        $findFile           = Filemanager::where('id_karyawan',$id_karyawan)->get();
+
+        foreach ($findFile as $key ) {
+            $delete = Filemanager::findOrFail($key->id);
+            $delete->delete();
+            $publicPath      = public_path();
+            if($key->slug == 'foto_profile') {
+                unlink($publicPath.$key->path);
+            }
+            else if($key->slug == 'signature') {
+                unlink($key->path);
+            }
+            else {
+                unlink($publicPath.$key->path.$key->filename);
+            }
+        }
+
+        $deleteUser         = User::findOrFail($findUser->id);
+        $deleteUser->delete();
+        $deleteKaryawan     = Karyawan::findOrFail($findDataKaryawan->id);
+        $deleteKaryawan->delete();
+
+        $pesan = ['status' => TRUE,'pesan' => 'Karyawan berhasil dihapus','title' => 'Sukses'];
+        return response()->json($pesan);
+
     }
 
 }

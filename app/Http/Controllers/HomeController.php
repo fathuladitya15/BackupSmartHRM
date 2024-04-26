@@ -164,7 +164,7 @@ class HomeController extends Controller
         $save = [
             'filename'  => $filename,
             'path'      => $path,
-            'extension' => 'svg',
+            'extension' => 'png',
             'id_karyawan'=> Auth::user()->id_karyawan,
             'slug'       =>'signature',
             'keterangan' => 'Tanda Tangan '.Auth::user()->name.'',

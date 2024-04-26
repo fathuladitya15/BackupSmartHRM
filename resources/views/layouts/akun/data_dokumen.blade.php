@@ -97,7 +97,6 @@
         const button          = document.getElementById(id_button);
         const stoploading   = 'Lihat File '+tipe_file;
         const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
-        // alert(button);
         $.ajax({
             url: url_file,
             data:{
@@ -108,10 +107,10 @@
             beforeSend: function() {
                 button.innerHTML = loading
             },success: function(s) {
+                console.log(s);
                 if(s.status == true) {
                     $("#modalView").modal('show');
                     if(s.type_file == 'pdf') {
-                        document.getElementById("ModalTitle").innerHTML = s.alt;
                         document.getElementById("pdf_file").style.display = "block";
                         document.getElementById("pdf_file").src = s.path ;
                     }else if (s.tipe_file != 'pdf') {
@@ -128,6 +127,7 @@
                     });
                 }
             }, error : function(e) {
+                console.log(e);
                 Swal.fire({
                     title: "Terjadi kesalahan",
                     text: "Hubungi Tim IT",
@@ -143,7 +143,6 @@
         document.getElementById("pdf_file").style.display = "none";
         document.getElementById("pdf_file").src = "";
         document.getElementById("image_file").src = "";
-        document.getElementById("ModalTitle").innerHTML = "";
 
     });
 </script>

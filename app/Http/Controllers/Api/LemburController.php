@@ -51,19 +51,19 @@ class LemburController extends Controller
     }
 
     function create_data_lembur(Request $request) {
-        
+
 
         $cek_TTD                = $this->cek_ttd($request->id_karyawan);
         $tipeKaryawan           = $this->tipeKaryawan($request->id_karyawan);
         $cek_data_by_tanggal    = Lembur::where('id_karyawan',$request->id_karyawan)->where('tanggal_lembur',$request->tanggal)->count();
         if($cek_data_by_tanggal > 0) {
             return response()->json(['pesan' => 'Lembur pada tanggal '.$request->tanggal.' telah tersedia']);
-        } 
-        
+        }
+
         if($request->id_karyawan == 001) {
             $jm = Carbon::createFromFormat('h:i A', $request->jam_mulai);
             $js = Carbon::createFromFormat('h:i A', $request->jam_selesai);
-            
+
             $result = [
                 'data'      => $request->all(),
                 'Tanggal'   => Carbon::parse($request->tanggal)->format('Y-m-d'),
@@ -72,7 +72,12 @@ class LemburController extends Controller
             ];
             return response()->json($result);
         }
-        
+
+        if($request->ttd == 0) {
+            return response()->json(['pesan' => 'Dokumen belum ditandatangani'],404);
+        }
+
+
         if(in_array($tipeKaryawan['karyawanType'],['kr-pusat','kr-project'])) {
             $jm = Carbon::createFromFormat('h:i A', $request->jam_mulai);
             $js = Carbon::createFromFormat('h:i A', $request->jam_selesai);
@@ -96,7 +101,7 @@ class LemburController extends Controller
                 'id_client'     => $namaClient,
                 'status'        => 0,
                 'tanggal_lembur'=> Carbon::parse($request->tanggal)->format('Y-m-d'),
-                // 'ttd_karyawan'  => $cek_TTD['path']
+                'ttd_karyawan'  => $cek_TTD['path']
             ];
             $result             = [
                 'status'        => $s,
@@ -110,7 +115,7 @@ class LemburController extends Controller
             ] ;
         }
         Lembur::create($dataInput);
-  
+
         return response()->json($result,200);
     }
 
@@ -224,14 +229,14 @@ class LemburController extends Controller
     function get_data_lembur_dir_hrd(Request $request) {
         if($request->id_karyawan == null) {
             return response()->json(['pesan' => 'ID karyawan dibutuhkan'],404);
-        } 
+        }
         $data        = Lembur::where('id_client',1)->where('status','>=',2)->get();
         $dataLembur  = Lembur::where('id_client',1)->where('status','>=',2)->count();
         $result      = [];
         // $roles      = User::where('id_karyawan',$req)
         $divisi      = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi;
         $nama_divisi = Divisi::find($divisi)->nama_divisi;
-        
+
         if($dataLembur > 0) {
             if($nama_divisi == 'MPO') {
                 $data       = Lembur::where('divisi',$nama_divisi)->where('status','>=',0)->get();
@@ -239,7 +244,7 @@ class LemburController extends Controller
                 foreach($data as $key) {
                     $result[] = [
                         'id' => $key['id'],
-    
+
                         'nama_karyawan' => $key['nama_karyawan'],
                         'id_karyawan'   => $key['id_karyawan'],
                         'divisi'        => $key['divisi'],
@@ -254,7 +259,7 @@ class LemburController extends Controller
                         'info'          =>  $this->info_status($nama_divisi,$key['status']),
                         'disetujui_oleh'    => $key['disetujui_oleh'],
                         'detail'        => $this->detail_data($key['id']),
-    
+
                     ];
                 }
             }
@@ -329,7 +334,7 @@ class LemburController extends Controller
                         $res = [
                             'status' => 200,
                             'pesan' => 'Lembur ID Karyawan: '.$dataLembur->id_karyawan. ' Telah tandatangani direktur HRD',
-                            
+
                         ];
                         $dataLembur->ttd_direktur = $cek_TTD['path'];
                         $dataLembur->status = 3;
@@ -341,7 +346,7 @@ class LemburController extends Controller
                 $res = [
                     'status' => 200,
                     'pesan' => 'Lembur ID Karyawan: '.$dataLembur->id_karyawan. ' Telah tandatangani Supervisor HRD',
-                    
+
                 ];
                 $dataLembur->ttd_admin_korlap = $cek_TTD['path'];
                 $dataLembur->status = 2;
@@ -382,7 +387,7 @@ class LemburController extends Controller
                 $s = 'Menunggu Disetujui Direktur HRD';
             }else if($status == 4) {
                 $s = 'Sudah Ditanda Tangani ';
-    
+
             }
             else {
                 $s = 'Status tidak diketahui';
@@ -439,7 +444,7 @@ class LemburController extends Controller
         $user   = User::where('id_karyawan',$id)->first();
         $result = [
             'kategori'      => $data->kategori,
-            'karyawanType'  => $user->roles,  
+            'karyawanType'  => $user->roles,
         ];
         return $result;
     }
@@ -474,5 +479,5 @@ class LemburController extends Controller
         }
         return response()->json(['data' => $data],200);
     }
-    
+
 }
