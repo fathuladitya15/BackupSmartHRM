@@ -222,7 +222,14 @@ if(!function_exists('foto_profile')) {
 if(!function_exists('getPathFile')){
     function getPathFile($idKaryawan,$slug) {
         $data       = Filemanager::where('id_karyawan',$idKaryawan)->where("slug",$slug)->first();
-        $path       = $data->path.$data->filename;
+        $path       = $data->path;
         return $path;
+    }
+}
+
+if(!function_exists('divisi')){
+    function divisi($idKaryawan) {
+        $data       = Karyawan::where('id_karyawan',$idKaryawan)->first();
+        return $data->divisi;
     }
 }

@@ -341,6 +341,8 @@ Route::middleware('revalidate')->group(function() {
                     Route::post('General-Affair/data',[GeneralAffairController::class,'data'])->name('pre-order-ga-data');
                 });
             });
+
+            Route::get('/send',[HomeController::class,'sendMessage']);
         });
     });
 

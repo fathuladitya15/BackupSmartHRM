@@ -397,5 +397,53 @@
         // }
     </script>
 
+    {{-- <script  type="module" src="{{ asset("assets/js/chat.js") }}"></script> --}}
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.11.1/laravel-echo.min.js"></script>
+    <script>
+         const Echo = window.Echo;
+         window.Echo = new Echo({
+            broadcaster: 'pusher',
+            key :'ac376b59c03673dec593',
+            cluster : 'ap1',
+            encrypted : true,
+
+         })
+
+         Echo.join('chat')
+            .listen('ChatSent', (e) => {
+                console.log(e);
+            })
+    </script> --}}
+
+    <!-- PUSHER -->
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script>
+
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = false;
+
+        var pusher = new Pusher('ac376b59c03673dec593', {
+          cluster: 'ap2',
+          encrypted: true
+        });
+
+        const channel = pusher.subscribe('ChatSent');
+        channel.bind('chat', function(data) {
+            console.log('Menerima pesan di channel:', channel.name);
+            console.log('Data:', data);
+        });
+        // Mendapatkan daftar channel yang sedang di-subscribe
+        const subscribedChannels = pusher.channels.channels;
+
+        // Mencetak informasi channel ke console
+        for (const channelName in subscribedChannels) {
+            if (subscribedChannels.hasOwnProperty(channelName)) {
+                const channel = subscribedChannels[channelName];
+                console.log('Channel aktif:', channelName);
+                console.log('Event listener:', channel.listeners); // Listener yang terdaftar di channel
+            }
+        }
+    </script>
+
   </body>
 </html>

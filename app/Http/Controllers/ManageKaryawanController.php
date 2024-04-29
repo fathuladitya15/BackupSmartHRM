@@ -30,13 +30,13 @@ class ManageKaryawanController extends Controller
 
     private function upload_file($data) {
 
-        $file       = $data['file'];
-        $keterangan = $data['keterangan'];
-        $filename   = $data['filename'];
-        $path       = $data['path'];
-        $id_karyawan= $data['id_karyawan'];
-        $slug       = $data['slug'];
-        $extension  = $data['extension'];
+        $file           = $data['file'];
+        $keterangan     = $data['keterangan'];
+        $filename       = $data['filename'];
+        $path           = $data['path'];
+        $id_karyawan    = $data['id_karyawan'];
+        $slug           = $data['slug'];
+        $extension      = $data['extension'];
 
         $file->move(public_path($data['path']),$data['filename']);
 
@@ -295,7 +295,7 @@ class ManageKaryawanController extends Controller
                 $data_upload = [
                     'file'      => $file,
                     'filename'  => $filename,
-                    'path'      => $path,
+                    'path'      => $path.$filename,
                     'extension' => $file->getClientOriginalExtension(),
                     'id_karyawan' => $request->karyawan_id,
                     'slug'          => 'foto_profile',
@@ -314,7 +314,7 @@ class ManageKaryawanController extends Controller
                 $data_upload = [
                     'file'      => $file,
                     'filename'  => $filename,
-                    'path'      => $path,
+                    'path'      => $path.$filename,
                     'extension' => $file->getClientOriginalExtension(),
                     'id_karyawan' => $request->karyawan_id,
                     'slug'      => 'ktp',
@@ -333,7 +333,7 @@ class ManageKaryawanController extends Controller
                 $data_upload = [
                     'file'      => $file,
                     'filename'  => $filename,
-                    'path'      => $path,
+                    'path'      => $path.$filename,
                     'extension' => $file->getClientOriginalExtension(),
                     'id_karyawan' => $request->karyawan_id,
                     'slug'      => 'jkn',
@@ -352,7 +352,7 @@ class ManageKaryawanController extends Controller
                 $data_upload = [
                     'file'      => $file,
                     'filename'  => $filename,
-                    'path'      => $path,
+                    'path'      => $path.$filename,
                     'extension' => $file->getClientOriginalExtension(),
                     'id_karyawan' => $request->karyawan_id,
                     'slug'      => 'kpj',
@@ -371,7 +371,7 @@ class ManageKaryawanController extends Controller
                 $data_upload = [
                     'file'      => $file,
                     'filename'  => $filename,
-                    'path'      => $path,
+                    'path'      => $path.$filename,
                     'extension' => $file->getClientOriginalExtension(),
                     'id_karyawan' => $request->karyawan_id,
                     'slug'      => 'npwp',
@@ -421,6 +421,7 @@ class ManageKaryawanController extends Controller
         return view('layouts.akun.index',compact('data_users','view','data_karyawan'));
 
     }
+
     function client($hash) {
         $id_karyawan    = EncryprVariable($hash);
         $data_users     = User::where('id_karyawan',$id_karyawan)->first();
@@ -441,6 +442,7 @@ class ManageKaryawanController extends Controller
         return view('layouts.akun.index',compact('data_users','view','client','jabatan','divisi','data_karyawan'));
 
     }
+
     function dokumen($hash) {
         $id_karyawan = EncryprVariable($hash);
         // $jabatan     = Jabatan::where('id_')
@@ -450,6 +452,7 @@ class ManageKaryawanController extends Controller
         return view('layouts.akun.index',compact('data_users','view','data_karyawan'));
 
     }
+
     function bank($hash) {
         $id_karyawan    = EncryprVariable($hash);
         $bank           = Bank::all();
@@ -594,7 +597,6 @@ class ManageKaryawanController extends Controller
 
     function update_dokumen($request) {
         $id_karyawan    = Karyawan::find($request->id_table_karyawan)->id_karyawan;
-        // dd($id_karyawan);
         $nama_karyawan  = Karyawan::find($request->id_table_karyawan)->nama_karyawan;
         $id             = Karyawan::find($request->id_table_karyawan)->id;
 
@@ -610,32 +612,30 @@ class ManageKaryawanController extends Controller
             $cek_file_manager   = Filemanager::where('id_karyawan',$id_karyawan)->where('slug','ktp')->count();
             if($cek_file_manager != 0) {
                 $getFilemanager     = Filemanager::where('id_karyawan',$id_karyawan)->where('slug','ktp')->first();
-                $path_old           = public_path().$getFilemanager->path.$getFilemanager->filename;
+                $path_old           = public_path().$getFilemanager->path;
                 unlink($path_old);
 
 
                 $filenew        = $request->ktp;
                 $filename       = "KTP_".date("YmdHi").'.'.$filenew->getClientOriginalExtension();
                 $path           = '/filemanager/ktp/';
-                $move_folder    = $path.$filename;
 
                 $filenew->move(public_path($path),$filename);
 
                 $updateFile = Filemanager::find($getFilemanager->id);
                 $updateFile->filename   = $filename;
-                $updateFile->path       = $path;
+                $updateFile->path       = $path.$filename;
                 $updateFile->extension  = $filenew->getClientOriginalExtension();
                 $updateFile->update();
             }else {
                 $file       = $request->ktp;
                 $filename   = "KTP_".date("YmdHi").'.'.$file->getClientOriginalExtension();
                 $path       = '/filemanager/ktp/';
-                $move_folder= $path.$filename;
 
                 $data_upload = [
                     'file'      => $file,
                     'filename'  => $filename,
-                    'path'      => $path,
+                    'path'      => $path.$filename,
                     'extension' => $file->getClientOriginalExtension(),
                     'id_karyawan' => $id_karyawan,
                     'slug'      => 'ktp',
@@ -645,36 +645,35 @@ class ManageKaryawanController extends Controller
                 $this->upload_file($data_upload);
             }
         }
+
         if($request->hasfile('jkn')){
             $cek_file_manager   = Filemanager::where('id_karyawan',$id_karyawan)->where('slug','jkn')->count();
             if($cek_file_manager != 0) {
                 $getFilemanager     = Filemanager::where('id_karyawan',$id_karyawan)->where('slug','jkn')->first();
-                $path_old           = public_path().$getFilemanager->path.$getFilemanager->filename;
+                $path_old           = public_path().$getFilemanager->path;
                 unlink($path_old);
 
 
                 $filenew        = $request->jkn;
                 $filename       = "jkn_".date("YmdHi").'.'.$filenew->getClientOriginalExtension();
                 $path           = '/filemanager/jkn/';
-                $move_folder    = $path.$filename;
 
                 $filenew->move(public_path($path),$filename);
 
                 $updateFile = Filemanager::find($getFilemanager->id);
                 $updateFile->filename   = $filename;
-                $updateFile->path       = $path;
+                $updateFile->path       = $path.$filename;
                 $updateFile->extension  = $filenew->getClientOriginalExtension();
                 $updateFile->update();
             }else {
                 $file       = $request->jkn;
                 $filename   = "jkn_".date("YmdHi").'.'.$file->getClientOriginalExtension();
                 $path       = '/filemanager/jkn/';
-                $move_folder= $path.$filename;
 
                 $data_upload = [
                     'file'      => $file,
                     'filename'  => $filename,
-                    'path'      => $path,
+                    'path'      => $path.$filename,
                     'extension' => $file->getClientOriginalExtension(),
                     'id_karyawan' => $id_karyawan,
                     'slug'      => 'jkn',
@@ -684,36 +683,35 @@ class ManageKaryawanController extends Controller
                 $this->upload_file($data_upload);
             }
         }
+
         if($request->hasfile('kpj')){
             $cek_file_manager   = Filemanager::where('id_karyawan',$id_karyawan)->where('slug','kpj')->count();
             if($cek_file_manager != 0) {
                 $getFilemanager     = Filemanager::where('id_karyawan',$id_karyawan)->where('slug','kpj')->first();
-                $path_old           = public_path().$getFilemanager->path.$getFilemanager->filename;
+                $path_old           = public_path().$getFilemanager->path;
                 unlink($path_old);
 
 
                 $filenew        = $request->kpj;
                 $filename       = "kpj_".date("YmdHi").'.'.$filenew->getClientOriginalExtension();
                 $path           = '/filemanager/kpj/';
-                $move_folder    = $path.$filename;
 
                 $filenew->move(public_path($path),$filename);
 
                 $updateFile = Filemanager::find($getFilemanager->id);
                 $updateFile->filename   = $filename;
-                $updateFile->path       = $path;
+                $updateFile->path       = $path.$filename;
                 $updateFile->extension  = $filenew->getClientOriginalExtension();
                 $updateFile->update();
             }else {
                 $file       = $request->kpj;
                 $filename   = "kpj_".date("YmdHi").'.'.$file->getClientOriginalExtension();
                 $path       = '/filemanager/kpj/';
-                $move_folder= $path.$filename;
 
                 $data_upload = [
                     'file'      => $file,
                     'filename'  => $filename,
-                    'path'      => $path,
+                    'path'      => $path.$filename,
                     'extension' => $file->getClientOriginalExtension(),
                     'id_karyawan' => $id_karyawan,
                     'slug'      => 'kpj',
@@ -723,36 +721,32 @@ class ManageKaryawanController extends Controller
                 $this->upload_file($data_upload);
             }
         }
+
         if($request->hasfile('npwp')){
             $cek_file_manager   = Filemanager::where('id_karyawan',$id_karyawan)->where('slug','npwp')->count();
             if($cek_file_manager != 0) {
                 $getFilemanager     = Filemanager::where('id_karyawan',$id_karyawan)->where('slug','npwp')->first();
-                $path_old           = public_path().$getFilemanager->path.$getFilemanager->filename;
+                $path_old           = public_path().$getFilemanager->path;
                 unlink($path_old);
-
 
                 $filenew        = $request->npwp;
                 $filename       = "npwp_".date("YmdHi").'.'.$filenew->getClientOriginalExtension();
                 $path           = '/filemanager/npwp/';
-                $move_folder    = $path.$filename;
-
                 $filenew->move(public_path($path),$filename);
 
                 $updateFile = Filemanager::find($getFilemanager->id);
                 $updateFile->filename   = $filename;
-                $updateFile->path       = $path;
+                $updateFile->path       = $path.$filename;
                 $updateFile->extension  = $filenew->getClientOriginalExtension();
                 $updateFile->update();
             }else {
                 $file       = $request->npwp;
                 $filename   = "npwp_".date("YmdHi").'.'.$file->getClientOriginalExtension();
                 $path       = '/filemanager/npwp/';
-                $move_folder= $path.$filename;
-
                 $data_upload = [
                     'file'      => $file,
                     'filename'  => $filename,
-                    'path'      => $path,
+                    'path'      => $path.$filename,
                     'extension' => $file->getClientOriginalExtension(),
                     'id_karyawan' => $id_karyawan,
                     'slug'      => 'npwp',
@@ -762,6 +756,7 @@ class ManageKaryawanController extends Controller
                 $this->upload_file($data_upload);
             }
         }
+
         Aktivitas(Auth::user()->name."(".Auth::user()->roles.")Melakukan pembaruan data dokumen karyawan dengan nama : ".$nama_karyawan."-".$nama_karyawan.", pada tanggal ".Carbon::now()->translatedFormat("d F Y, H:I:s")."  ");
 
         return redirect()->route('karyawan')->with('success','Berhasil memperbarui dokumen karyawan '.$nama_karyawan.'');

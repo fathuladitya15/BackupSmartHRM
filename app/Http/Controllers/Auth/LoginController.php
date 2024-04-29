@@ -19,31 +19,11 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
 
     use AuthenticatesUsers;
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
     protected $redirectTo = '/home';
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
@@ -66,68 +46,153 @@ class LoginController extends Controller
         }
 
 
-        $datauser           = User::where('username', $request->get('username'));
+        $datauser           = User::where('username', $request->get('username')); // Ambil data dari table user
+
+
+        if($datauser->count() == 0) { // Cek apabila data tidak tersedia
+            return response()->json(['status' => FALSE,'messages' => 'Akun anda belum terdaftar.' ]);
+        }
+
         $dataKaryawan       = Karyawan::where('id_karyawan',$datauser->first()->id_karyawan)->first();
         $divisi             = $dataKaryawan->divisi()->first()->nama_divisi;
         $jabatan            = $dataKaryawan->jabatan()->first()->nama_jabatan;
-        $userLoginsRoles    = $datauser->first()->roles;
         $namaClient         = Clients::find($dataKaryawan->lokasi_kerja);
-        $loginType          = $request->get('roles');
+        // Cek apabila data tersedia
 
 
-        if($datauser->count() == 0) {
-            return response()->json(['status' => FALSE,'messages' => 'Akun ini tidak terdaftar']);
-        }else {
-            if($userLoginsRoles != 'superadmin') {
-                if($loginType == 'admin') {
-                    if($jabatan == 'Admin' || $namaClient->id != 1) {
-                        if($jabatan == 'Supervisor') {
-                            $r = 'Akun diubah dari kr-pusat menjadi spv-internal ';
-                            $updateData = User::find($datauser->first()->id);
-                            $updateData->roles = 'spv-internal';
-                            $updateData->update();
-                        }else if($jabatan == 'Admin') {
-                            $r = 'Akun diubah dari kr-project menjadi admin ';
-                            $updateData = User::find($datauser->first()->id);
-                            $updateData->roles = 'admin';
-                            $updateData->update();
-                        }else if($jabatan == 'Koordinator Lapangan') {
-                            $r = 'Akun diubah dari kr-project menjadi korlap ';
-                            $r = 'Akun diubah dari kr-project menjadi admin ';
-                            $updateData = User::find($datauser->first()->id);
-                            $updateData->roles = 'korlap';
-                            $updateData->update();
-                        }
-                    }else if($jabatan == 'Karyawan') {
-                        return response()->json(['status' => FALSE,'messages' => 'Akun anda tidak terdaftar dimanagement']);
-                    }
+        $userLoginsRoles    = $datauser->first()->roles;    // Sebagai
+        $asLogin            = $request->get('roles') == 'admin' ? 'project' : 'internal';
 
-                }else if($loginType == 'karyawan') {
-                    if($jabatan == 'Direktur') {
-                        return response()->json(['status' => FALSE,'messages' => 'Akun anda tidak terdaftar dimenu karyawan']);
-                    }else if($jabatan == 'Supervisor' ){
-                        $r = 'Akun diubah menjadi kr-pusat';
-                        $updateData = User::find($datauser->first()->id);
-                        $updateData->roles = 'kr-pusat';
-                        $updateData->update();
-                    }else if($jabatan == 'Admin') {
-                        $r = 'Akun di ubah dari Admin menjadi kr-project';
-                        $updateData = User::find($datauser->first()->id);
-                        $updateData->roles = 'kr-project';
-                        $updateData->update();
-
-                    }else if($jabatan == 'Koordinator Lapangan') {
-                        $r = 'Akun di ubah dari Korlap menjadi kr-project';
-                        $updateData = User::find($datauser->first()->id);
-                        $updateData->roles = 'kr-project';
-                        $updateData->update();
-                    }
-
+        if(in_array($userLoginsRoles,['spv-internal','admin','korlap'])) {
+            if($asLogin == 'internal'){
+                $updateData         = User::find($datauser->first()->id);
+                if($userLoginsRoles == 'spv-internal') {
+                    $updateData->roles  = 'kr-pusat';
+                    $updateData->update();
                 }else {
-                    return response()->json(['status' => FALSE,'messages' => 'Anonim Login']);
+                    $updateData->roles  = 'kr-project';
+                    $updateData->update();
                 }
             }
         }
+
+        if($userLoginsRoles == 'karyawan') {
+            if($asLogin == 'project') {
+                $r = 'Anda tidak terdaftar dalam management PFI';
+                return response()->json(['status' => FALSE,'messages' => $r]);
+            }
+        }
+
+        if(in_array($userLoginsRoles,['hrd','direktur','manajer','general-affair'])) {
+            if($asLogin == 'project') {
+                $r = 'Anda login sebagai Atasan';
+            }else if($asLogin == 'internal') {
+                $r = 'Anda login sebagai Karyawan Biasa';
+            }
+        }
+
+        if(in_array($userLoginsRoles, ['kr-project','kr-pusat'])) {
+            $updateData         = User::find($datauser->first()->id);
+            if($asLogin == 'project'){
+                if($jabatan == "Admin") {
+                     $updateData->roles = 'admin';
+                     $updateData->update();
+                }
+                if($jabatan == 'Supervisor') {
+                    $updateData->roles = 'spv-internal';
+                    $updateData->update();
+                }
+                if($jabatan == 'Koordinator Lapangan') {
+                    $updateData->roles = 'korlap';
+                    $updateData->update();
+                }
+                if(divisi($datauser->first()->id_karyawan) == 3) {
+
+                    return response()->json(['pesan' => 'Anda anda terdaftar sebagai karyawan']);
+                }
+            }
+        }
+
+        if($userLoginsRoles == 'general-affair') {
+            $updateData         = User::find($datauser->first()->id);
+            if($asLogin == 'internal') {
+                $updateData->roles  = 'kr-pusat';
+                $updateData->update();
+                // return response()->json(['roles' => $userLoginsRoles ,'asLogin' => $asLogin]);
+            }else if($asLogin == 'project') {
+                if($jabatan == 'Manager')
+                $updateData->roles  = 'general-affair';
+                $updateData->update();
+                // return response()->json(['roles' => $userLoginsRoles,'asLogin' => $asLogin]);
+            }
+        }
+
+        // $getDataUpdate = $datauser->first()->roles;
+        // return response()->json(['roles' => $userLoginsRoles,'Login Sebagai' => $asLogin,'jabatan' => $jabatan ,'info' => 'Logged in','roles update' => $getDataUpdate]);
+
+
+        // $loginType          = $request->get('roles');
+
+
+
+
+
+
+
+
+        // if($datauser->count() == 0) {
+        //     return response()->json(['status' => FALSE,'messages' => 'Akun ini tidak terdaftar']);
+        // }else {
+        //     if($userLoginsRoles != 'superadmin') {
+        //         if($loginType == 'admin') {
+        //             if($jabatan == 'Admin' || $namaClient->id != 1) {
+        //                 if($jabatan == 'Supervisor') {
+        //                     $r = 'Akun diubah dari kr-pusat menjadi spv-internal ';
+        //                     $updateData = User::find($datauser->first()->id);
+        //                     $updateData->roles = 'spv-internal';
+        //                     $updateData->update();
+        //                 }else if($jabatan == 'Admin') {
+        //                     $r = 'Akun diubah dari kr-project menjadi admin ';
+        //                     $updateData = User::find($datauser->first()->id);
+        //                     $updateData->roles = 'admin';
+        //                     $updateData->update();
+        //                 }else if($jabatan == 'Koordinator Lapangan') {
+        //                     $r = 'Akun diubah dari kr-project menjadi korlap ';
+        //                     $r = 'Akun diubah dari kr-project menjadi admin ';
+        //                     $updateData = User::find($datauser->first()->id);
+        //                     $updateData->roles = 'korlap';
+        //                     $updateData->update();
+        //                 }
+        //             }else if($jabatan == 'Karyawan') {
+        //                 return response()->json(['status' => FALSE,'messages' => 'Akun anda tidak terdaftar dimanagement']);
+        //             }
+
+        //         }else if($loginType == 'karyawan') {
+        //             if($jabatan == 'Direktur') {
+        //                 return response()->json(['status' => FALSE,'messages' => 'Akun anda tidak terdaftar dimenu karyawan']);
+        //             }else if($jabatan == 'Supervisor' ){
+        //                 $r = 'Akun diubah menjadi kr-pusat';
+        //                 $updateData = User::find($datauser->first()->id);
+        //                 $updateData->roles = 'kr-pusat';
+        //                 $updateData->update();
+        //             }else if($jabatan == 'Admin') {
+        //                 $r = 'Akun di ubah dari Admin menjadi kr-project';
+        //                 $updateData = User::find($datauser->first()->id);
+        //                 $updateData->roles = 'kr-project';
+        //                 $updateData->update();
+
+        //             }else if($jabatan == 'Koordinator Lapangan') {
+        //                 $r = 'Akun di ubah dari Korlap menjadi kr-project';
+        //                 $updateData = User::find($datauser->first()->id);
+        //                 $updateData->roles = 'kr-project';
+        //                 $updateData->update();
+        //             }
+
+        //         }else {
+        //             return response()->json(['status' => FALSE,'messages' => 'Anonim Login']);
+        //         }
+        //     }
+        // }
 
 
         if ($this->attemptLogin($request)) {

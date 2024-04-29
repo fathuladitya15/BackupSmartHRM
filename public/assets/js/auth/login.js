@@ -7,21 +7,9 @@ $('#formAuthentication').submit(function(e) {
     var password = $("#password").val();
     if(username == "" && password == "" ) {
         Swal.fire({
-            title: "Username / Password Wajib Di isi !",
-            text: "Silahkan Cek Kembali !",
-            icon: "error"
-          });
-    }else if(username == "" ) {
-        Swal.fire({
-            title: "Username / Password Wajib Di isi !",
-            text: "Silahkan Cek Kembali !",
-            icon: "error"
-          });
-    }else if(password == ""){
-        Swal.fire({
-            title: "Username / Password Wajib Di isi !",
-            text: "Silahkan Cek Kembali !",
-            icon: "error"
+            text: "Username / Password Wajib diisi !",
+            title: "",
+            icon: "info"
           });
     }else {
         $.ajax({
@@ -33,46 +21,46 @@ $('#formAuthentication').submit(function(e) {
                 button_login.disabled - true
             },
             success : function(e) {
-                console.log(e)
+                console.log(e);
                 if(e.status == false) {
                     Swal.fire({
-                        title: "Opps ! ",
+                        title: "Maaf ! ",
                         text: e.messages,
                         icon: "error"
                       });
-                }else {
-
-                    let timerInterval;
-                    Swal.fire({
-                      title: "Login Berhasil !",
-                      html: "Anda Akan Dialihkan Ke Menu Beranda ",
-                      icon: "success",
-                      timer: 2000,
-                      timerProgressBar: true,
-                      didOpen: () => {
-                        Swal.showLoading();
-                        const timer = Swal.getPopup().querySelector("b");
-                        timerInterval = setInterval(() => {
-                          timer.textContent = `${Swal.getTimerLeft()}`;
-                        }, 100);
-                      },
-                      willClose: () => {
-                        clearInterval(timerInterval);
-                      }
-                    }).then((result) => {
-                      /* Read more about handling dismissals below */
-                      if (result.dismiss === Swal.DismissReason.timer) {
-                        // console.log("I was closed by the timer");
-                        window.location.href = home;
-                      }
-                    });
                 }
+                // else {
+                //     let timerInterval;
+                //     Swal.fire({
+                //       title: "Login Berhasil !",
+                //       html: "Anda Akan Dialihkan Ke Menu Beranda ",
+                //       icon: "success",
+                //       timer: 2000,
+                //       timerProgressBar: true,
+                //       didOpen: () => {
+                //         Swal.showLoading();
+                //         const timer = Swal.getPopup().querySelector("b");
+                //         timerInterval = setInterval(() => {
+                //           timer.textContent = `${Swal.getTimerLeft()}`;
+                //         }, 100);
+                //       },
+                //       willClose: () => {
+                //         clearInterval(timerInterval);
+                //       }
+                //     }).then((result) => {
+                //       /* Read more about handling dismissals below */
+                //       if (result.dismiss === Swal.DismissReason.timer) {
+                //         // console.log("I was closed by the timer");
+                //         window.location.href = home;
+                //       }
+                //     });
+                // }
             },error: function(e) {
                 Swal.fire({
-                        title: "Opps !",
-                        text: e.responseJSON.message,
-                        icon: "error"
-                      });
+                    title: "Opps !",
+                    text: e.responseJSON.message,
+                    icon: "error"
+                  });
             }, complete: function() {
                 button_login.innerHTML = "Login";
                 button_login.disabled  = false;

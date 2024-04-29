@@ -16,6 +16,7 @@ use App\Models\Filemanager;
 use App\Models\Aktifitas;
 use Illuminate\Http\Request;
 use App\Notifications\NotifikasiSelesaiKontrak;
+use App\Events\ChatSent;
 
 use Illuminate\Support\Facades\Storage;
 // use Intervention\Image\ImageManagerStatic as Image;
@@ -178,5 +179,9 @@ class HomeController extends Controller
             $status = ['status' => FALSE ,'title' => 'Error',' pesan' => "Terjadi kesalahan hubungi tim IT"];
         }
         return response()->json($status);
+    }
+
+    function sendMessage(Request $request) {
+        broadcast(new ChatSent('Test Pesan'));
     }
 }

@@ -488,7 +488,8 @@
                         </ul>
                     </li>
                 @endif
-                @if(Auth::user()->roles == 'general-affair')
+
+                @if(divisi(Auth::user()->id_karyawan) == 3)
                     @php
                       $data = App\Models\Clients::where("nama_client",'!=','PT Proven Force Indonesia')->get();
                     @endphp

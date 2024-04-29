@@ -90,7 +90,6 @@ class LoginController extends Controller
                 }else {
                     if(in_array($jabatan,['Direktur','Manager','Head'])){
                         $r = ['pesan' => 'Akun anda tidak terdatar disini'];
-
                     }
                 }
 
