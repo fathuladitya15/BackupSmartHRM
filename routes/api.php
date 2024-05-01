@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('login', [LoginController::class, 'login']);
 Route::prefix('ttd')->group(function() {
     Route::get('cek-ttd',function(Request $request) {
         $search = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','signature')->count();
@@ -65,10 +66,11 @@ Route::prefix('cuti')->group(function() {
     Route::get('get-data-cuti-dir-hrd',[CutiController::class,'get_data_cuti_dir_hrd']);
     Route::post('update',[CutiController::class,'update_status']);
     Route::get('kategori-cuti',[CutiController::class,'get_kategori_cuti']);
+    Route::get('file/{idkaryawan}',[CutiController::class,'viewFile']);
 
 });
 
-Route::post('login', [LoginController::class, 'login']);
+
 Route::get('lembur',[LemburController::class,'get_data_lembur']);
 Route::prefix('lembur')->group(function() {
     Route::post('create',[LemburController::class,'create_data_lembur']);
@@ -101,10 +103,12 @@ route::prefix('upload')->group(function() {
 });
 
 Route::post('save-ttd',[AbsensiController::class,'save_ttd_mobile']);
+Route::middleware('auth:api')->group(function() {
 
+    Route::get('profile',[ProfileController::class,'index']);
 
+});
 
-Route::get('profile',[ProfileController::class,'index']);
 
 
 

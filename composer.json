@@ -12,6 +12,7 @@
         "intervention/image-laravel": "^1.2",
         "kreait/laravel-firebase": "^5.8",
         "laravel/framework": "^10.10",
+        "laravel/passport": "^12.2",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.4",

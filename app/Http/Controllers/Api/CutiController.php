@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Auth;
 use DB;
+use PDF;
 use Carbon\Carbon;
 use App\Models\Cuti;
 use App\Models\LogCuti;
@@ -241,9 +242,9 @@ class CutiController extends Controller
                 if($divisi->nama_divisi == 'MPO'){
                     $roles      = User::where('id_karyawan',$request->id_karyawan)->first()->roles;
                     $divisi     = Karyawan::where('id_karyawan',$request->id_karyawan)->with('divisi')->first()->divisi()->first()->nama_divisi;
-            
+
                     $data       = Cuti::where('divisi',$divisi)->where('status','>=',0)->get();
-            
+
                     $result = [];
                     foreach ($data as $key) {
                         $result[] = [
@@ -260,7 +261,7 @@ class CutiController extends Controller
                             'cuti'              => $key['ambil_cuti'],
                             'disetujui_oleh'    => $key['disetujui_oleh'],
                             'info'              => $this->info_status($key['status'])
-            
+
                         ];
                     }
                     if ($roles) {
@@ -405,8 +406,18 @@ class CutiController extends Controller
         $user   = User::where('id_karyawan',$id)->first();
         $result = [
             'kategori'      => $data->kategori,
-            'karyawanType'  => $user->roles,  
+            'karyawanType'  => $user->roles,
         ];
         return $result;
+    }
+
+    function viewFile($id) {
+        $data       = Cuti::where('id',$id)->first();
+        // $filename   = 'Form Cuti '.$data->nama_karyawan;
+        // $jabatan    = Karyawan::where('id_karyawan',$data->id_karyawan)->with('jabatan')->first()->jabatan()->first()->nama_jabatan;
+        // $pdf        = PDF::loadview("layouts.pdf_view.pdfFormCuti",['data' => $data,'filename'=> $filename,'jabatan' => $jabatan]);
+        // $pdf->setPaper('A4', 'landscape');
+        // return $pdf->stream($filename.'.pdf');
+        return response()->json(['data' => $data]);
     }
 }

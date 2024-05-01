@@ -82,6 +82,12 @@ Route::post('/login',[LoginController::class,'login'])->name('login');
 Route::post('/logout',[LoginController::class,'logout'])->name('logout');
 Route::middleware('revalidate')->group(function() {
     Route::middleware('SingelSession')->group(function() {
+        Route::get('/testBase64',function() {
+            return view('TestBase64');
+        });
+        Route::post('test-upload-base64',function(Request $request) {
+            return response()->json(['data' => $request->all()])->name('test-upload-base64');
+        });
         Route::middleware('auth')->group(function() {
             Route::get('/home', [HomeController::class, 'index'])->name('home');
 

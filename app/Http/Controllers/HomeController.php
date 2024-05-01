@@ -13,6 +13,7 @@ use App\Models\Clients;
 use App\Models\Karyawan;
 use App\Models\Pengumuman;
 use App\Models\Filemanager;
+use App\Models\Peringatan;
 use App\Models\Aktifitas;
 use Illuminate\Http\Request;
 use App\Notifications\NotifikasiSelesaiKontrak;
