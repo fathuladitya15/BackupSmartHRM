@@ -170,14 +170,42 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {{-- <script type="module" src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js" defer></script>
     <script type="module"  src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging.js" defer></script> --}}
+
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+    </script>
+
+    <script>
+    const firebaseConfig = {
+
+        apiKey: 'AIzaSyA_T_z7YTOWgcVqgGZYCQWcySxNtgkOsKw',
+        authDomain: 'pushnotification-52987.firebaseapp.com',
+        projectId: 'pushnotification-52987',
+        storageBucket: 'pushnotification-52987.appspot.com',
+        messagingSenderId: '773466760609',
+        appId: '1:773466760609:web:6c689b798f25081ac157e0',
+        measurementId: 'G-NYL0QLL715',
+    };
+
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    messaging.onMessage(function(payload) {
+        const title = payload.notification.title;
+        const options = {
+            body: payload.notification.body,
+            icon: payload.notification.icon,
+        };
+        new Notification(title, options);
+    });
+
+
     </script>
 
     @stack('js')
@@ -300,150 +328,7 @@
 
     </script>
 
-    <script>
 
-
-        // function initializeFirebase() {
-
-            const firebaseConfig = {
-
-                apiKey: 'AIzaSyA_T_z7YTOWgcVqgGZYCQWcySxNtgkOsKw',
-                authDomain: 'pushnotification-52987.firebaseapp.com',
-                projectId: 'pushnotification-52987',
-                storageBucket: 'pushnotification-52987.appspot.com',
-                messagingSenderId: '773466760609',
-                appId: '1:773466760609:web:6c689b798f25081ac157e0',
-                measurementId: 'G-NYL0QLL715',
-            };
-
-            // Inisialisasi Firebase
-            firebase.initializeApp(firebaseConfig);
-
-            // Inisialisasi Firebase Messaging
-            const messaging = firebase.messaging();
-            // var pathSW = "{{ asset('assets/js/firebase/firebase-messaging-sw.js') }}";
-            // // Mengatur Service Worker
-            // if ('serviceWorker' in navigator) {
-            //     navigator.serviceWorker.register(pathSW)
-            //         .then(registration => {
-            //             console.log('Service Worker registered:', registration);
-
-            //             // Mengatur messaging untuk menggunakan Service Worker yang sudah didaftarkan
-            //             messaging.useServiceWorker(registration);
-
-            //             // Mendapatkan token
-            //             messaging.getToken({ vapidKey: 'YOUR_VAPID_KEY' })
-            //                 .then(currentToken => {
-            //                     if (currentToken) {
-            //                         console.log('Token:', currentToken);
-            //                         // Kirim token ke server jika diperlukan
-            //                     } else {
-            //                         console.log('No registration token available.');
-            //                     }
-            //                 })
-            //                 .catch(error => {
-            //                     console.log('An error occurred while retrieving token. ', error);
-            //                 });
-            //         })
-            //         .catch(error => {
-            //             console.log('Service Worker registration failed:', error);
-            //         });
-            // }
-        // }
-        // Konfigurasi Firebase
-        // initializeFirebase();
-
-        function sendNotification() {
-            messaging.requestPermission().then(function(value) {
-                return messaging.getToken()
-            }).then(function(value) {
-                $.ajax({
-                    url: "{{ route('saveToken') }}",
-                    type: "POST",
-                    headers: {
-                        'X-CSRF-TOKEN' : "{{ csrf_token() }}"
-                    },
-                    data: {
-                        not_token : value
-                    },success: function(res) {
-                        alert(res)
-                    }
-                }).catch(function(error) {
-                    alert(error);
-                })
-            })
-        }
-
-        // function sendNotification() {
-        //     fetch('/send-notification', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        //         },
-        //         body: JSON.stringify({})
-        //     })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         if (data.success) {
-        //             alert('Notifikasi berhasil dikirim!');
-        //         } else {
-        //             alert('Gagal mengirim notifikasi: ' + data.error);
-        //         }
-        //     })
-        //     .catch(error => {
-        //         console.error('Error:', error);
-        //     });
-        // }
-    </script>
-
-    {{-- <script  type="module" src="{{ asset("assets/js/chat.js") }}"></script> --}}
-    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.11.1/laravel-echo.min.js"></script>
-    <script>
-         const Echo = window.Echo;
-         window.Echo = new Echo({
-            broadcaster: 'pusher',
-            key :'ac376b59c03673dec593',
-            cluster : 'ap1',
-            encrypted : true,
-
-         })
-
-         Echo.join('chat')
-            .listen('ChatSent', (e) => {
-                console.log(e);
-            })
-    </script> --}}
-
-    <!-- PUSHER -->
-    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-    <script>
-
-        // Enable pusher logging - don't include this in production
-        Pusher.logToConsole = false;
-
-        var pusher = new Pusher('ac376b59c03673dec593', {
-          cluster: 'ap2',
-          encrypted: true
-        });
-
-        const channel = pusher.subscribe('ChatSent');
-        channel.bind('chat', function(data) {
-            console.log('Menerima pesan di channel:', channel.name);
-            console.log('Data:', data);
-        });
-        // Mendapatkan daftar channel yang sedang di-subscribe
-        const subscribedChannels = pusher.channels.channels;
-
-        // Mencetak informasi channel ke console
-        for (const channelName in subscribedChannels) {
-            if (subscribedChannels.hasOwnProperty(channelName)) {
-                const channel = subscribedChannels[channelName];
-                console.log('Channel aktif:', channelName);
-                console.log('Event listener:', channel.listeners); // Listener yang terdaftar di channel
-            }
-        }
-    </script>
 
   </body>
 </html>

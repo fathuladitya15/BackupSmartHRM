@@ -137,15 +137,55 @@
     </div>
 
     <div class="row">
-        <button class="btn btn-success" onclick="sendNotification()">Test Notif</button>
-        <form action="{{ route('send-notif') }}" method="POST">
+        <button onclick="startFCM()"
+            class="btn btn-danger btn-flat">Allow notification
+        </button>
+        <form action="{{ route('send.web-notification') }}" method="POST">
             @csrf
-            <input type="text" name="title">
-            <input type="text" name="body">
-            <button class="btn btn-primary" type="submit">Test Notifikasi</button>
+            <div class="form-group">
+                <label>Message Title</label>
+                <input type="text" class="form-control" name="title">
+            </div>
+            <div class="form-group">
+                <label>Message Body</label>
+                <textarea class="form-control" name="body"></textarea>
+            </div>
+            <button type="submit" class="btn btn-success btn-block">Send Notification</button>
         </form>
     </div>
 
 </div>
 
 @endsection
+@push('js')
+<script>
+    function startFCM() {
+        messaging.requestPermission().then(function () {
+                return messaging.getToken()
+            })
+            .then(function (response) {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '{{ route("store.token") }}',
+                    type: 'POST',
+                    data: {
+                        token: response
+                    },
+                    dataType: 'JSON',
+                    success: function (response) {
+                        alert('Token stored.');
+                    },
+                    error: function (error) {
+                        alert(error);
+                    },
+                });
+            }).catch(function (error) {
+                alert(error);
+            });
+    }
+</script>
+@endpush

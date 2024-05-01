@@ -349,6 +349,11 @@ Route::middleware('revalidate')->group(function() {
             });
 
             Route::get('/send',[HomeController::class,'sendMessage']);
+
+            Route::post('/store-token', [HomeController::class, 'updateDeviceToken'])->name('store.token');
+            Route::post('/send-web-notification', [HomeController::class, 'sendNotification'])->name('send.web-notification');
+            Route::get('/add-firebase-token-to-users', [HomeController::class,'addAllUsers'])->name('add_firebase_token_to_users');
+
         });
     });
 
@@ -389,5 +394,5 @@ Route::post('save-ttd-mobile',function(Request $request) {
         return response()->json($status);
 })->name("save-ttd-mobile");
 
-Route::post('saveToken',[FirebaseController::class,'saveToken'])->name('saveToken');
-Route::post('/send-notification', [FirebaseController::class, 'sendNotification'])->name('send-notif');
+// Route::post('saveToken',[FirebaseController::class,'saveToken'])->name('saveToken');
+// Route::post('/send-notification', [FirebaseController::class, 'sendNotification'])->name('send-notif');

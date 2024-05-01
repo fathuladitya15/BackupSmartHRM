@@ -28,7 +28,6 @@ class User extends Authenticatable
         'id_karyawan',
         'id_client',
         'token',
-        'device_token'
     ];
 
     /**
