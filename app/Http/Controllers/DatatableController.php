@@ -338,15 +338,17 @@ class DatatableController extends Controller
 
     // DATA LEMBUR UNTUK KARYAWAN
     function data_lembur_karyawan(Request $request,$hash) {
-        // dd($hash);
+
 
         if(Auth::user()->roles == 'spv-internal') {
-            // dd("SPG");
             $data = Lembur::where('id_client',Auth::user()->id_client)->where('status',1)->get();
-        }else {
+        }
+        else if(in_array(Auth::user()->roles,['karyawan','kr-project','kr-pusat'])) {
+            $data = Lembur::where('id_karyawan',Auth::user()->id_karyawan)->get();
+        }
+        else {
             $data = Lembur::where('id_karyawan',Auth::user()->id_karyawan)->where('id_client',Auth::user()->id_client)->get();
         }
-
         $dt = DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('aksi', function($row) {

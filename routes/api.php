@@ -80,6 +80,7 @@ Route::prefix('lembur')->group(function() {
     Route::get('dir-hrd',[LemburController::class,'get_data_lembur_dir_hrd']);
     Route::get('manager',[LemburController::class,'get_data_lembur_manager']);
     Route::get('data-shift',[LemburController::class,'getShift']);
+    Route::post('create-test',[LemburController::class,'testingSaveDate']);
 });
 
 Route::prefix('izin')->group(function() {

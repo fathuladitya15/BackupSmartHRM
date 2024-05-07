@@ -33,6 +33,7 @@ use App\Http\Controllers\ManageKaryawanController;
 use App\Http\Controllers\GeneralAffairController;
 use App\Http\Controllers\DirekturController;
 use App\Http\Controllers\FirebaseController;
+use App\Http\Controllers\RequestAbsensiController;
 
 use App\Models\Filemanager;
 
@@ -353,6 +354,14 @@ Route::middleware('revalidate')->group(function() {
             Route::post('/store-token', [HomeController::class, 'updateDeviceToken'])->name('store.token');
             Route::post('/send-web-notification', [HomeController::class, 'sendNotification'])->name('send.web-notification');
             Route::get('/add-firebase-token-to-users', [HomeController::class,'addAllUsers'])->name('add_firebase_token_to_users');
+
+            Route::prefix('request')->group(function() {
+                Route::get('list',[RequestAbsensiController::class,'list_index'])->name('list-index');
+            });
+
+            Route::prefix('kr-internal-project')->group(function() {
+                Route::get('DataLembur/{hash}',[LemburController::class,'data_lembur_kr_internal_project'])->name("data-table-kr-project-internal");
+            });
 
         });
     });

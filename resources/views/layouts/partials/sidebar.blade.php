@@ -77,12 +77,19 @@
                     @endif
 
                     {{-- ABSENSI --}}
-                    <li class="menu-item {{  menuOpen(['shift','absensi-data','absensi-search-one','absensi']) }} ">
+                    <li class="menu-item {{  menuOpen(['shift','absensi-data','absensi-search-one','absensi','list-index']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-calendar"></i>
                             <div data-i18n="">Absensi</div>
                         </a>
                         <ul class="menu-sub">
+                            @if(Auth::user()->roles == 'admin')
+                                <li class="menu-item {{ menuActive('list-index') }}">
+                                    <a href="{{ route('list-index') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Daftar Kehadiran</div>
+                                    </a>
+                                </li>
+                            @endif
                             @if (in_array(Auth::user()->roles,['admin','korlap','superadmin','spv-internal','hrd']))
                                 @if (in_array(Auth::user()->roles,['admin','korlap']))
                                     @if(Auth::user()->id_client != 2)
@@ -125,6 +132,7 @@
                                     </a>
                                 </li>
                             @endif
+
                         </ul>
                     </li>
 

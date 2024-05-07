@@ -123,7 +123,6 @@ class LemburController extends Controller
         $cek_ttd    = $request->ttd;
 
         if($cek_ttd == 1) {
-
             if(in_array($role,['kr-project','kr-pusat'])) {
                 $data = [
                     'id_karyawan'           => $request->id_karyawan,
@@ -140,10 +139,10 @@ class LemburController extends Controller
                     'group'                 => $request->group,
                     'status'                => 0,
                     'tanggal_lembur'        => $request->tanggal_lembur,
-                    'id_client'             => 1,
+                    'id_client'             => Auth::user()->id_client,
                     'ttd_karyawan'          => $ttd->path,
                 ];
-                // Lembur::create($data);
+                Lembur::create($data);
                 $status = ['status' => TRUE,'title'=>'sukses','pesan' => 'Lembur berhasil ditambahkan'];
             }
             else if($role == 'manager'){
@@ -639,8 +638,101 @@ class LemburController extends Controller
 
     }
 
-    function DataTableByKaryawan(Request $request) {
+    function data_lembur_kr_internal_project(Request $request,$hash) {
+        $id_karyawan = EncryprVariable($hash);
+        $data        = Lembur ::where('id_karyawan',$id_karyawan)->get();
+        $result      = [];
 
+        foreach($data as $key) {
+            $result[]   =   [
+                'id'            => $key['id'],
+                'id_karyawan'   => $key['id_karyawan'],
+                'tanggal_lembur'=> Carbon::parse($key['tanggal_lembur'])->translatedFormat("l, d F Y"),
+                'jam_mulai'     => $key['jam_mulai'],
+                'jam_selesai'   => $key['jam_selesai'],
+                'tugas'         => $key['tugas'],
+                'total_jam'     => $key['total_jam'],
+                'status'        => $this->info_status($key['divisi'],$key['status']),
+                'disetujui_oleh'=> $key['disetujui_oleh'],
+                'aksi'          => $this->aksi($key['divisi'],$key['status'],$key['id'],Auth::user()->roles),
+
+            ];
+        }
+
+        $dt = DataTables::of($result)
+        ->addIndexColumn()
+        ->rawColumns(['status','aksi'])
+        ->make(true);
+
+        return $dt;
+        dd($result);
+    }
+
+    function info_status($divisi,$status) {
+        if($divisi == 'MPO') {
+            if($status == 0) {
+                $s = '<span class="badge bg-warning">Menunggu Disetujui Supervisor</span>';
+            }else if($status == 1) {
+                $s = '<span class="badge bg-warning">Menunggu Ditanda Tangani Manager Divisi</span>';
+            }else if($status == 2) {
+                $s = '<span class="badge bg-warning">Menunggu Ditanda Tangani HRD</span>';
+            }else if ($status == 3) {
+                $s = '<span class="badge bg-warning">Menunggu Ditanda Tangani Direktur HRD</span>';
+            }else if($status == 4) {
+                $s = '<span class="badge bg-warning">Menunggu Disetujui Direktur HRD</span>';
+            }else if($status == 5 ){
+                $s = '<span class="badge bg-success">Sudah Ditanda Tangani </span>';
+            }
+            else {
+                $s = '<span class="badge bg-danger">Status tidak diketahui</span>';
+            }
+        }
+        else {
+            if($status == 0) {
+                $s = '<span class="badge bg-warning">Menunggu Ditanda Tangani Manager Divisi</span>';
+            }else if($status == 1) {
+                $s = '<span class="badge bg-warning">Menunggu Ditanda Tangani HRD</span>';
+            }else if($status == 2) {
+                $s = '<span class="badge bg-warning">Menunggu Ditanda Tangani Direktur HRD</span>';
+            }else if ($status == 3) {
+                $s = '<span class="badge bg-warning">Menunggu Disetujui Direktur HRD</span>';
+            }else if($status == 4) {
+                $s = '<span class="badge bg-success">Sudah Ditanda Tangani </span>';
+
+            }
+            else {
+                $s = 'Status tidak diketahui';
+            }
+
+        }
+
+        return $s;
+
+    }
+
+    function aksi($divisi,$status,$id,$roles) {
+        $edit   = '<a href="javascript:void(0)" class="btn btn-primary btn-sm" id="edit_'.$id.'" onclick="detail('.$id.')"  ><i class="bx bx-edit-alt"></i>Edit</a>';
+        $file   = '<a href="'.route("lembur-download-perorang",['hash' => HashVariable($id)]).'" class="btn btn-primary btn-sm" ><i class="bx bx-download"></i> Lihat File</a>';
+        $hapus  = '<a href="javascript:void(0)" class="btn btn-danger btn-sm" id="hapus_'.$id.'" onclick="hapus('.$id.')" ><i class="bx bxs-trash" ></i>Hapus</a>';
+
+        if(in_array($roles,['kr-project','kr-pusat'])){
+            if($divisi == 'MPO') {
+                if($status >= 0 ||$staus <= 4 ) {
+                    $s = $edit.'&nbsp;'.$hapus;
+                }else {
+                    $s = $file;
+                }
+            }else {
+                if($status >= 0 ||$staus <= 3 ) {
+                    $s = $edit.'&nbsp;'.$hapus;
+                }else  {
+                    $s = $file;
+                }
+            }
+        }else {
+            $s = "";
+        }
+        return $s;
     }
 
 }

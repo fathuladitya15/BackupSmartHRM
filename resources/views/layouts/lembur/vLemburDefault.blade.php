@@ -290,7 +290,56 @@
             searchable: false
         }, ]
     }) ;
+
+
+    function hitungJam(){
+        var tanggal = document.getElementById("tanggal_lembur").value;
+        var mulai   = document.getElementById("jam_mulai").value;
+        var selesai = document.getElementById("jam_selesai").value;
+
+        // Gabungkan tanggal dan waktu mulai
+        var waktuMulaiLembur    = new Date(tanggal + "T" + mulai);
+
+        // Gabungkan tanggal dan waktu selesai
+        var waktuSelesaiLembur  = new Date(tanggal + "T" + selesai);
+
+
+        if (isNaN(waktuMulaiLembur) || isNaN(waktuSelesaiLembur)) {
+            document.getElementById("jumlah_jam").value = "Mohon masukkan waktu mulai dan selesai yang valid.";
+            return;
+        }
+
+        // Hitung selisih waktu dalam milidetik
+        var selisih             = waktuSelesaiLembur - waktuMulaiLembur;
+
+        // Validasi hasil negatif (minus)
+        if (selisih < 0) {
+            document.getElementById("jumlah_jam").value = "Waktu selesai harus setelah waktu mulai.";
+            return;
+        }
+
+
+        // Konversi selisih waktu ke dalam jam dan menit
+        var jam         = Math.floor(selisih / (1000 * 60 * 60));
+        var menit       = Math.floor((selisih % (1000 * 60 * 60)) / (1000 * 60));
+
+        var result;
+
+        if(menit == 0) {
+            result = jam + " Jam";
+        }else {
+            result = jam + " Jam " + menit +" menit.";
+        }
+
+        // var result      = "Lembur selama " + jam + " jam " + menit + " menit";
+
+        document.getElementById("jumlah_jam").value = result;
+    }
+
+    document.getElementById('tanggal_lembur').addEventListener("change",hitungJam);
+    document.getElementById('jam_mulai').addEventListener("change",hitungJam);
+    document.getElementById('jam_selesai').addEventListener("change",hitungJam);
+
 </script>
-<script src="{{ asset('assets/js/lembur.js') }}"></script>
 
 @endpush

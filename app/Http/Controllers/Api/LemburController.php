@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Shift;
 use App\Models\Lembur;
 use App\Models\Karyawan;
 use App\Models\Divisi;
 use App\Models\Jabatan;
 use App\Models\Clients;
-use App\Models\Shift;
 use App\Models\Filemanager;
-use Carbon\Carbon;
-use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Validator;
 
 class LemburController extends Controller
 {
@@ -478,6 +478,48 @@ class LemburController extends Controller
 
         }
         return response()->json(['data' => $data],200);
+    }
+
+    public function testingSaveDate(Request $request) {
+
+        $hitungLembur = $this->HitungLembur($request->jam_mulai,$request->jam_selesai);
+        if($hitungLembur['status'] == FALSE) {
+            return response()->json(['pesan' => $hitungLembur['keterangan']]);
+        }
+
+        return response()->json([
+            'data' => $request->all(),
+            'jam mulai' => $request->jam_mulai,
+            'jam selesai' => $request->jam_selesai,
+            'ket' => $hitungLembur['keterangan']]);
+    }
+
+    function HitungLembur($jam_mulai,$jam_selesai) {
+        $mulai          = Carbon::createFromFormat('H:i', $jam_mulai);
+        $selesai        = Carbon::createFromFormat('H:i', $jam_selesai);
+
+        $selisihMenit   = $selesai->diffInMinutes($mulai);
+
+        // Mengonversi selisih menit menjadi jam dan menit
+        $jam        = floor($selisihMenit / 60);
+        $menit      = $selisihMenit % 60;
+
+
+        if($menit == 0) {
+            $res = $jam." jam";
+        }else if($jam == 0) {
+            $res = $menit." menit";
+        }else {
+            $res = "$jam jam $menit menit";
+        }
+
+        if($jam > 7 || $menit > 0) {
+            return  ["status" => FALSE,'keterangan' => "Total lembur tidak boleh melebihi 7 jam."];
+
+        }
+
+        return ['status' => TRUE,'keterangan' =>  $res];
+
     }
 
 }
