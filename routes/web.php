@@ -361,6 +361,7 @@ Route::middleware('revalidate')->group(function() {
 
             Route::prefix('kr-internal-project')->group(function() {
                 Route::get('DataLembur/{hash}',[LemburController::class,'data_lembur_kr_internal_project'])->name("data-table-kr-project-internal");
+                Route::delete('delete/{id}',[LemburController::class,'delete_lembur'])->name('delete-lembur');
             });
 
         });

@@ -735,4 +735,10 @@ class LemburController extends Controller
         return $s;
     }
 
+    function delete_lembur($id) {
+        $data = Lembur::findOrFail($id);
+        $data->delete();
+        return response()->json(['status' => TRUE,'pesan' => "Data lembur berhasil dihapus" ]);
+    }
+
 }

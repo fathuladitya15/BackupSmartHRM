@@ -488,6 +488,33 @@
         document.getElementById("jumlah_jam").value = result;
     }
 
+    function hapus(id) {
+        const hapus              = document.getElementById("hapus_"+id+"");
+        const stoploading       = '<i class="bx bxs-trash" ></i>Hapus';
+        const loading           = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
+        $.ajax({
+            url : "kr-internal-project/delete/" + id,
+            type : "DELETE",
+            beforeSend: function() {
+                hapus.innerHTML = loading;
+                hapus.disabled = true;
+            },success:function(s) {
+                if(s.status == true) {
+                    Swal.fire('Sukses',s.pesan,'success');
+                }else {
+                    Swal.fire('Error','Hapus data gagal','error');
+                }
+                console.log(s);
+            },error : function(e) {
+                Swal.fire('Error','Terjadi kesalahan','error');
+            },complete: function() {
+                hapus.innerHTML = stoploading;
+                hapus.disabled  = false;
+                table.DataTable().ajax.reload();
+            }
+        })
+    }
+
     document.getElementById('tanggal_lembur').addEventListener("change",hitungJam);
     document.getElementById('jam_mulai').addEventListener("change",hitungJam);
     document.getElementById('jam_selesai').addEventListener("change",hitungJam);
