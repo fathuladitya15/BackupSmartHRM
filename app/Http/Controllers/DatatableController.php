@@ -1947,12 +1947,43 @@ class DatatableController extends Controller
 
         $dt = DataTables::of($data)
         ->addIndexColumn()
-        ->addColumn('face_id', function($row) {
+        ->addColumn('face_id', function($row)  {
             return "";
         })
-        ->addColumn('aksi', function($row) {
-            // $a = "<a href='javascript:void(0)')' class='btn btn-primary btn-sm'><i class='bx bxs-folder-open'></i>Lihat File</a>";
-            return "";
+        ->addColumn('aksi', function($row) use ($kr) {
+            $jamMasukKaryawan = $row->tanggal." ".$row->jam_masuk;
+
+            if($kr == 'pusat'){
+                $waktuMaksimalAbsen = $row->tanggal." 09:00:00";
+            }else {
+                $waktuMaksimalAbsen = $row->tanggal." 08:00:00";
+            }
+
+            $absensiCarbon = Carbon::parse($jamMasukKaryawan);
+
+            $waktuMaksimalAbsenCarbon = Carbon::parse($waktuMaksimalAbsen);
+
+            $selisih = $absensiCarbon->diffInMinutes($waktuMaksimalAbsenCarbon);
+
+            $cekGT =  $absensiCarbon->gt($waktuMaksimalAbsenCarbon);
+
+            if($cekGT == true) {
+                $selisih        = $absensiCarbon->diffInMinutes($waktuMaksimalAbsenCarbon);
+                // Konversi selisih waktu ke dalam format jam dan menit
+                $jam        = floor($selisih / 60);
+                $menit      = $selisih % 60;
+                if($jam == 0) {
+                    $r = $menit.' menit';
+                }else if($menit == 0) {
+                    $r = $jam.' jam';
+                }else {
+                    $r = $jam.' jam '.$menit.' menit';
+                }
+
+            }else {
+                $r = "";
+            }
+            return $r;
         })
         ->rawColumns(['aksi','face_id'])
         ->make(true);

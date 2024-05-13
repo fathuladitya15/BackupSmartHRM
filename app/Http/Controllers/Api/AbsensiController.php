@@ -42,11 +42,10 @@ class AbsensiController extends Controller
     }
 
     function create_absensi(Request $request) {
-        
+
 
         $dateNow    =   Carbon::now()->format('Y-m-d');
 
-       
 
         $attendance = Absensi::where('id_karyawan',$request->id_karyawan)->where('tanggal',$dateNow)->count();
 
@@ -58,14 +57,16 @@ class AbsensiController extends Controller
                 'nama_karyawan'             => $request->nama_karyawan,
                 'divisi'                    => $request->divisi,
                 'jabatan'                   => $request->jabatan,
-                'tanggal'                   => $request->tanggal_absensi,   
+                'tanggal'                   => $request->tanggal_absensi,
                 'jam_masuk'                 => $request->jam_masuk,
-                'lokasi_absen_masuk'        => $request->lokasi_absen_masuk,         
-                'detail_lokasi_absen_masuk' => $request->detail_lokasi_absen_masuk,   
+                'lokasi_absen_masuk'        => $request->lokasi_absen_masuk,
+                'detail_lokasi_absen_masuk' => $request->detail_lokasi_absen_masuk,
                 'shift'                     => 'Non Shift',
                 'catatan'                   => $request->catatan,
-                'id_client'                 => 1,      
+                'id_client'                 => 1,
             ];
+            // return response()->json(['pesan' => $absen_masuk]);
+
             Absensi::create($absen_masuk);
             return response()->json(['pesan' => 'Absen berhasil'],200);
         }
@@ -133,7 +134,7 @@ class AbsensiController extends Controller
         // $get    = Absensi::where('tanggal',$request->tanggal)->where('id_karyawan',$request->id_karyawan)->first();
 
         // if($get->jam_keluar == "") {
-        //     $p = 'Anda belum absen keluar'; 
+        //     $p = 'Anda belum absen keluar';
         // }else {
         //     $p = 'Anda sudah absen keluar';
         // }
@@ -223,5 +224,5 @@ class AbsensiController extends Controller
             ];
         }
         return response()->json(['pesan' => $result]);
-    }   
+    }
 }

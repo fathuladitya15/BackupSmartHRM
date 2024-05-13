@@ -103,6 +103,9 @@
                                     <th>Detail Lokasi</th>
                                     <th>shift</th>
                                     <th>Catatan</th>
+                                    @if (Auth::user()->roles == 'hrd')
+                                        <th>Keterlambatan</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
@@ -126,6 +129,45 @@
                                             {{ $value[0]['shift'] == null ? 'Non Shift' :  $value[0]['shift'] }}
                                         </td>
                                         <td>{{ $value[0]['catatan']  }}</td>
+                                        @if (Auth::user()->roles == 'hrd')
+                                            <td>
+                                                @php
+                                                    $kr = request()->segment(4);
+                                                    $jamMasukKaryawan = $value[0]['tanggal']." ".$value[0]['jam_masuk'];
+
+                                                    if($kr == 'pusat'){
+                                                        $waktuMaksimalAbsen = $value[0]['tanggal']." 09:00:00";
+                                                    }else {
+                                                        $waktuMaksimalAbsen = $value[0]['tanggal']." 08:00:00";
+                                                    }
+
+                                                    $absensiCarbon = Carbon\Carbon::parse($jamMasukKaryawan);
+
+                                                    $waktuMaksimalAbsenCarbon = Carbon\Carbon::parse($waktuMaksimalAbsen);
+
+                                                    $selisih = $absensiCarbon->diffInMinutes($waktuMaksimalAbsenCarbon);
+
+                                                    $cekGT =  $absensiCarbon->gt($waktuMaksimalAbsenCarbon);
+                                                    if($cekGT == true) {
+                                                        $selisih        = $absensiCarbon->diffInMinutes($waktuMaksimalAbsenCarbon);
+                                                        // Konversi selisih waktu ke dalam format jam dan menit
+                                                        $jam        = floor($selisih / 60);
+                                                        $menit      = $selisih % 60;
+                                                        if($jam == 0) {
+                                                            $r = $menit.' menit';
+                                                        }else if($menit == 0) {
+                                                            $r = $jam.' jam';
+                                                        }else {
+                                                            $r = $jam.' jam '.$menit.' menit';
+                                                        }
+
+                                                    }else {
+                                                        $r = "";
+                                                    }
+                                                @endphp
+                                                {{ $r }}
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             </tbody>

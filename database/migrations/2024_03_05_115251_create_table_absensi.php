@@ -22,11 +22,11 @@ return new class extends Migration
             $table->string('lokasi_absen_masuk');
             $table->text('detail_lokasi_absen_masuk');
 
-            $table->string('jam_keluar');
+            $table->string('jam_keluar')->nullable();
             $table->string('mulai_istirahat')->nullable();
             $table->string('selesai_istirahat')->nullable();
             $table->string('shift');
-            $table->string('lokasi_absen_plg');
+            $table->string('lokasi_absen_plg')->nullable();
             $table->text('detail_lokasi_absen_plg');
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();

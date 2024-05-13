@@ -44,10 +44,10 @@ Route::prefix('ttd')->group(function() {
             return response()->json(['data'  => $result],200);
         }else {
             return redirect()->route('create-tanda-tangan-m',['id_karyawan' => $request->id_karyawan]);
-            
+
         }
     })->name('cek-ttd');
-    
+
 });
 
 Route::get('get-bank', function() {
