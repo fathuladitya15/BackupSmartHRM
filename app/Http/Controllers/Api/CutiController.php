@@ -27,13 +27,13 @@ class CutiController extends Controller
 
     function get_data_cuti(Request $request) {
         $tahun      = Carbon::now()->format('Y');
-        $data       = Cuti::where('id_karyawan',$request->id_karyawan)->get();
+        $data       = Cuti::where('id_karyawan',$request->id_karyawan)->orderBy('created_at','DESC')->get();
         $totalCuti  = LogCuti::where('id_karyawan',$request['id_karyawan'])->where('tahun',$tahun)->sum('cuti_get');
-        $batas_hari =  12 - $totalCuti;
+        $batas_hari = 12 - $totalCuti;
         $result = [];
         foreach ($data as $key) {
             $result[] = [
-                'id'    => $key['id'],
+                'id'                => $key['id'],
                 'id_karyawan'       => $key['id_karyawan'],
                 'nama_karyawan'     => $key['nama_karyawan'],
                 'divisi'            => $key['divisi'],
@@ -47,6 +47,7 @@ class CutiController extends Controller
                 'info'              => $this->info_status($key['status']),
                 'sisa_cuti'         => $batas_hari,
                 'disetujui_oleh'    => $key['disetujui_oleh'],
+                'created_at'    => $key['created_at'],
                 'detail'            => $this->detail_data($key['id']),
             ];
         }
@@ -60,8 +61,12 @@ class CutiController extends Controller
         $tipeKaryawan           = $this->tipeKaryawan($request->id_karyawan);
         $validasi_tanggal       = $this->validasi_tanggal_cuti($request->all());
 
+
         if($validasi_tanggal['status'] != 200) {
-            return response()->json(['status' => 404,'pesan' => $validasi_tanggal['pesan'],'total Cuti' => $validasi_tanggal['totalCuti']]);
+            return response()->json(['pesan' => $validasi_tanggal['pesan'],'total Cuti' => $validasi_tanggal['totalCuti']], 422);
+        }
+        if($request->ttd == 0 || $request->ttd == null) {
+            return response()->json(['pesan' => 'Dokumen belum ditandatangani'],404);
         }
         if(in_array($tipeKaryawan['karyawanType'],['kr-project','kr-pusat','manajer'])) {
             $getDataKaryawan    = Karyawan::where('id_karyawan',$request->id_karyawan)->first();
@@ -105,14 +110,14 @@ class CutiController extends Controller
 
             return response()->json(['pesan' => 'Cuti dengan ID Karyawan : '.$request->id_karyawan.' berhasil dibuat','ttd' => $pesan],200);
         }else {
-           return response()->json(['pesan' => 'Buat Cuti Gagal'],404);
+           return response()->json(['pesan' => 'Buat Cuti Gagal'],500);
         }
     }
 
     function validasi_tanggal_cuti($request) {
 
         $tahunSkarang   = Carbon::now()->format('Y');
-        $totalCuti = LogCuti::where('id_karyawan',$request['id_karyawan'])->where('tahun',$tahunSkarang)->sum('cuti_get');
+        $totalCuti      = LogCuti::where('id_karyawan',$request['id_karyawan'])->where('tahun',$tahunSkarang)->sum('cuti_get');
 
         $batas_hari     =  12 - $totalCuti;
 
@@ -147,12 +152,13 @@ class CutiController extends Controller
         $roles      = User::where('id_karyawan',$request->id_karyawan)->first()->roles;
         $divisi     = Karyawan::where('id_karyawan',$request->id_karyawan)->with('divisi')->first()->divisi()->first()->nama_divisi;
 
-        $data       = Cuti::where('divisi',$divisi)->where('status','>=',0)->get();
+        $data       = Cuti::where('divisi',$divisi)->where('id_karyawan','!=',$request->id_karyawan)->where('status','>=',0)->orderBy('created_at','DESC')->get();
 
         $result = [];
         foreach ($data as $key) {
             $result[] = [
-                'id'=> $key['id'],
+                'id'                => $key['id'],
+                'foto_profile'      => foto_profile($key['id_karyawan']),
                 'id_karyawan'       => $key['id_karyawan'],
                 'nama_karyawan'     => $key['nama_karyawan'],
                 'divisi'            => $key['divisi'],
@@ -164,8 +170,9 @@ class CutiController extends Controller
                 'tanggal_pengajuan' => Carbon::parse($key['created_at'])->translatedFormat('l, d F Y'),
                 'cuti'              => $key['ambil_cuti'],
                 'info'              => $this->info_status($key['status']),
+                'acc'               => $key['status'] >= 1 ? 1 : 0,
                 'disetujui_oleh'    => $key['disetujui_oleh'],
-
+                'created_at'    => $key['created_at'],
                 'detail'            => $this->detail_data($key['id']),
 
             ];
@@ -179,7 +186,7 @@ class CutiController extends Controller
     }
 
     function get_data_cuti_spv_hrd(Request $request) {
-        $data       = Cuti::where('status','>=',1)->get();
+        $data       = Cuti::where('status','>=',1)->orderBy('created_at','DESC')->get();
 
         $result = [];
         foreach ($data as $key) {
@@ -198,6 +205,7 @@ class CutiController extends Controller
                 'cuti'              => $key['ambil_cuti'],
                 'info'              => $this->info_status($key['status']),
                 'disetujui_oleh'    => $key['disetujui_oleh'],
+                'created_at'    => $key['created_at'],
                 'detail'            => $this->detail_data($key['id']),
 
 
@@ -212,73 +220,79 @@ class CutiController extends Controller
     }
 
     function get_data_cuti_dir_hrd(Request $request) {
-        $data       = Cuti::where('status','>=',2)->get();
 
-        $result = [];
-        foreach ($data as $key) {
-            $result[] = [
-                'id'=> $key['id'],
-
-                'id_karyawan'       => $key['id_karyawan'],
-                'nama_karyawan'     => $key['nama_karyawan'],
-                'divisi'            => $key['divisi'],
-                'jabatan'           => $key['jabatan'],
-                'start_date'        => Carbon::parse($key['start_date'])->translatedFormat('l, d F Y'),
-                'end_date'          => Carbon::parse($key['end_date'])->translatedFormat('l, d F Y'),
-                'alasan'            => $key['alasan'],
-                'kategori_cuti'     => $key['kategori_cuti'],
-                'tanggal_pengajuan' => Carbon::parse($key['created_at'])->translatedFormat('l, d F Y'),
-                'cuti'              => $key['ambil_cuti'],
-                'info'              => $this->info_status($key['status']),
-                'disetujui_oleh'    => $key['disetujui_oleh'],
-                'status_pengajuan'  => $key['status'],
-            ];
+        // Response apabila id karyawan kosong
+        if($request->id_karyawan == null || $request->id_karyawan == "" ){ 
+            return response()->json(['pesan' => 'ID Karyawan dibutuhkan'],422);
         }
 
-        if($request->id_karyawan) {
-            if($data->count() > 0) {
-                $id_divisi = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi;
-                $divisi = Divisi::find($id_divisi);
-                if($divisi->nama_divisi == 'MPO'){
-                    $roles      = User::where('id_karyawan',$request->id_karyawan)->first()->roles;
-                    $divisi     = Karyawan::where('id_karyawan',$request->id_karyawan)->with('divisi')->first()->divisi()->first()->nama_divisi;
+        // Cek roles user sebagai direktur atau bukan
+        $cekRolesDirektur = User::where('id_karyawan',$request->id_karyawan)->first();
 
-                    $data       = Cuti::where('divisi',$divisi)->where('status','>=',0)->get();
+        // Response roles apabila bukan sebagain direktur
+        if($cekRolesDirektur->roles !=  'direktur') {
+            return response()->json(['pesan' => 'Anda tidak mempunyai akses'],401);
+        }
 
-                    $result = [];
-                    foreach ($data as $key) {
-                        $result[] = [
-                            'id'=> $key['id'],
-                            'id_karyawan'       => $key['id_karyawan'],
-                            'nama_karyawan'     => $key['nama_karyawan'],
-                            'divisi'            => $key['divisi'],
-                            'jabatan'           => $key['jabatan'],
-                            'start_date'        => Carbon::parse($key['start_date'])->translatedFormat('l, d F Y'),
-                            'end_date'          => Carbon::parse($key['end_date'])->translatedFormat('l, d F Y'),
-                            'alasan'            => $key['alasan'],
-                            'kategori_cuti'     => $key['kategori_cuti'],
-                            'tanggal_pengajuan' => Carbon::parse($key['created_at'])->translatedFormat('l, d F Y'),
-                            'cuti'              => $key['ambil_cuti'],
-                            'disetujui_oleh'    => $key['disetujui_oleh'],
-                            'info'              => $this->info_status($key['status'])
+        // Ambil nama divisi berdasakarkan id karyawan
+        $getDivisi = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi()->first()->nama_divisi;
 
-                        ];
-                    }
-                    if ($roles) {
-                        if($data) {
-                            return response()->json(['status' => 200,'data' => $result,'pesan' => 'Data ditemukan','divisi' => $divisi]);
-                        }
-                    }
-                    return response()->json(['status' => 404, 'pesan' => 'Data tidak ditemukan']);
-                }else {
-                    return response()->json(['status' => 200,'pesan' => 'Data ditemukan', 'data' => $result]);
-                }
-            }else {
-                return response()->json(['status' => 404 ,'pesan' => 'Data tidak ditemukan']);
+        // Varible untuk menampung data
+        $result     = [];
+        if($getDivisi == 'MPO'){
+            $data = Cuti::where('divisi',$getDivisi)->where('status','>=',0)->orderBy('created_at','DESC')->get();
+            foreach($data as $key) {
+                $result[] = [
+                    'id'=> $key['id'],
+                    'id_karyawan'       => $key['id_karyawan'],
+                    'nama_karyawan'     => $key['nama_karyawan'],
+                    'divisi'            => $key['divisi'],
+                    'jabatan'           => $key['jabatan'],
+                    'start_date'        => Carbon::parse($key['start_date'])->translatedFormat('l, d F Y'),
+                    'end_date'          => Carbon::parse($key['end_date'])->translatedFormat('l, d F Y'),
+                    'alasan'            => $key['alasan'],
+                    'kategori_cuti'     => $key['kategori_cuti'],
+                    'tanggal_pengajuan' => Carbon::parse($key['created_at'])->translatedFormat('l, d F Y'),
+                    'cuti'              => $key['ambil_cuti'],
+                    'disetujui_oleh'    => $key['disetujui_oleh'],
+                    'info'              => $this->info_status($key['status']),
+                    'acc'               => $key['status'] >= 1 ? 1 : 0,
+                    'created_at'    => $key['created_at'],
+                    'detail'            => $this->detail_data($key['id']),
+    
+                ];
             }
-        }else {
-            return response()->json(['status' => 404, 'pesan' => 'ID Karyawan dibutuhkan']);
+            $res = ['data' => $result];            
         }
+        else {
+            $data       = Cuti::where('status','>=',2)->orderBy('created_at','DESC')->get();
+            foreach($data as $key) {
+                $result[] = [
+                    'id'=> $key['id'],
+                    'id_karyawan'       => $key['id_karyawan'],
+                    'nama_karyawan'     => $key['nama_karyawan'],
+                    'divisi'            => $key['divisi'],
+                    'jabatan'           => $key['jabatan'],
+                    'start_date'        => Carbon::parse($key['start_date'])->translatedFormat('l, d F Y'),
+                    'end_date'          => Carbon::parse($key['end_date'])->translatedFormat('l, d F Y'),
+                    'alasan'            => $key['alasan'],
+                    'kategori_cuti'     => $key['kategori_cuti'],
+                    'tanggal_pengajuan' => Carbon::parse($key['created_at'])->translatedFormat('l, d F Y'),
+                    'cuti'              => $key['ambil_cuti'],
+                    'disetujui_oleh'    => $key['disetujui_oleh'],
+                    'info'              => $this->info_status($key['status']),
+                    'acc'               => $key['status'] == 4 ? 1 : 0,
+                    'created_at'    => $key['created_at'],
+                    'detail'            => $this->detail_data($key['id']),
+    
+                ];
+            }
+            $res        = ['data' => $result];
+        }
+        
+       
+        return response($res);
+
 
     }
 
@@ -395,10 +409,20 @@ class CutiController extends Controller
             'disetujui_oleh'        => $data->disetujui_oleh,
             'ttd_karyawan'          => $data->ttd_karyawan == null ? "" : asset($data->ttd_karyawan),
             'ttd_manager'           => $data->ttd_manager == null ? "" : asset($data->ttd_manager),
+            'nama_manager'          => $data->ttd_manager == null ? "" : $this->getNameByPath($data->ttd_manager),
             'ttd_spv_hrd'           => $data->ttd_hrd == null ? "" : asset($data->ttd_hrd),
+            'nama_spv_hrd'          => $data->ttd_hrd == null ? "" : $this->getNameByPath($data->ttd_hrd),
             'ttd_dir_hrd'           => $data->ttd_direktur == null ? "" : asset($data->ttd_direktur),
+            'nama_dir_hrd'          => $data->ttd_direktur == null ? "" : $this->getNameByPath($data->ttd_direktur),
+            'link'                  => $data->status == 4 ? $this->getLinkDownload($id) : '',
         ];
+
         return $result;
+    }
+
+    function getLinkDownload($id) {
+        $url = route("download-cuti",['idCuti' => $id ]);
+        return $url;
     }
 
     function tipeKaryawan($id) {
@@ -406,18 +430,25 @@ class CutiController extends Controller
         $user   = User::where('id_karyawan',$id)->first();
         $result = [
             'kategori'      => $data->kategori,
-            'karyawanType'  => $user->roles,
+            'karyawanType'  => $user->roles,  
         ];
         return $result;
     }
 
     function viewFile($id) {
-        $data       = Cuti::where('id',$id)->first();
-        // $filename   = 'Form Cuti '.$data->nama_karyawan;
-        // $jabatan    = Karyawan::where('id_karyawan',$data->id_karyawan)->with('jabatan')->first()->jabatan()->first()->nama_jabatan;
-        // $pdf        = PDF::loadview("layouts.pdf_view.pdfFormCuti",['data' => $data,'filename'=> $filename,'jabatan' => $jabatan]);
-        // $pdf->setPaper('A4', 'landscape');
-        // return $pdf->stream($filename.'.pdf');
-        return response()->json(['data' => $data]);
+        $data       = Cuti::find($id);
+        $filename   = 'Form Cuti '.$data->nama_karyawan;
+        $jabatan    = Karyawan::where('id_karyawan',$data->id_karyawan)->with('jabatan')->first()->jabatan()->first()->nama_jabatan;
+        $pdf        = PDF::loadview("layouts.pdf_view.pdfFormCuti",['data' => $data,'filename'=> $filename,'jabatan' => $jabatan]);
+        $pdf->setPaper('A4', 'landscape');
+        return $pdf->download($filename.'.pdf');
     }
+
+    function getNameByPath($path) {
+        $get        = Filemanager::where('path',$path)->first()->id_karyawan;
+        $getName    = Karyawan::where('id_karyawan',$get)->first()->nama_karyawan;
+
+        return $getName;
+    }
+
 }

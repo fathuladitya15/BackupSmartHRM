@@ -58,6 +58,7 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <button class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#modalFilter"> <i class='bx bx-filter' ></i> Filter</button>
+                        <button class="btn btn-danger " data-bs-toggle="modal" data-bs-target="#modalDownloadPerorang"> <i class='bx bx-download' ></i> Download Per karyawan</button>
                     </div>
                     <div class="col-lg-6">
                         <button class="btn btn-danger " data-bs-toggle="modal" data-bs-target="#modalDownload" style="float: right"> <i class='bx bx-download' ></i> Download</button>
@@ -79,11 +80,13 @@
                             <th>Jabatan</th>
                             <th>Tanggal</th>
                             <th>Absen Masuk</th>
-                            <th>Lokasi Absen Masuk</th>
+                            <th>Lokasi Absen </th>
+                            <th>Detail Lokasi Absen </th>
                             <th>Absen Pulang</th>
-                            <th>Lokasi Absen Pulang</th>
+                            <th>Lokasi Absen    </th>
+                            <th>Detail Lokasi Absen </th>
                             <th>catatan</th>
-                            <th>Aksi</th>
+                            <th>Keterlambatan</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -139,6 +142,48 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalDownloadPerorang" tabindex="-1" role="dialog" aria-labelledby="modalDownloadPerorangTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title black" id="modalDownloadPerorangLongTitle">Download Data Per Karyawan</h5>
+                <button type="button" class="btn btn-default close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="Add" enctype="multipart/form-data" method="POST" action="{{ route('absensi-doc-perorang') }}">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-lg-6">
+                            <label for="" class="col-form-label">Pilih Karyawan</label>
+                            <select name="id_karyawan" id="id_karyawan" class="form-control" required>
+                                <option value="">-- Pilih Karyawan --</option>
+                                @foreach ($karyawan as $kr )
+                                    <option value="{{ $kr->id_karyawan }}">{{ $kr->id_karyawan }} - {{  $kr->nama_karyawan }}</option>
+
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-3">
+                            <label for="" class="col-form-label">Dari</label>
+                            <input type="date" class="form-control" name="from_date" value="" required>
+                        </div>
+                        <div class="form-group col-lg-3">
+                            <label for="" class="col-form-label">Sampai</label>
+                            <input type="date" class="form-control" name="to_date" value="" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="aksi">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Download</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modalDownload" tabindex="-1" role="dialog" aria-labelledby="modalDownloadTitle" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
@@ -148,7 +193,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="Add" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('absensi-doc') }}">
                 @csrf
                 <div class="modal-body">
                     <div class="row">
@@ -159,6 +204,7 @@
                         <div class="form-group col-lg-6">
                             <label for="" class="col-form-label">Sampai</label>
                             <input type="date" class="form-control" name="to_date" value="">
+                            <input type="hidden" name="tipe_karyawan" value="{{ $tipe_karyawan }}">
                         </div>
 
                     </div>
@@ -226,6 +272,11 @@
                 orderable: false,
                 searchable: false
             },{
+                data: 'detail_lokasi_absen_masuk',
+                name: 'detail_lokasi_absen_masuk',
+                orderable: false,
+                searchable: false
+            },{
                 data: 'jam_keluar',
                 name: 'jam_keluar',
                 orderable: false,
@@ -233,6 +284,12 @@
             },{
                 data: 'lokasi_absen_plg',
                 name: 'lokasi_absen_plg',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'detail_lokasi_absen_plg',
+                name: 'detail_lokasi_absen_plg',
                 orderable: false,
                 searchable: false
             },{

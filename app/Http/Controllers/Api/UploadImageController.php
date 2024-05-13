@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Filemanager;
-use App\Models\Karyawan;
 use Validator;
+use App\Models\User;
+use App\Models\Karyawan;
+use App\Models\Filemanager;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class UploadImageController extends Controller
 {
+
     function upload(Request $request) {
         $id_karyawan    = $request->id_karyawan;
 
@@ -57,6 +59,7 @@ class UploadImageController extends Controller
                 }else {
                     $uploadImage    = $this->imageReUpload($dataUpload); // UPDATE DB FILEMANAGER BY ID KARYAWAN AND SLUG & REUPLOAD IMAGE
                 }
+
             }
             else if($request->hasFile('image_npwp')) {
 
@@ -232,23 +235,59 @@ class UploadImageController extends Controller
                     $uploadImage    = $this->imageReUpload($dataUpload); // UPDATE DB FILEMANAGER BY ID KARYAWAN AND SLUG & REUPLOAD IMAGE
                 }
             }
+            else if($request->hasFile('photo_profile')) {
+                 // VALIDASI GAMBAR
+                 $validasi = Validator::make($request->all(),['photo_profile' => 'image|mimes:jpeg,png,jpg|max:1000'],[
+                    'photo_profile.image' => 'File harus berbentuk gambar',
+                    'photo_profile.mimes' => 'Gambar yang diizinkan JPEG,PNG,JPG,',
+                    'photo_profile.max'   => 'Maksimal ukuran 1 Mb',
 
-            // VALIDASI NIK
-            $validasi = Validator::make($request->all(),[
-                'nomor_ktp'         => 'digits:16|unique:table_karyawan,nik'
-            ],[
-                'nomor_ktp.digits'   => 'Nomor KTP harus 16 Angka',
-                'nomor_ktp.unique'   => 'Nomor KTP anda telah terdaftar',
-            ]);
+                ]);
 
-            // RETURN REPORT NIK
-            if ($validasi->fails()) {
-                return response()->json(['pesan' => $validasi->errors()->first()], 400);
+                // ERROR REPORT
+                if ($validasi->fails()) {
+                    return response()->json(['pesan' => $validasi->errors()->first()], 400);
+                }
+
+                // CEK KETERSDIAAN FILE
+                $cekFileExist   = $this->CekFileExists($id_karyawan,'foto_profile');
+                $file           = $request->photo_profile; //REQUEST FILE
+
+                // DATA UNTUK DIUPLOAD
+                $dataUpload     = [
+                    'id_karyawan'   => $id_karyawan,
+                    'file'          => $request->photo_profile,
+                    'typeFile'      => 'photo_profile',
+                    'filename'      => "PP_".date("YmdHi").$id_karyawan.'.'.$file->getClientOriginalExtension(),
+                    'keterangan'    => "Foto Profile:".$id_karyawan,
+                    'ext'           => $file->getClientOriginalExtension(),
+                ];
+
+                if($cekFileExist == TRUE) {
+                    $uploadImage    = $this->imageUpload($dataUpload); //CREATE NEW DB FILEMANAGER BY IDKARYAWAN AND SLUG & UPLOAD IMAGE
+                }else {
+                    $uploadImage    = $this->imageReUpload($dataUpload); // UPDATE DB FILEMANAGER BY ID KARYAWAN AND SLUG & REUPLOAD IMAGE
+                }
+                return response()->json(['data' => $uploadImage]);
             }
 
-            // UPDATE DATA
+            if($request->nomor_ktp) {
+                $validasi = Validator::make($request->all(),[
+                    'nomor_ktp'         => 'digits:16|unique:table_karyawan,nik'
+                ],[
+                    'nomor_ktp.digits'   => 'Nomor KTP harus 16 Angka',
+                    'nomor_ktp.unique'   => 'Nomor KTP anda telah terdaftar',
+                ]);
+    
+                if ($validasi->fails()) {
+                    return response()->json(['pesan' => $validasi->errors()->first()], 400);
+                }
+            }
+
             $getKaryawan            = Karyawan::where('id_karyawan',$id_karyawan)->first();
-            $getKaryawan->nik       = $request->nomor_ktp;
+            if($request->nomor_ktp != null ) {
+                $getKaryawan->nik       = $request->nomor_ktp;
+            }
             $getKaryawan->no_npwp   = $request->nomor_npwp;
             $getKaryawan->no_jkn    = $request->nomor_jkn;
             $getKaryawan->no_kpj    = $request->nomor_kpj;
@@ -257,6 +296,61 @@ class UploadImageController extends Controller
         }else {
             return response()->json(['pesan' => 'ID Karawan tidak terdaftar'],404);
         }
+
+    }
+
+    function uploadFotoProfile(Request $request) {
+        if($request->id_karyawan == "" || $request->id_karyawan == null) {
+            return response()->json(['pesan' => 'ID Karyawan tidak diketahui'],404);
+        }
+        
+        $cekFileExist   = $this->CekFileExists($request->id_karyawan,'foto_profile');
+
+        // return response()->json(['base64' => base64_decode($request->input('photo_profile'))],200);
+        if($cekFileExist == FALSE) {
+            $getPathOld         = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','foto_profile')->first()->path; // Ambil path sebelumya dari database
+            $getPathServer      = public_path().$getPathOld;    //Kombinasikan dengan path server 
+
+            unlink($getPathServer); // Unlink / Hapus File sebelumnya
+            $saveImageBase64    = $this->convertBase64ToJpg($request); // Save gambar baru
+
+
+            $updateData     = [
+                'path'      => $saveImageBase64['path'],
+                'filename'  => $saveImageBase64['filename'],
+            ];
+
+            // GET ID FILE MANAGER            
+            $idFilemanager          = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','foto_profile')->first()->id;
+
+            // PROSES UPDATE DATA
+            $UpdateFile             = Filemanager::find($idFilemanager);
+            $UpdateFile->path       = $updateData['path'];
+            $UpdateFile->filename   = $updateData['filename'];
+            $UpdateFile->update();
+
+            return response()->json(['pesan' => 'Foto profile diperbaharui'],200);
+        }else {
+            // SAVE GAMBAR  
+            $saveImageBase64        = $this->convertBase64ToJpg($request);
+
+            // DATA INSERT TO DATABASE
+            $dataInsert             = [
+                'filename'          => $saveImageBase64['filename'],
+                'path'              => $saveImageBase64['path'],
+                'keterangan'        => 'Foto Profile ID:'.$request->id_karyawan,
+                'slug'              => 'foto_profile',
+                'id_karyawan'       => $request->id_karyawan,
+                'extension'         => 'jpg',
+            ];
+
+            // SAVE TO DATABASE
+            Filemanager::create($dataInsert);
+            return response()->json(['pesan' => 'Foto Profile berhasil ditambahkan'],200);
+        }
+
+        return response()->json(['data' => $getPathServer]);
+
 
     }
 
@@ -282,16 +376,16 @@ class UploadImageController extends Controller
         $dataInsert = [
             "file"          => $data['file'],
             "filename"      => $data['filename'],
-            "path"          => "/filemanager/".$data['typeFile'],
+            "path"          => "/filemanager/".$data['typeFile'].'/'.$data['filename'],
             "extension"     => $data['ext'],
             "id_karyawan"   => $data['id_karyawan'],
-            "slug"          => $data['typeFile'],
+            "slug"          => $data['typeFile'] == 'photo_profile' ? 'foto_profile' : $data['typeFile'] ,
             "keterangan"    => $data['keterangan'],
             "status"        => 'Create New',
         ];
 
         // SIMPAN FILE TO PUBLIC
-        $data['file']->move(public_path($dataInsert['path']),$data['filename']);
+        $data['file']->move(public_path("/filemanager/".$data['typeFile']),$data['filename']);
 
         // SIMPAN DATA TO DATABSE
         Filemanager::create($dataInsert);
@@ -302,25 +396,53 @@ class UploadImageController extends Controller
 
         $dataInsert = [
             "filename"      => $data['filename'],
-            "path"          => "/filemanager/".$data['typeFile'],
+            "path"          => "/filemanager/".$data['typeFile'].'/'.$data['filename'],
             "extension"     => $data['ext'],
             "id_karyawan"   => $data['id_karyawan'],
-            "slug"          => $data['typeFile'],
+            "slug"          => $data['typeFile'] == 'photo_profile' ? 'foto_profile' : $data['typeFile'],
             "keterangan"    => $data['keterangan'],
             "status"        => 'Re Upload',
         ];
 
-        $getDatabase    = Filemanager::where('id_karyawan',$data['id_karyawan'])->where('slug',$data['typeFile'])->first();
-        $pathOld        = public_path().$getDatabase->path.'/'.$getDatabase->filename;
+        $slugs = $data['typeFile'] == 'photo_profile' ? 'foto_profile' : $data['typeFile'];
+
+        $getDatabase    = Filemanager::where('id_karyawan',$data['id_karyawan'])->where('slug',$slugs)->first();
+        // return $dataInsert;
+        $pathOld        = public_path().$getDatabase->path;
         unlink($pathOld);
         if($getDatabase) {
-
+            $getDatabase->path     = "/filemanager/".$data['typeFile'].'/'.$data['filename'];
             $getDatabase->filename = $data['filename'];
             $getDatabase->save();
         }
-        $data['file']->move(public_path($dataInsert['path']),$data['filename']);
+        $data['file']->move(public_path("/filemanager/".$data['typeFile']),$data['filename']);
 
         return 'Data Sudah diperbaharui';
     }
 
+    public function convertBase64ToJpg($request)
+    {
+
+        $id_karyawan    = $request->id_karyawan;
+        $base64Image    = $request->input('photo_profile');
+    
+        // Decode Base64 menjadi data biner
+        // $imageData   = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Image));
+        $imageData      = base64_decode($base64Image);
+
+        // Tentukan lokasi penyimpanan dan nama file
+        $fileName       = 'PP_' . time().$id_karyawan. '.jpg';
+        $storagePath    = public_path('/filemanager/photo_profile/' . $fileName); // Tentukan lokasi penyimpanan
+
+        file_put_contents($storagePath, $imageData);
+
+
+        $r = [
+            'filename'  => $fileName,
+            'path'      => '/filemanager/photo_profile/'.$fileName,
+        ];
+
+        return $r;
+    }
+    
 }

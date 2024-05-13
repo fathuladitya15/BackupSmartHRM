@@ -15,125 +15,83 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Login MOBILE
      */
     public function login(Request $request)
     {
-        $credentials = $request->only('username', 'password');
-        // return response()->json(['data'=> $credentials]);
+        $as_login           = $request->as_login;
+        $cekIdKaryawan      = User::where('username', $request->get('username'))->count();
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = $user->createToken('AppName')->accessToken;
-            return response()->json(['token' => $token], 200);
-        } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        if($cekIdKaryawan > 0) {
+            $dataKaryawan   = User::where('username', $request->get('username'))->first();
+            $getRoles       = $dataKaryawan->roles;
+            if($as_login == 'internal') {
+                if(in_array($getRoles,['kr-pusat','kr-project','karyawan'])){
+                    $logedIn = 'Logged In';
+                }else {
+                    $logedIn = 'Akun anda tidak terdaftar sebagai karyawan';
+                    return response()->json(['response_code' => 401,'pesan' => $logedIn],401);
+                }
+            }
+            if($as_login == 'project') {
+                if(in_array($getRoles,['kr-pusat','kr-project','karyawan'])){
+                    $logedIn = 'Akun anda tidak terdaftar sebagai management PFI';
+                    return response()->json(['response_code' => 401,'pesan' => $logedIn],401);
+                }else {
+                    $logedIn = 'Logged In';
+                }
+            }
+        }else {
+            $dataKaryawan   = 'Akun anda tidak terdaftar';
+            $getRoles       = '';
+            $logedIn        = '';
+            return response()->json(['response_code' => 404,'pesan' => $dataKaryawan],404);
         }
-        // $as_login           = $request->as_login;
-        // $cekIdKaryawan      = User::where('username', $request->get('username'))->count();
 
 
-        // if($cekIdKaryawan > 0) {
-        //     $datauser           = User::where('username', $request->get('username'));
-        //     $dataKaryawan       = Karyawan::where('id_karyawan',$datauser->first()->id_karyawan)->first();
-        //     $divisi             = $dataKaryawan->divisi()->first()->nama_divisi;
-        //     $jabatan            = $dataKaryawan->jabatan()->first()->nama_jabatan;
-        //     $userLoginsRoles    = $datauser->first()->roles;
-        //     $namaClient         = Clients::find($dataKaryawan->lokasi_kerja);
-        //     $loginType          = $request->get('roles');
+        $loginData = ['username' => $request->username,'password' => $request->password];
 
-        //     if($userLoginsRoles == 'superadmin') {
-        //         return response()->json(['pesan' => 'Superadmin tidak bisa login disini'],401);
-        //     }
+        $login = Auth::Attempt($loginData);
 
-        //     if($as_login == 'internal') {
-        //         $r = [
-        //             'pesan'     =>'Jabatan Anda adalah '.$jabatan. ' pada divisi '.$divisi.' di '.$namaClient->nama_client,
-        //             'divisi'    => $divisi,
-        //             'jabatan'   => $jabatan,
-        //             'Roles'     => $userLoginsRoles
-        //         ];
-        //         if(in_array(!$dataKaryawan->kategori, ['karyawan'])) {
-        //             $r = ['pesan' => 'Akun anda tidak terdaftar dalam manajemen PT PFI'];
-        //         }else {
-        //             if($userLoginsRoles == 'spv-internal') {
-        //                 $updateRoles = 'kr-pusat';
-        //                 $updates     = User::find($datauser->first()->id);
-        //                 $updates->roles = $updateRoles;
-        //                 $updates->update();
-        //                 array_push($r,['Login Sebagai' => $updateRoles ]);
-        //             }else if(in_array($userLoginsRoles,['admin','korlap'])){
-        //                 $updateRoles  = 'kr-project';
-        //                 $updates     = User::find($datauser->first()->id);
-        //                 $updates->roles = $updateRoles;
-        //                 $updates->update();
-        //                 array_push($r,['Login Sebagai' => $updateRoles ]);
-        //             }
-        //         }
-        //     }else if($as_login == 'project') {
-        //         $r = ['roles' => $userLoginsRoles,'id_client' => $dataKaryawan->lokasi_kerja];
-        //         if($dataKaryawan->lokasi_kerja != 1) {
-        //             if($jabatan == 'Supervisor') {
-        //                 if($userLoginsRoles != 'hrd') {
-        //                     $updateRoles = 'spv-internal';
-        //                     $updates     = User::find($datauser->first()->id);
-        //                     $updates->roles = $updateRoles;
-        //                     $updates->update();
-        //                     array_push($r,['update Data' => $updateRoles]);
-        //                 }else {
-        //                     $r = ['akun anda' => $userLoginsRoles];
-        //                 }
-        //             }else if($jabatan == 'Admin') {
-        //                 $updateRoles = 'admin';
-        //                 $updates     = User::find($datauser->first()->id);
-        //                 $updates->roles = $updateRoles;
-        //                 $updates->update();
-        //                 array_push($r,['update Data' => $updateRoles]);
+        if ($login) {
+            $user = Auth::user();
+            $user->token = $this->generateToken($user->id);
+            $user->save();
+            $user->makeVisible('token');
 
-        //             }else if($jabatan == 'Koordinator Lapangan') {
-        //                 $updateRoles = 'korlap';
-        //                 $updates     = User::find($datauser->first()->id);
-        //                 $updates->roles = $updateRoles;
-        //                 $updates->update();
-        //                 array_push($r,['update Data' => $updateRoles]);
-        //             }
-        //         }else {
-        //             if(in_array($jabatan,['Direktur','Manager','Head'])){
-        //                 $r = ['pesan' => 'Akun anda tidak terdatar disini'];
-        //             }
-        //         }
+            $divisi     = Karyawan::where('id_karyawan',$user->id_karyawan)->first()->divisi()->first()->nama_divisi;
 
-        //     }
-        //     $loginData = ['username' => $request->username,'password' => $request->password];
-        //     $updateData = User::find($datauser->first()->id);
-        //     return response()->json(['data' => $r,'roles' => $updateData->roles],200);
-        // }else {
-        //     return response()->json(['status' => 200,'pesan' => 'Akun anda tidak terdaftar']);
-        // }
+            $result = [
+                'id'                => $user->id,
+                'name'              => $user->name,
+                'username'          => $user->username,
+                'email'             => $user->email,
+                'email_verified_at' => $user->email_verified_at,
+                'last_session'      => $user->last_session,
+                'last_seen'         => $user->last_seen,
+                'roles'             => $user->roles,
+                'divisi'            => $divisi,
+                'id_client'         => $user->id_client,
+                'id_karyawan'       => $user->id_karyawan,
+                'token'             => $user->token,
+                'created_at'        => $user->created_at,
+                'updated_at'        => $user->updated_at,
 
 
-
-        // $login = Auth::Attempt($loginData);
-
-        // if ($login) {
-        //     $user = Auth::user();
-        //     $user->token = $this->generateToken($user->id);
-        //     $user->save();
-        //     $user->makeVisible('token');
-
-        //     return response()->json([
-        //         'response_code' => 200,
-        //         'message'       => 'Login Berhasil',
-        //         // 'as_login'      =>
-        //         'conntent'      => $user
-        //     ]);
-        // }else{
-        //     return response()->json([
-        //         'response_code' => 404,
-        //         'message' => 'Username atau Password Tidak Ditemukan!'
-        //     ]);
-        // }
+            ];
+            return response()->json([
+                'response_code' => 200,
+                'pesan'       => 'Login Berhasil',
+                'conntent'      => $result,
+            ],200);
+        }else{
+            return response()->json([
+                'response_code' => 404,
+                'pesan' => 'Username atau Password Tidak sesuai!'
+            ],404);
+        }
     }
+
     private function generateToken($userId)
     {
         return hash('sha256', Str::random(40) . $userId);

@@ -27,10 +27,10 @@ class AbsensiController extends Controller
         if($role == 'hrd'){
             $karyawan = Karyawan::where('kategori',$kr)->get();
             $absensi  = DB::table('table_karyawan as kr')->select('ta.*')
-                ->join('table_absensi as ta','ta.id_karyawan','=','kr.id_karyawan')->where('kategori',$kr)->get();
-
+            ->join('table_absensi as ta','ta.id_karyawan','=','kr.id_karyawan')->where('kategori',$kr)->get();
+            $tipe_karyawan = $kr;
             $route_data_table = route('absensi-data-ajax',['karyawan' =>$kr]);
-            return view('layouts.hrd.vAbsensi',compact("route_data_table",'karyawan','kr'));
+            return view('layouts.hrd.vAbsensi',compact("route_data_table",'karyawan','kr','tipe_karyawan'));
         }
         else if(in_array($role,['admin','korlap'])){
 

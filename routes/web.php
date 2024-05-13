@@ -105,6 +105,8 @@ Route::middleware('revalidate')->group(function() {
             Route::get('/Absensi/{karyawan}/data',[DatatableController::class,'absensi_hrd'])->name('absensi-data-ajax');
             Route::get('/Absensi/{karyawan}/search/{id}',[AbsensiController::class,'search_by_one'])->name('absensi-search-one');
             Route::post('/Absensi/data/search/dokumen',[AbsensiController::class,'dokumen_perorang'])->name('absensi-doc-perorang');
+            Route::post('/Absensi/download-data',[AbsensiController::class,'download_absensi_all'])->name('absensi-doc');
+
 
 
 

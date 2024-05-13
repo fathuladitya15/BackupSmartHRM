@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use PDF;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Shift;
 use App\Models\Lembur;
-use App\Models\Karyawan;
 use App\Models\Divisi;
-use App\Models\Jabatan;
 use App\Models\Clients;
+use App\Models\Jabatan;
+use App\Models\Karyawan;
 use App\Models\Filemanager;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\Validator;
 class LemburController extends Controller
 {
     function get_data_lembur(Request $request){
-        $data       = Lembur::where('id_karyawan',$request->id_karyawan)->get();
+        $data       = Lembur::where('id_karyawan',$request->id_karyawan)->orderBy('created_at','DESC')->get();
         $divisi     = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi()->first()->nama_divisi;
         $result     = [];
 
@@ -42,6 +43,7 @@ class LemburController extends Controller
                 'acc'           => $key['status'] == 4 ? 1 : 0,
                 'disetujui_oleh'    => $key['disetujui_oleh'],
                 'detail'        => $this->detail_data($key['id']),
+                'created_at'    => $key['created_at']
             ];
         }
         return response()->json([
@@ -51,36 +53,27 @@ class LemburController extends Controller
     }
 
     function create_data_lembur(Request $request) {
-
-
         $cek_TTD                = $this->cek_ttd($request->id_karyawan);
         $tipeKaryawan           = $this->tipeKaryawan($request->id_karyawan);
         $cek_data_by_tanggal    = Lembur::where('id_karyawan',$request->id_karyawan)->where('tanggal_lembur',$request->tanggal)->count();
+
         if($cek_data_by_tanggal > 0) {
             return response()->json(['pesan' => 'Lembur pada tanggal '.$request->tanggal.' telah tersedia']);
-        }
+        } 
+        
 
-        if($request->id_karyawan == 001) {
-            $jm = Carbon::createFromFormat('h:i A', $request->jam_mulai);
-            $js = Carbon::createFromFormat('h:i A', $request->jam_selesai);
-
-            $result = [
-                'data'      => $request->all(),
-                'Tanggal'   => Carbon::parse($request->tanggal)->format('Y-m-d'),
-                'jam_mulai' => $jm->format('H:i'),
-                'jam_selesai' => $js->format('H:i'),
-            ];
-            return response()->json($result);
-        }
-
-        if($request->ttd == 0) {
+        if($request->ttd == 0 || $request->ttd == null) {
             return response()->json(['pesan' => 'Dokumen belum ditandatangani'],404);
         }
+        
+        if(in_array($tipeKaryawan['karyawanType'],['kr-pusat','kr-project','manajer'])) {
+            $hitungLembur       = $this->HitungLembur($request);
 
+            if($hitungLembur['status'] == FALSE) {
+                return response()->json(['pesan' => $hitungLembur['keterangan']],$hitungLembur['response']);
+            }
 
-        if(in_array($tipeKaryawan['karyawanType'],['kr-pusat','kr-project'])) {
-            $jm = Carbon::createFromFormat('h:i A', $request->jam_mulai);
-            $js = Carbon::createFromFormat('h:i A', $request->jam_selesai);
+            // return response()->json(['data' => ]);
 
             $getDataKaryawan    = Karyawan::where('id_karyawan',$request->id_karyawan)->first();
             $divisi             = Divisi::find($getDataKaryawan->divisi)->nama_divisi;
@@ -90,16 +83,16 @@ class LemburController extends Controller
             $dataInput = [
                 'nama_karyawan' => $getDataKaryawan->nama_karyawan,
                 'id_karyawan'   => $request->id_karyawan,
-                'lokasi_kerja'  => $getDataKaryawan->lokasi_kerja,
+                'lokasi_kerja'  => $namaClient,
                 'divisi'        => $divisi,
                 'jabatan'       => $jabatan,
-                'jam_mulai'     => $jm->format('H:i'),
-                'jam_selesai'   => $js->format('H:i'),
+                'jam_mulai'     => $request->jam_mulai,
+                'jam_selesai'   => $request->jam_selesai,
                 'tugas'         => $request->tugas,
                 'alasan_lembur' => $request->alasan_lembur,
-                'total_jam'     => $request->total_jam,
-                'id_client'     => $namaClient,
-                'status'        => 0,
+                'total_jam'     => $hitungLembur['keterangan'],
+                'id_client'     => $getDataKaryawan->lokasi_kerja,
+                'status'        => $jabatan == 'Manager' ? 2 : 0,
                 'tanggal_lembur'=> Carbon::parse($request->tanggal)->format('Y-m-d'),
                 'ttd_karyawan'  => $cek_TTD['path']
             ];
@@ -115,7 +108,7 @@ class LemburController extends Controller
             ] ;
         }
         Lembur::create($dataInput);
-
+  
         return response()->json($result,200);
     }
 
@@ -124,7 +117,7 @@ class LemburController extends Controller
         $id_client  = $request->id_client;
         $divisi     = $request->divisi;
         if($divisi == 'MPO') {
-            $data       = Lembur::where('divisi',$divisi)->where('status','>=',0)->get();
+            $data       = Lembur::where('divisi',$divisi)->where('status','>=',0)->orderBy('created_at','DESC')->get();
             $result     = [];
 
             foreach($data as $key) {
@@ -144,6 +137,8 @@ class LemburController extends Controller
                     'tanggal_lembur'=> Carbon::parse($key['tanggal_lembur'])->translatedFormat('d F Y'),
                     'info'          =>  $this->info_status($key['status']),
                     'disetujui_oleh'    => $key['disetujui_oleh'],
+                    'acc'           => $key['status'] == 1 ? 1 : 0,
+                    'created_at'    => $key['created_at'],
                     'detail'        => $this->detail_data($divisi,$key['id']),
 
                 ];
@@ -157,16 +152,31 @@ class LemburController extends Controller
     }
 
     function get_data_lembur_manager(Request $request) {
-        $id_client  = $request->id_client;
-        $divisi     = $request->divisi;
-        $data       = Lembur::where('divisi',$divisi)->where('status','>=',0)->get();
-        $dataLembur = Lembur::where('divisi',$divisi)->where('status','>=',0)->count();
+
+        $id_client   = $request->id_client;
+        $divisi      = $request->divisi;
+        $id_karyawan = $request->id_karyawan;
+
+        if($id_karyawan == "" || $id_karyawan == null) {
+            return response()->json(['pesan' => 'ID Karyawan dibutuhkan'],401);
+        }
+
+
+        if($divisi == 'MPO') {
+            $dataLembur = Lembur::where('divisi',$divisi)->where('status','>=',1)->count();
+            $data       = Lembur::where('divisi',$divisi)->where('status','>=',1)->orderBy('created_at','DESC')->get();
+        }else {
+            $data       = Lembur::where('divisi',$divisi)->where('id_karyawan','!=',$id_karyawan)->where('status','>=',0)->orderBy('created_at','DESC')->get();
+            $dataLembur = Lembur::where('divisi',$divisi)->where('status','>=',0)->count();
+        }
+        
         if($dataLembur > 0) {
             $result     = [];
 
             foreach($data as $key) {
                 $result[] = [
-                    'id' => $key['id'],
+                    'id'            => $key['id'],
+                    'foto_profile'      => foto_profile($key['id_karyawan']),
 
                     'nama_karyawan' => $key['nama_karyawan'],
                     'id_karyawan'   => $key['id_karyawan'],
@@ -180,20 +190,23 @@ class LemburController extends Controller
                     'total_jam'     => $key['total_jam'],
                     'tanggal_lembur'=> Carbon::parse($key['tanggal_lembur'])->translatedFormat('d F Y'),
                     'info'          =>  $this->info_status($divisi,$key['status']),
-                    'disetujui_oleh'    => $key['disetujui_oleh'],
+                    'disetujui_oleh'=> $key['disetujui_oleh'] == null ? ""  :  $key['disetujui_oleh'] ,
+                    'acc'           => $this->acc_manager($divisi,$key['status']),
+                    'created_at'    => $key['created_at'],
                     'detail'        => $this->detail_data($key['id']),
 
                 ];
             }
-            return response()->json(['status' => 200,'data' => $result]);
+            return response()->json(['status' => 200,'data' => $result],200);
+        }else {
+            return response()->json(['data' => ""],200);
         }
-        return response()->json(['data' => $result]);
 
     }
 
     function get_data_lembur_spv_hrd(Request $request) {
         $id_client  = $request->id_client;
-        $data       = Lembur::whereIn('divisi',['MPO','Finance'])->where('status','>=',1)->get();
+        $data       = Lembur::whereIn('divisi',['MPO','Finance'])->where('status','>=',1)->orderBy('created_at','DESC')->get();
         $dataLembur = Lembur::where('id_client',1)->where('status','>=',1)->count();
         $result     = [];
         $divisi     = "";
@@ -215,6 +228,7 @@ class LemburController extends Controller
                     'tanggal_lembur'=> Carbon::parse($key['tanggal_lembur'])->translatedFormat('d F Y'),
                     'info'          =>  $this->info_status($divisi,$key['status']),
                     'disetujui_oleh'    => $key['disetujui_oleh'],
+                    'created_at'    => $key['created_at'],
                     'detail'        => $this->detail_data($key['id']),
 
                 ];
@@ -227,134 +241,167 @@ class LemburController extends Controller
     }
 
     function get_data_lembur_dir_hrd(Request $request) {
-        if($request->id_karyawan == null) {
-            return response()->json(['pesan' => 'ID karyawan dibutuhkan'],404);
+        
+        if($request->id_karyawan == null || $request->id_karyawan == "") {
+            return response()->json(['pesan' => 'ID karyawan dibutuhkan'],422);
+        } 
+
+        $cekUser = User::where('id_karyawan',$request->id_karyawan)->count();
+        
+        if($cekUser == 0) {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses'],422);
         }
-        $data        = Lembur::where('id_client',1)->where('status','>=',2)->get();
-        $dataLembur  = Lembur::where('id_client',1)->where('status','>=',2)->count();
-        $result      = [];
-        // $roles      = User::where('id_karyawan',$req)
-        $divisi      = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi;
-        $nama_divisi = Divisi::find($divisi)->nama_divisi;
 
-        if($dataLembur > 0) {
-            if($nama_divisi == 'MPO') {
-                $data       = Lembur::where('divisi',$nama_divisi)->where('status','>=',0)->get();
+        $roles = User::where('id_karyawan',$request->id_karyawan)->first()->roles;
 
-                foreach($data as $key) {
-                    $result[] = [
-                        'id' => $key['id'],
+        // memuat variable kosong
+        $result             = [];
+        $nama_divisi        = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi()->first()->nama_divisi;
+        
+        // Validasi 
+        if($nama_divisi == 'MPO') {
 
-                        'nama_karyawan' => $key['nama_karyawan'],
-                        'id_karyawan'   => $key['id_karyawan'],
-                        'divisi'        => $key['divisi'],
-                        'jabatan'       => $key['jabatan'],
-                        'lokasi_kerja'  => $key['lokasi_kerja'],
-                        'alasan_lembur' => $key['alasan_lembur'],
-                        'jam_mulai'     => $key['jam_mulai'],
-                        'jam_selesai'   => $key['jam_selesai'],
-                        'tugas'         => $key['tugas'],
-                        'total_jam'     => $key['total_jam'],
-                        'tanggal_lembur'=> Carbon::parse($key['tanggal_lembur'])->translatedFormat('d F Y'),
-                        'info'          =>  $this->info_status($nama_divisi,$key['status']),
-                        'disetujui_oleh'    => $key['disetujui_oleh'],
-                        'detail'        => $this->detail_data($key['id']),
-
-                    ];
-                }
-            }
-            $nama_divisi =  "";
+            $data           = Lembur::where('divisi',$nama_divisi)->where('status','>=',1)->orderBy('created_at','DESC')->get();
+            
             foreach($data as $key) {
                 $result[] = [
-                'id' => $key['id'],
-
-                    'nama_karyawan' => $key['nama_karyawan'],
-                    'id_karyawan'   => $key['id_karyawan'],
-                    'divisi'        => $key['divisi'],
-                    'jabatan'       => $key['jabatan'],
-                    'lokasi_kerja'  => $key['lokasi_kerja'],
-                    'alasan_lembur' => $key['alasan_lembur'],
-                    'jam_mulai'     => $key['jam_mulai'],
-                    'jam_selesai'   => $key['jam_selesai'],
-                    'tugas'         => $key['tugas'],
-                    'total_jam'     => $key['total_jam'],
-                    'tanggal_lembur'=> Carbon::parse($key['tanggal_lembur'])->translatedFormat('d F Y'),
-                    'info'          =>  $this->info_status($nama_divisi,$key['status']),
-                    'disetujui_oleh'    => $key['disetujui_oleh'],
-                    'detail'        => $this->detail_data($key['id']),
-
-                ];
+                                'id'                => $key['id'],
+                                'nama_karyawan'     => $key['nama_karyawan'],
+                                'id_karyawan'       => $key['id_karyawan'],
+                                'divisi'            => $key['divisi'],
+                                'jabatan'           => $key['jabatan'],
+                                'lokasi_kerja'      => $key['lokasi_kerja'],
+                                'alasan_lembur'     => $key['alasan_lembur'],
+                                'jam_mulai'         => $key['jam_mulai'],
+                                'jam_selesai'       => $key['jam_selesai'],
+                                'tugas'             => $key['tugas'],
+                                'total_jam'         => $key['total_jam'],
+                                'tanggal_lembur'    => Carbon::parse($key['tanggal_lembur'])->translatedFormat('d F Y'),
+                                'info'              => $this->info_status($nama_divisi,$key['status']),
+                                'disetujui_oleh'    => $key['disetujui_oleh'],
+                                'detail'            => $this->detail_data($key['id']),
+            
+                            ];
             }
-            return response()->json(['status' => 200,'data' => $result]);
+        }else {
+            $data           = Lembur::where('id_client',1)->where('status','>=',2)->orderBy('created_at','DESC')->get();
+
+            foreach($data as $key) {
+                $result[] = [
+                                'id'                => $key['id'],
+                                'nama_karyawan'     => $key['nama_karyawan'],
+                                'id_karyawan'       => $key['id_karyawan'],
+                                'divisi'            => $key['divisi'],
+                                'jabatan'           => $key['jabatan'],
+                                'lokasi_kerja'      => $key['lokasi_kerja'],
+                                'alasan_lembur'     => $key['alasan_lembur'],
+                                'jam_mulai'         => $key['jam_mulai'],
+                                'jam_selesai'       => $key['jam_selesai'],
+                                'tugas'             => $key['tugas'],
+                                'total_jam'         => $key['total_jam'],
+                                'tanggal_lembur'    => Carbon::parse($key['tanggal_lembur'])->translatedFormat('d F Y'),
+                                'info'              => $this->info_status($nama_divisi,$key['status']),
+                                'disetujui_oleh'    => $key['disetujui_oleh'],
+                                'detail'            => $this->detail_data($key['id']),
+            
+                            ];
+            }
         }
-        return response()->json(['data' => $result]);
+        return response()->json(['data' => $result],200);
+        
+
 
     }
 
     function update_data_lembur_internal(Request $request) {
-        $dataLembur  = Lembur::find($request->id_lembur);
-        $UpdatedBy   = Karyawan::where('id_karyawan',$request->id_karyawan)->first();
-        $Divisi      = Divisi::find($UpdatedBy->divisi)->nama_divisi;
-        $as_user     = User::where('id_karyawan',$request->id_karyawan)->first()->roles;
 
+        // Ambil ID Karyawan yang melakukan update
+        $as_user     = User::where('id_karyawan',$request->id_karyawan)->first()->roles; 
+
+
+        // Pengecekan Roles
+        if(!in_array($as_user, ['manajer','direktur','hrd'])) {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses'],422);
+        }
+
+        // Pengecekan sudah di tanda tangan atau belum
+        if($request->ttd == null || $request->ttd != 1) {
+            return response()->json(['pesan' => "Dokumen belum ditandatangani"],422);
+        }
+
+
+        //  Ambil data lembur berdasarkan ID
+        $dataLembur  = Lembur::find($request->id_lembur);
+
+
+        // Memberikan Notifikasi apabila lembur tidak tersedia
+        if(!$dataLembur) {
+            return response()->json(['pesan' => 'Data tidak tersedia'],422);
+        }
+
+
+        // Ambil divisi dari ID Karyawan yang melakukan update data
+        $divisi     = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi()->first()->nama_divisi;
+       
+
+        // Pengecekan tandatangan dari ID Karyawan yang melakukan update data
         $cek_TTD    = $this->cek_ttd($request->id_karyawan);
+
+        // Memvalidasi apakah tanda tangan tersedia atau tidak
         if($cek_TTD == FALSE) {
             return redirect()->route('create-tanda-tangan-m',['id_karyawan' => $request->id_karyawan]);
         }
 
-        if($dataLembur) {
-            if($as_user == 'manajer') {
-                $res = [
-                    'status' => 200,
-                    'pesan' => 'Update by manager'
-                ];
-                $dataLembur->ttd_manager = $cek_TTD['path'];
-                $dataLembur->status = 1;
-                $dataLembur->update();
-            }else if($as_user == 'direktur') {
-                if($Divisi == 'MPO') {
-                    $res = [
-                        'status' => 200,
-                        'pesan' => 'Lembur ID Karyawan: '.$dataLembur->id_karyawan. ' Telah ditandatangani manager divisi'
-                    ];
-                    $dataLembur->ttd_manager = $cek_TTD['path'];
-                    $dataLembur->status = 1;
-                    $dataLembur->update();
-                }else {
-                    if($dataLembur->status == 3) {
-                        $res = [
-                            'status' => 200,
-                            'pesan' => 'Lembur ID Karyawan: '.$dataLembur->id_karyawan. ' Telah disetujui direktur HRD',
+        // Updated data berdasarkan Roles
 
-                        ];
-                        $dataLembur->disetujui_oleh = 'Direktur HRD';
-                        $dataLembur->status = 4;
-                        $dataLembur->update();
-                    }else {
-                        $res = [
-                            'status' => 200,
-                            'pesan' => 'Lembur ID Karyawan: '.$dataLembur->id_karyawan. ' Telah tandatangani direktur HRD',
-
-                        ];
-                        $dataLembur->ttd_direktur = $cek_TTD['path'];
-                        $dataLembur->status = 3;
-                        $dataLembur->update();
-
-                    }
-                 }
-            }else if($as_user == 'hrd') {
-                $res = [
-                    'status' => 200,
-                    'pesan' => 'Lembur ID Karyawan: '.$dataLembur->id_karyawan. ' Telah tandatangani Supervisor HRD',
-
-                ];
-                $dataLembur->ttd_admin_korlap = $cek_TTD['path'];
-                $dataLembur->status = 2;
-                $dataLembur->update();
-            }
-            return response()->json($res);
+        if($as_user == 'manajer'){
+            $dataLembur->status = 1;
+            $dataLembur->ttd_manager = $cek_TTD['path'];
+            $dataLembur->update();
+            $pesan = ['pesan' => $dataLembur->nama_karyawan.' berhasil di setujui'];
         }
-        return response()->json(['status' => 404,'pesan' => 'Data tidak tersedia','data' => $Divisi]);
+
+        if($as_user == 'hrd') {
+            $dataLembur->status             = $as_user != 'MPO' ? 2 : 3;
+            $dataLembur->ttd_admin_korlap   = $cek_TTD['path'];
+            $dataLembur->update();
+            $pesan = ['pesan' => $dataLembur->nama_karyawan.' berhasil di setujui'];
+        }
+
+        if($as_user == 'direktur' || $divisi == 'Direktur' ) {
+            $divisiUpdated = $dataLembur->divisi;
+            if($divisiUpdated != 'MPO') {
+                if($dataLembur->status == 3) {
+                    $dataLembur->disetujui_oleh = 'Direktur HRD';
+                    $dataLembur->status = 4;
+                    $dataLembur->update();
+                    $r = ['pesan' => $dataLembur->nama_karyawan.' berhasil disetujui'];
+                }else {
+                    $dataLembur->ttd_direktur = $cek_TTD['path'];
+                    $dataLembur->status = 3;
+                    $dataLembur->update();
+                    $r = ['pesan' => $dataLembur->nama_karyawan.' berhasil ditandatangani'];
+                }
+                $pesan = $r;
+
+            }else {
+                if($dataLembur == 4) {
+                    $dataLembur->disetujui_oleh = 'Direktur HRD';
+                    $dataLembur->status = 5;
+                    $dataLembur->update();
+                    $r = ['pesan' => $dataLembur->nama_karyawan.' berhasil disetujui'];
+                }else {
+                    $dataLembur->ttd_direktur = $cek_TTD['path'];
+                    $dataLembur->status = 4;
+                    $dataLembur->update();
+                    $r = ['pesan' => $dataLembur->nama_karyawan.' berhasil ditandatangani'];
+                }
+                $pesan = $r;
+            }
+        }
+
+        return response()->json($pesan,200);
+
 
     }
 
@@ -387,7 +434,7 @@ class LemburController extends Controller
                 $s = 'Menunggu Disetujui Direktur HRD';
             }else if($status == 4) {
                 $s = 'Sudah Ditanda Tangani ';
-
+    
             }
             else {
                 $s = 'Status tidak diketahui';
@@ -429,14 +476,35 @@ class LemburController extends Controller
             'jam_mulai'         => $data->jam_mulai,
             'jam_selesai'       => $data->jam_selesai,
             'total_jam'         => $data->total_jam,
-            'disetujui_oleh'    => $data->disetujui_oleh,
+            'disetujui_oleh'    => $data->disetujui_oleh == null ? "" : $data->disetujui_oleh ,
             'ttd_karyawan'      => $data->ttd_karyawan == null ? "" : asset($data->ttd_karyawan),
             'ttd_manager'       => $data->ttd_manager == null ? "" : asset($data->ttd_manager),
+            'nama_manager'      => $data->ttd_manager == null ? "" : $this->getNameByPath($data->ttd_manager),
             'ttd_spv_hrd'       => $data->ttd_admin_korlap == null ? "" : asset($data->ttd_admin_korlap),
+            'nama_spv_hrd'      => $data->ttd_admin_korlap == null ? "" : $this->getNameByPath($data->ttd_admin_korlap),
             'ttd_dir_hrd'       => $data->ttd_direktur == null ? "" : asset($data->ttd_direktur),
+            'nama_dir_hrd'      => $data->ttd_direktur == null ? "" : $this->getNameByPath($data->ttd_direktur),
+            'link'              => $this->getLinkDownload($data->divisi,$id,$data->status),
         ];
-
         return $result;
+    }
+
+    function getLinkDownload($divisi,$id,$status) {
+        if($divisi == 'MPO') {
+            if($status == 5) {
+                $link = route("download-lembur",['id' => $id ]);
+            }else {
+                $link = "";
+            }
+        }else {
+            if($status == 4) {
+                $link = route("download-lembur",['id' => $id ]);
+            }else {
+                $link = "";
+            }
+        }
+        
+        return $link;
     }
 
     function tipeKaryawan($id) {
@@ -444,13 +512,15 @@ class LemburController extends Controller
         $user   = User::where('id_karyawan',$id)->first();
         $result = [
             'kategori'      => $data->kategori,
-            'karyawanType'  => $user->roles,
+            'karyawanType'  => $user->roles,  
         ];
         return $result;
     }
 
-    public function convertSvgToPng($svgPath)
+    public function convertSvgToPng(Request $request)
     {
+        $getPath        = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','signature')->get();
+        return response()->json(['data' =>  $getPath],200);
         // Cek apakah file ada dan mime type-nya adalah SVG
         if (file_exists($svgPath) && mime_content_type($svgPath) === 'image/svg+xml') {
             // Baca konten SVG
@@ -480,46 +550,73 @@ class LemburController extends Controller
         return response()->json(['data' => $data],200);
     }
 
-    public function testingSaveDate(Request $request) {
+    function getNameByPath($path) {
+        $get        = Filemanager::where('path',$path)->first()->id_karyawan;
+        $getName    = Karyawan::where('id_karyawan',$get)->first()->nama_karyawan;
 
-        $hitungLembur = $this->HitungLembur($request->jam_mulai,$request->jam_selesai);
-        if($hitungLembur['status'] == FALSE) {
-            return response()->json(['pesan' => $hitungLembur['keterangan']]);
-        }
-
-        return response()->json([
-            'data' => $request->all(),
-            'jam mulai' => $request->jam_mulai,
-            'jam selesai' => $request->jam_selesai,
-            'ket' => $hitungLembur['keterangan']]);
+        return $getName;
     }
 
-    function HitungLembur($jam_mulai,$jam_selesai) {
-        $mulai          = Carbon::createFromFormat('H:i', $jam_mulai);
-        $selesai        = Carbon::createFromFormat('H:i', $jam_selesai);
+    function viewFile($id) {
+        $data       = Lembur::find($id);
+        $filename   = 'Lembur '.$data->nama_karyawan;
+        $jabatan    = Karyawan::where('id_karyawan',$data->id_karyawan)->with('jabatan')->first()->jabatan()->first()->nama_jabatan;
+        $getIDAdmin = Filemanager::where('path',$data->ttd_admin_korlap)->first()->id_karyawan;
+        $nama_admin = Karyawan::where("id_karyawan",$getIDAdmin)->first()->nama_karyawan;
+        $pdf        = PDF::loadview("layouts.pdf_view.pdfLemburPFI",['data' => $data,'nama_admin' => $nama_admin]);
 
-        $selisihMenit   = $selesai->diffInMinutes($mulai);
+        $pdf->setPaper('A4', 'landscape');
+        return $pdf->download($filename.'.pdf');
 
-        // Mengonversi selisih menit menjadi jam dan menit
-        $jam        = floor($selisihMenit / 60);
-        $menit      = $selisihMenit % 60;
+    }
 
-
-        if($menit == 0) {
-            $res = $jam." jam";
-        }else if($jam == 0) {
-            $res = $menit." menit";
+    function acc_manager($divisi,$status) {
+        if($divisi == 'MPO') {
+            if($status >= 2) {
+                $acc = 1;
+            }else {
+                $acc = 0;
+            }
         }else {
-            $res = "$jam jam $menit menit";
+            if($status >= 1) {
+                $acc = 1;
+            }else {
+                $acc = 0;
+            }
         }
-
-        if($jam > 7 || $menit > 0) {
-            return  ["status" => FALSE,'keterangan' => "Total lembur tidak boleh melebihi 7 jam."];
-
-        }
-
-        return ['status' => TRUE,'keterangan' =>  $res];
-
+        return $acc;
     }
 
+    function HitungLembur($request) {
+
+        $ConvertMulai     = $request->tanggal." ".$request->jam_mulai.":00";
+        $ConvertSelesai   = $request->tanggal." ".$request->jam_selesai.":00";
+
+        $start           = Carbon::parse($ConvertMulai);
+        $end             = Carbon::parse($ConvertSelesai);
+
+
+        $selisih        = $end->diffInMinutes($start);
+
+        // Konversi selisih waktu ke dalam format jam dan menit
+        $jam        = floor($selisih / 60);
+        $menit      = $selisih % 60;
+
+        // Maksimal lembur per hari adalah 7 jam (420 menit)
+
+        $maksimalLemburPerHari = 420; // 7 * 60 (menit)
+        
+        if ($selisih > $maksimalLemburPerHari) {
+            return  ['status' => FALSE,'keterangan' => 'Maksimal lembur adalah 7 jam','response' => 422];
+        }   
+
+        return [
+            'status'    => TRUE,
+            'Jam mulai' => $start,
+            'Jam Selesai' => $end,
+            'keterangan'   => $jam . ' jam '. $menit . ' menit',
+        ];
+
+    }
+    
 }

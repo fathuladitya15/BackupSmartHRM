@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\CutiController;
 use App\Http\Controllers\Api\IzinController;
 use App\Http\Controllers\Api\AbsensiController;
 use App\Http\Controllers\Api\UploadImageController;
+use App\Http\Controllers\Api\PreorderController;
+use App\Http\Controllers\Api\ReferensikerjaController;
 use App\Models\Filemanager;
 use App\Models\Bank;
 use App\Models\Karyawan;
@@ -31,7 +33,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', [LoginController::class, 'login']);
 Route::prefix('ttd')->group(function() {
     Route::get('cek-ttd',function(Request $request) {
         $search = Filemanager::where('id_karyawan',$request->id_karyawan)->where('slug','signature')->count();
@@ -43,10 +44,10 @@ Route::prefix('ttd')->group(function() {
             return response()->json(['data'  => $result],200);
         }else {
             return redirect()->route('create-tanda-tangan-m',['id_karyawan' => $request->id_karyawan]);
-
+            
         }
     })->name('cek-ttd');
-
+    
 });
 
 Route::get('get-bank', function() {
@@ -66,12 +67,14 @@ Route::prefix('cuti')->group(function() {
     Route::get('get-data-cuti-dir-hrd',[CutiController::class,'get_data_cuti_dir_hrd']);
     Route::post('update',[CutiController::class,'update_status']);
     Route::get('kategori-cuti',[CutiController::class,'get_kategori_cuti']);
-    Route::get('file/{idkaryawan}',[CutiController::class,'viewFile']);
+    Route::get('file/{idCuti}',[CutiController::class,'viewFile'])->name("download-cuti");
+
 
 });
 
-
+Route::post('login', [LoginController::class, 'login']);
 Route::get('lembur',[LemburController::class,'get_data_lembur']);
+
 Route::prefix('lembur')->group(function() {
     Route::post('create',[LemburController::class,'create_data_lembur']);
     Route::post('update-internal',[LemburController::class,'update_data_lembur_internal']);
@@ -80,7 +83,7 @@ Route::prefix('lembur')->group(function() {
     Route::get('dir-hrd',[LemburController::class,'get_data_lembur_dir_hrd']);
     Route::get('manager',[LemburController::class,'get_data_lembur_manager']);
     Route::get('data-shift',[LemburController::class,'getShift']);
-    Route::post('create-test',[LemburController::class,'testingSaveDate']);
+    Route::get('file/{id}',[LemburController::class,'viewFile'])->name('download-lembur');
 });
 
 Route::prefix('izin')->group(function() {
@@ -90,28 +93,46 @@ Route::prefix('izin')->group(function() {
     Route::get('data-izin-manager',[IzinController::class,'get_izin_manager']);
     Route::get('data-izin-spv-hrd',[IzinController::class,'get_izin_hrd']);
     Route::get('data-izin-direktur-hrd',[IzinController::class,'get_izin_direktur_hrd']);
+    Route::get('file/{id}',[IzinController::class,'viewFile'])->name('download-izin');
+
 });
+
 Route::prefix('absensi')->group(function() {
     Route::get('data-karyawan',[AbsensiController::class,'get_data_absensi']);
     Route::post('clock-in',[AbsensiController::class,'create_absensi']);
     Route::post('clock-out',[AbsensiController::class,'update_absensi']);
     Route::get('data-clients',[AbsensiController::class,'get_data_client']);
     Route::get('cek-absen',[AbsensiController::class,'cek_absensi']);
-    route::get('absen',[AbsensiController::class,'absensi']);
+    Route::get('absen',[AbsensiController::class,'absensi']);
+    Route::get('filter',[AbsensiController::class,'filterData']);
+    Route::get('hrd',[AbsensiController::class,'data_absensi_hrd']);
 });
-route::prefix('upload')->group(function() {
-    Route::post('image',[UploadImageController::class,'upload']);
+
+Route::prefix('preorder')->group(function() {
+    Route::get('data',[PreorderController::class,'dataPreOrder']);
+    Route::post('acc-order',[PreorderController::class,'acc_spv_internal']);
+    Route::post('ttd-order',[PreorderController::class,'ttd_direktur']);
+    Route::get('file/{id}',[PreorderController::class,'viewFile'])->name('download-preorder');
+
 });
 
 Route::post('save-ttd',[AbsensiController::class,'save_ttd_mobile']);
-Route::middleware('auth:api')->group(function() {
 
-    Route::get('profile',[ProfileController::class,'index']);
+Route::get('profile',[ProfileController::class,'index']);
 
+Route::get('convert-svg',[LemburController::class,'convertSvgToPng']);
+
+Route::post('update-password',[ProfileController::class,'updatePassword']);
+
+route::prefix('upload')->group(function() {
+    Route::post('image',[UploadImageController::class,'upload']);
+    Route::post('image/profile',[UploadImageController::class,'uploadFotoProfile']);
 });
 
-
-
+Route::prefix('rf')->group(function() {
+    Route::get('data',[ReferensikerjaController::class,'get_data']);
+    Route::post('update',[ReferensiKerjaController::class,'update_status']);
+});
 
 route::middleware(['auth'])->group(function() {
     route::get('/home', function() {

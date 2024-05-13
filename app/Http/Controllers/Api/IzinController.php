@@ -12,6 +12,7 @@ use App\Models\Karyawan;
 use App\Models\User;
 use App\Models\Filemanager;
 use Carbon\Carbon;
+use PDF;
 
 class IzinController extends Controller
 {
@@ -20,6 +21,7 @@ class IzinController extends Controller
 
         $tipeKaryawan   = $this->tipeKaryawan($request->id_karyawan);
         $cek_TTD        = $this->cek_ttd($request->id_karyawan);
+
         if($cek_TTD == FALSE) {
             $pesan  = 'Tanda tangan belum dibuat, default tandatangan 1';
             $r      = 1;
@@ -28,7 +30,11 @@ class IzinController extends Controller
             $pesan  = 'Tanda tangan tersedia';
             $r      = $ttd->path;
         }
-        if(in_array($tipeKaryawan['karyawanType'],['kr-project','kr-pusat'])) {
+        
+        if($request->ttd == 0 || $request->ttd == null) {
+            return response()->json(['pesan' => 'Dokumen belum ditandatangani'],404);
+        }
+        if(in_array($tipeKaryawan['karyawanType'],['kr-project','kr-pusat','manajer'])) {
             $getDataKaryawan    = Karyawan::where('id_karyawan',$request->id_karyawan)->first();
             $divisi             = Divisi::find($getDataKaryawan->divisi)->nama_divisi;
             $jabatan            = Jabatan::find($getDataKaryawan->jabatan)->nama_jabatan;
@@ -47,7 +53,7 @@ class IzinController extends Controller
                 'tanggal_pembuatan'     => $request->tanggal,
                 'ttd_karyawan'          => $r,
                 'kembali'               => $request->kembali,
-                'status'                => 0,
+                'status'                => $jabatan == 'Manager' ? 2 : 0,
                 'id_client'             => $getDataKaryawan->lokasi_kerja,
             ];
 
@@ -75,7 +81,7 @@ class IzinController extends Controller
             return response()->json(['pesan' => 'ID karyawan dibutuhkan'],404);
         }
 
-        $data   = Izin::where('karyawan_id',$request->id_karyawan)->get();
+        $data   = Izin::where('karyawan_id',$request->id_karyawan)->orderBy('created_at','DESC')->get();
         $cek    = Izin::where('karyawan_id',$request->id_karyawan)->count();
         $result = [];
 
@@ -93,7 +99,8 @@ class IzinController extends Controller
                 'kembali'           => $key['kembali'] == 1 ? 'Tidak' : 'Ya',
                 'info'              => $this->info_status($key['status']),
                 'acc'               => $key['status'] == 4 ? 1 : 0,
-                'disetujui_oleh'    => $key['disetujui_oleh'],
+                    'created_at'    => $key['created_at'],
+                    'disetujui_oleh'    => $key['disetujui_oleh'],
                 'detail'            => $this->detail_data($key['id'])
             ];
         }
@@ -114,7 +121,7 @@ class IzinController extends Controller
         $id_divisi      = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi;
         $nama_divisi    = Divisi::find($id_divisi)->nama_divisi;
 
-        $data           = Izin::where('divisi',$nama_divisi)->where('status','>=',0)->get();
+        $data           = Izin::where('divisi',$nama_divisi)->where('id_karyawan','!=',$request->id_karyawan)->where('status','>=',0)->orderBy('created_at','DESC')->get();
         $cek            = Izin::where('divisi',$nama_divisi)->where('status','>=',0)->count();
 
         $result         = [];
@@ -122,6 +129,8 @@ class IzinController extends Controller
         foreach ($data as $key) {
             $result[]   = [
                 'id'                => $key['id'],
+                'foto_profile'      => foto_profile($key['karyawan_id']),
+
                 'id_karyawan'       => $key['karyawan_id'],
                 'nama_karyawan'     => $key['nama_karyawan'],
                 'divisi'            => $key['divisi'],
@@ -132,8 +141,9 @@ class IzinController extends Controller
                 'alasan'            => $key['alasan'],
                 'kembali'           => $key['kembali'] == 1 ? 'Tidak' : 'Ya',
                 'info'              => $this->info_status($key['status']),
-                'acc'               => $key['status'] == 4 ? 1 : 0,
-                'disetujui_oleh'    => $key['disetujui_oleh'],
+                'acc'               => $key['status'] == 2 ? 1 : 0,
+                    'created_at'    => $key['created_at'],
+                    'disetujui_oleh'    => $key['disetujui_oleh'],
                 'detail'            => $this->detail_data($key['id'])
 
             ];
@@ -154,7 +164,7 @@ class IzinController extends Controller
         $id_divisi      = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi;
         $nama_divisi    = Divisi::find($id_divisi)->nama_divisi;
 
-        $data           = Izin::where('status','>=',1)->where('id_client',1)->get();
+        $data           = Izin::where('status','>=',1)->where('id_client',1)->orderBy('created_at','DESC')->get();
         $cek            = Izin::where('status','>=',1)->where('id_client',1)->count();
 
         $result         = [];
@@ -174,6 +184,7 @@ class IzinController extends Controller
                 'info'              => $this->info_status($key['status']),
                 'acc'               => $key['status'] == 4 ? 1 : 0,
                 'disetujui_oleh'    => $key['disetujui_oleh'],
+                'created_at'    => $key['created_at'],
                 'detail'            => $this->detail_data($key['id'])
 
             ];
@@ -195,7 +206,7 @@ class IzinController extends Controller
         $id_divisi      = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi;
         $nama_divisi    = Divisi::find($id_divisi)->nama_divisi;
 
-        $data       = Izin::where('status','>=',2)->where('id_client',1)->where('id_client',1)->get();
+        $data       = Izin::where('status','>=',2)->where('id_client',1)->where('id_client',1)->orderBy('created_at','DESC')->get();
 
 
         $result         = [];
@@ -215,6 +226,7 @@ class IzinController extends Controller
                     'kembali'           => $key['kembali'] == 1 ? 'Tidak' : 'Ya',
                     'info'              => $this->info_status($key['status']),
                     'acc'               => $key['status'] == 4 ? 1 : 0,
+                    'created_at'    => $key['created_at'],
                     'disetujui_oleh'    => $key['disetujui_oleh'],
                     'detail'            => $this->detail_data($key['id'])
     
@@ -236,7 +248,8 @@ class IzinController extends Controller
                 'kembali'           => $key['kembali'] == 1 ? 'Tidak' : 'Ya',
                 'info'              => $this->info_status($key['status']),
                 'acc'               => $key['status'] == 4 ? 1 : 0,
-                'disetujui_oleh'    => $key['disetujui_oleh'],
+                    'created_at'    => $key['created_at'],
+                    'disetujui_oleh'    => $key['disetujui_oleh'],
                 'detail'            => $this->detail_data($key['id'])
 
             ];
@@ -300,10 +313,18 @@ class IzinController extends Controller
                 $update->update();
                 $pesan              = ['pesan' => 'Izin ID Karyawan: '.$data->karyawan_id. ' Telah ditandatangani Supervisor HRD'];
 
-            }else {
-                $pesan = ['status' => TRUE];
+            }else if($roles == 'manajer') {
+                $update         =   Izin::find($id_izin);
+                $update->status = 2;
+                $update->ttd_mengetahui = $cek_TTD['path'];
+                $update->update();
+                $pesan          = ['pesan' => 'Izin ID Karyawan : '.$data->karyawan_id.' Telah ditandatangani Manager'];
             }
-            // $pesan = ['roles' => $roles];
+            else {
+                // $pesan = ['status' => TRUE];
+
+                return response()->json(['pesan' => 'Gagal Update'],422);
+            }
             return response()->json($pesan,200);
         }
         return response()->json(['data' => $data],404);
@@ -370,11 +391,36 @@ class IzinController extends Controller
             'kembali'               => $data->kembali == 1 ? 'Tidak' : 'Ya',
             'disetujui_oleh'        => $data->disetujui_oleh,
             'ttd_karyawan'          => $data->ttd_karyawan == null ? "" : asset($data->ttd_karyawan),
+
             'ttd_manager'           => $data->ttd_mengetahui == null ? "" : asset($data->ttd_mengetahui),
+            'nama_manager'          => $data->ttd_mengetahui == null ? "" : $this->getNameByPath($data->ttd_mengetahui),
+            
             'ttd_spv_hrd'           => $data->ttd_hrd == null ? "" : asset($data->ttd_hrd),
+            'nama_spv_hrd'          => $data->ttd_hrd == null ? "" : $this->getNameByPath($data->ttd_hrd),
+
             'ttd_dir_hrd'           => $data->ttd_direktur == null ? "" : asset($data->ttd_direktur),
+            'nama_dir_hrd'          => $data->ttd_direktur == null ? "" : $this->getNameByPath($data->ttd_direktur),
+
+            'link'                  => $data->status == 4 ? $this->getLinkDownload($data->id) : '',
+
         ];
         return $result;
+    }
+    
+    function getLinkDownload($id) {
+        $url = route("download-izin",['id' => $id ]);
+        return $url;
+    }
+
+    function viewFile($id) {
+        $data = Izin::find($id);
+        $jabatan        = Karyawan::where('id_karyawan',$data->karyawan_id)->with('jabatan')->first()->jabatan()->first()->nama_jabatan;
+        $filename       = 'Detail Izin Keluar '.$data->nama_karyawan;
+        $pdf            = PDF::loadview("layouts.pdf_view.pdfIzinPFI",['data' => $data,'jabatan' => $jabatan]);
+
+        $pdf->setPaper('A4', 'landscape');
+        return $pdf->stream($filename.'.pdf');
+
     }
 
     function tipeKaryawan($id) {
@@ -385,6 +431,13 @@ class IzinController extends Controller
             'karyawanType'  => $user->roles,  
         ];
         return $result;
+    }
+
+    function getNameByPath($path) {
+        $get        = Filemanager::where('path',$path)->first()->id_karyawan;
+        $getName    = Karyawan::where('id_karyawan',$get)->first()->nama_karyawan;
+
+        return $getName;
     }
 
 }
