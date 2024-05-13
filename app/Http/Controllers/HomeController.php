@@ -186,7 +186,7 @@ class HomeController extends Controller
     {
         Auth::user()->device_token =  $request->token;
 
-        // Auth::user()->save();
+        Auth::user()->save();
 
         return response()->json(['token' => $request->token]);
         // return response()->json(['Token successfully stored.']);
