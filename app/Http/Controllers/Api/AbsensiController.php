@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use DB;
 use File;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -224,5 +225,43 @@ class AbsensiController extends Controller
             ];
         }
         return response()->json(['pesan' => $result]);
+    }
+
+    function get_absensi_admin_korlap($kr,Request $request) {
+        $id_karyawan = $request->id_karyawan;
+        if($id_karyawan == "" || $id_karyawan == null) {
+            return response()->json(['pesan' => 'ID Karyawan dibutuhkan'],422);
+        }
+        $roles       = User::where('id_karyawan',$id_karyawan)->first()->roles;
+
+        if(in_array($roles,['admin','korlap'])){
+            $id_client = User::where('id_karyawan',$id_karyawan)->first()->id_client;
+            $data  = DB::table('table_karyawan as kr')->select('ta.*')
+                ->join('table_absensi as ta','ta.id_karyawan','=','kr.id_karyawan')
+                ->where('kr.gol_karyawan',$kr)
+                ->where('ta.id_client',$id_client)
+                ->get();
+                $result = [];
+                foreach ($data as $key) {
+                    $result[] = [
+                        'id'                                => $key->id,
+                        'id_karyawan'                       => $key->id_karyawan,
+                        'nama_karyawan'                     => $key->nama_karyawan,
+                        'tanggal'                           => Carbon::parse($key->tanggal)->translatedFormat('d F Y'),
+                        'jam_masuk'                         => $key->jam_masuk,
+                        'lokasi_absen_masuk'                => $key->lokasi_absen_masuk,
+                        'detail_lokasi_absen_masuk'         => $key->detail_lokasi_absen_masuk,
+                        'jam_keluar'                        => $key->jam_keluar,
+                        'lokasi_absen_plg'                  => $key->lokasi_absen_plg,
+                        'detail_lokasi_absen_plg'           => $key->detail_lokasi_absen_plg,
+                        'shift'                             => $key->shift,
+                        'catatan'                           => $key->catatan,
+                    ];
+                }
+            return response()->json(['id Client' => $id_client,'data' => $result]);
+
+        }else {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses'],401);
+        }
     }
 }

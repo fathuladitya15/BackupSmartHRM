@@ -26,6 +26,7 @@ class SingleSession
                // do logout
                Auth::logout();
 
+
                // Redirecto login page
               return Redirect::to('login');
             }

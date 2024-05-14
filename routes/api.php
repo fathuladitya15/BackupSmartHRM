@@ -107,6 +107,7 @@ Route::prefix('absensi')->group(function() {
     Route::get('absen',[AbsensiController::class,'absensi']);
     Route::get('filter',[AbsensiController::class,'filterData']);
     Route::get('hrd',[AbsensiController::class,'data_absensi_hrd']);
+    Route::get('adm/{gol_karyawan}',[AbsensiController::class,'get_absensi_admin_korlap']);
 });
 
 Route::prefix('preorder')->group(function() {
