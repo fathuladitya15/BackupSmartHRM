@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\AbsensiController;
 use App\Http\Controllers\Api\UploadImageController;
 use App\Http\Controllers\Api\PreorderController;
 use App\Http\Controllers\Api\ReferensikerjaController;
+use App\Http\Controllers\Api\KaryawanController;
 use App\Models\Filemanager;
 use App\Models\Bank;
 use App\Models\Karyawan;
@@ -132,6 +133,16 @@ route::prefix('upload')->group(function() {
 Route::prefix('rf')->group(function() {
     Route::get('data',[ReferensikerjaController::class,'get_data']);
     Route::post('update',[ReferensiKerjaController::class,'update_status']);
+});
+
+Route::prefix('karyawan')->group(function() {
+    Route::post('create',[KaryawanController::class,'create']);
+    Route::get('tipe-akun',[KaryawanController::class,'get_tipe_akun']);
+    Route::get('kategori',[KaryawanController::class,'kategori_karyawan']);
+    Route::get('client',[KaryawanController::class,'clients']);
+    Route::get('jabatan',[KaryawanController::class,'jabatan']);
+    Route::get('divisi',[KaryawanController::class,'divisi']);
+    Route::get('marital',[KaryawanController::class,'marital']);
 });
 
 route::middleware(['auth'])->group(function() {

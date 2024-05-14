@@ -50,6 +50,7 @@ class LoginController extends Controller
 
 
         if($datauser->count() == 0) { // Cek apabila data tidak tersedia
+
             return response()->json(['status' => FALSE,'messages' => 'Akun anda belum terdaftar.' ]);
         }
 
