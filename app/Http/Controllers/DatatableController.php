@@ -1911,14 +1911,15 @@ class DatatableController extends Controller
     // FILEMANAGER USER
 
     function file_manager(Request $request) {
-        $data = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->get();
-        $karyawan = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first();
+        $data       = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->get();
+        $karyawan   = Karyawan::where("id_karyawan",Auth::user()->id_karyawan)->first();
 
         $dt = DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('aksi', function($row) {
             $a = "<a href='javascript:void(0)' id='".$row->slug.'_'.Auth::user()->id_karyawan."' onclick='lihat_file(".'"'.$row->slug.'"'.",".'"'.Auth::user()->id_karyawan.'"'.")' class='btn btn-primary btn-sm'><i class='bx bxs-folder-open'></i>Lihat File</a>";
-            return $a;
+            $d = "<button class='btn btn-danger btn-sm hapus' id='hapus_".Auth::user()->id_karyawan."' data-id_karyawan='".Auth::user()->id_karyawan."' data-slug='".$row->slug."'>Hapus</button>";
+            return $a.'&nbsp;'.$d;
         })
         ->addColumn('keterangan', function($row) use ($karyawan) {
             if(in_array($row->slug, ['ktp','npwp','jkn','kpj'])){

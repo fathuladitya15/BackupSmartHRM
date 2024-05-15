@@ -93,6 +93,7 @@
 @push('js')
 
 <script>
+    var asset = "{{ asset('') }}";
     var url_data = "{{ route('profile-filemanager') }}";
     var table  = $('#myTable').dataTable({
         processing: true,
@@ -133,7 +134,6 @@
         const button          = document.getElementById(id_button);
         const stoploading   = '<i class="bx bxs-folder-open"></i> Lihat File';
         const loading       = '<div class="spinner-border spinner-border-sm text-default" role="status"><span class="visually-hidden">Loading...</span></div> Loading';
-        // alert(button);
         $.ajax({
             url: url_file,
             data:{
@@ -147,12 +147,12 @@
                 if(s.status == true) {
                     $("#modalView").modal('show');
                     if(s.type_file == 'pdf') {
-                        document.getElementById("ModalTitle").innerHTML = s.alt;
+                        document.getElementById("ModalTitle").innerHTML = asset +  s.alt;
                         document.getElementById("pdf_file").style.display = "block";
                         document.getElementById("pdf_file").src = s.path ;
                     }else if (s.tipe_file != 'pdf') {
                         document.getElementById("pdf_file").style.display = "none";
-                        document.getElementById("image_file").src = s.path;
+                        document.getElementById("image_file").src = asset + s.path;
                     }else {
                         console.log("error");
                     }
@@ -310,5 +310,11 @@
         })
 
     }
+
+    $(document).on('click','.hapus',function(e) {
+        var id_karyawan = $(this).data('id_karyawan');
+        var slug        = $(this).data('slug');
+        alert(slug);
+    })
 </script>
 @endpush
