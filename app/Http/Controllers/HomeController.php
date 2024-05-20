@@ -61,15 +61,13 @@ class HomeController extends Controller
 
         $table_kr   = Karyawan::where('id_karyawan','like','%'.Auth::user()->id_karyawan.'')->first();
 
-        $data = [
-            'pengumuman'
-        ];
+        $data       = ['pengumuman'];
 
         if(Auth::user()->roles == 'superadmin'){
             $dataKr = Karyawan::count();
             $khl = Karyawan::where('gol_karyawan','KHL')->whereDate('end_date',Carbon::now()->addDays(7))->get();
             $pkwt = Karyawan::where('gol_karyawan','PKWT')->get();
-            // dd($pkwt);
+
 
             foreach ($khl as $kr_khl ) {
                 $kr_khl->notify(new NotifikasiSelesaiKontrak());

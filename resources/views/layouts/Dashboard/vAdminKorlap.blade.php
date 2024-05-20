@@ -159,6 +159,9 @@
 @endsection
 @push('js')
 <script>
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     var xhr =
+    // })
     function startFCM() {
         messaging.requestPermission().then(function () {
                 return messaging.getToken()

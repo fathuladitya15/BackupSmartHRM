@@ -30,7 +30,7 @@ class IzinController extends Controller
             $pesan  = 'Tanda tangan tersedia';
             $r      = $ttd->path;
         }
-        
+
         if($request->ttd == 0 || $request->ttd == null) {
             return response()->json(['pesan' => 'Dokumen belum ditandatangani'],404);
         }
@@ -40,7 +40,7 @@ class IzinController extends Controller
             $jabatan            = Jabatan::find($getDataKaryawan->jabatan)->nama_jabatan;
             $namaClient         = Clients::find($getDataKaryawan->lokasi_kerja)->nama_client;
 
-            
+
 
             $createData = [
                 'karyawan_id'           => $request->id_karyawan,
@@ -200,9 +200,9 @@ class IzinController extends Controller
     function get_izin_direktur_hrd(Request $request) {
         if($request->id_karyawan == null) {
             return response()->json(['pesan' => 'ID karyawan dibutuhkan'],404);
-        }  
+        }
 
-        
+
         $id_divisi      = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi;
         $nama_divisi    = Divisi::find($id_divisi)->nama_divisi;
 
@@ -229,7 +229,7 @@ class IzinController extends Controller
                     'created_at'    => $key['created_at'],
                     'disetujui_oleh'    => $key['disetujui_oleh'],
                     'detail'            => $this->detail_data($key['id'])
-    
+
                 ];
             }
             return response()->json(['data' => $result],200);
@@ -273,13 +273,13 @@ class IzinController extends Controller
         $data       = Izin::find($id_izin);
 
         if($data){
-            $cek_TTD = $this->cek_ttd($request->id_karyawan);   
+            $cek_TTD = $this->cek_ttd($request->id_karyawan);
             if($cek_TTD == FALSE) {
                 return redirect()->route('create-tanda-tangan-m',['id_karyawan' => $request->id_karyawan]);
             }
             $id_divisi      = Karyawan::where('id_karyawan',$request->id_karyawan)->first()->divisi;
             $nama_divisi    = Divisi::find($id_divisi)->nama_divisi;
-            
+
             $roles          = User::where('id_karyawan',$request->id_karyawan)->first()->roles;
             if($roles == 'direktur') {
                 if($nama_divisi == 'MPO') {
@@ -304,7 +304,7 @@ class IzinController extends Controller
                         $update->update();
                         $pesan                  = ['pesan' => 'Izin ID Karyawan: '.$data->karyawan_id. ' Telah ditandatangani  Direktur HRD'];
 
-                    }   
+                    }
                 }
             }else if($roles == 'hrd') {
                 $update             = Izin::find($id_izin);
@@ -394,7 +394,7 @@ class IzinController extends Controller
 
             'ttd_manager'           => $data->ttd_mengetahui == null ? "" : asset($data->ttd_mengetahui),
             'nama_manager'          => $data->ttd_mengetahui == null ? "" : $this->getNameByPath($data->ttd_mengetahui),
-            
+
             'ttd_spv_hrd'           => $data->ttd_hrd == null ? "" : asset($data->ttd_hrd),
             'nama_spv_hrd'          => $data->ttd_hrd == null ? "" : $this->getNameByPath($data->ttd_hrd),
 
@@ -406,7 +406,7 @@ class IzinController extends Controller
         ];
         return $result;
     }
-    
+
     function getLinkDownload($id) {
         $url = route("download-izin",['id' => $id ]);
         return $url;
@@ -428,7 +428,7 @@ class IzinController extends Controller
         $user   = User::where('id_karyawan',$id)->first();
         $result = [
             'kategori'      => $data->kategori,
-            'karyawanType'  => $user->roles,  
+            'karyawanType'  => $user->roles,
         ];
         return $result;
     }
@@ -438,6 +438,126 @@ class IzinController extends Controller
         $getName    = Karyawan::where('id_karyawan',$get)->first()->nama_karyawan;
 
         return $getName;
+    }
+
+    function getDataIzinAdmin(Request $request) {
+        $id_karyawan = $request->id_karyawan;
+
+        if($id_karyawan == '' || $id_karyawan == null) {
+            return response()->json(['pesan' => 'ID Karyawan dibutuhkan'],422);
+        }
+
+        $queryID = User::where('id_karyawan',$id_karyawan);
+
+        if($queryID->count() == 0) {
+            return response()->json(['pesan' => 'ID Karyawan tidak terdaftar'],404);
+        }
+        $dataUser = $queryID->first();
+        if(!in_array($dataUser->roles,['admin','korlap'])) {
+            return response()->json(['pesan'  => 'Anda tidak memiliki akses'],401);
+        }
+
+        $queryData =Izin::where('id_client',$dataUser->id_client)->orderBy('created_at','DESC');
+
+        if($request->search) {
+            $data = $queryData->where('nama_karyawan','LIKE',"%{$request->search}%")->get();
+        }else {
+            $data = $queryData->get();
+
+        }
+
+        $result = [];
+        foreach($data as $key) {
+            $datas = [
+                'id'                => $key->id,
+                'foto_profile'      => "",
+                'tanggal'           => Carbon::parse($key->tanggal_pembuatan)->translatedFormat('d F Y'),
+                'nama_karyawan'     => $key->nama_karyawan,
+                'id_karyawan'       => $key->karyawan_id,
+                'jabatan'           => $key->jabatan,
+                'divisi'            => $key->divisi,
+                'alasan'            => $key->id_client == 3 ? $key->alasan : $key->detail,
+                'status'            => $this->status_adm($key->id_client,$key->status),
+                'acc_adm'           => $key->status == 1 ? 1 : 0,
+                'disetujui_oleh'    => $key->disetujui_oleh == null ? "" : $key->disetujui_oleh,
+                'detail'            => $this->detail_adm($key->id),
+            ];
+
+            if($key->id_client != 3) {
+                $datas['nomor_surat'] =  $key->no_surat;
+            }
+            $result[] = $datas;
+        }
+
+
+        return response()->json(['data' => $result]);
+
+    }
+
+    function status_adm($id_client,$status) {
+        if($id_client == 3 || $id_client == 4) {
+            if($status == 0) {
+                $s = "Menunggu ditandatangani.";
+            }else if($status == 1) {
+                $s = "Telah ditandatangan";
+            } elseif($status == 2) {
+                $s = "Menunggu disetujui ( Supervisor )";
+            }else if($status == 3) {
+                $s = "Telah disetujui.";
+            }
+            else {
+                $s = "";
+            }
+        }else {
+            if($status == 0) {
+                $s = "Menunggu ditandatangani.";
+            }else {
+                $s = "Telah ditandatangani.";
+            }
+        }
+        return $s;
+    }
+
+    function detail_adm($idIzin) {
+        $data = Izin::find($idIzin);
+
+        if($data->id_client == 3 || $data->id_client == 4) {
+
+            $result = [
+                'tanggal'           => Carbon::parse($data->tanggal_pembuatan)->translatedFormat('d F Y'),
+                'nama_karyawan'     => $data->nama_karyawan,
+                'id_karyawan'       => $data->karyawan_id,
+                'jabatan'           => $data->jabatan,
+                'divisi'            => $data->divisi,
+                'alasan'            => $data->alasan,
+                'detail_alasan'     => $data->detail,
+                'jam_keluar'        => $data->jam_keluar,
+                'jam_kembali'       => $data->jam_masuk == null ? "-" : $data->jam_masuk,
+                'kembali'           => $data->jam_masuk == null ? 1: 0,
+                'file_download'     => $data->ttd_mengetahui == null ? "" : route("izin-download",['hash' => HashVariable($data->id)]),
+                'file_uploaded'     => $data->status >= 2 ? asset(Filemanager::find($data->id_filemanager)->path) : "",
+                'ttd_karyawan'      => asset($data->ttd_karyawan),
+                'ttd_admin'         => $data->ttd_mengetahui == null ? "" : asset($data->ttd_mengetahui),
+                'nama_admin'        => $data->user_id_mengetahui == null ? "" : $data->user_id_mengetahui,
+            ];
+        }else {
+            $result = [
+                'tanggal'           => Carbon::parse($data->tanggal_pembuatan)->translatedFormat('d F Y'),
+                'nomor_surat'       => $data->no_surat,
+                'nama_karyawan'     => $data->nama_karyawan,
+                'id_karyawan'       => $data->karyawan_id,
+                'jabatan'           => $data->jabatan,
+                'divisi'            => $data->divisi,
+                'alasan'            => $data->alasan,
+                'detail_alasan'     => $data->detail,
+                'jam_keluar'        => $data->jam_keluar,
+                'kembali'           => $data->kembali == 1 ? 1 : 0,
+                'ttd_karyawan'      => asset($data->ttd_karyawan),
+                'ttd_admin'         => $data->ttd_mengetahui == null ? "" : asset($data->ttd_mengetahui),
+            ];
+        }
+
+        return $result;
     }
 
 }

@@ -1039,7 +1039,10 @@ class DatatableController extends Controller
                     $download  = '<a href="'.route("izin-download",['hash' => HashVariable($row->id)]).'" class="btn btn-danger btn-sm"  ><i class="bx bx-download"></i>Download</a>';
                     $view_file = '<a href="javascript:void(0)" onclick="view('.$row->id.')" class="btn btn-info btn-sm" id="view_'.$row->id.'"><i class="menu-icon tf-icons bx bx-folder-open"></i> Lihat File</a> &nbsp;';
                     $upload    = '<a href="javascript:void(0)" class="btn btn-info btn-sm" id="upload_'.$row->id.'" onclick="upload('.$row->id.')" ><i class="bx bx-upload" ></i>Upload</a>';
-                    if($row->status == 1) {
+                    if($row->status == 0) {
+                        $btn  = $edit;
+                    }
+                    else if($row->status == 1) {
                         $btn = $download.'&nbsp;'.$upload;
                     }else if($row->status == 2){
                         $btn = $download.'&nbsp;'.$upload.'&nbsp;'.$view_file;

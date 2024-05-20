@@ -82,10 +82,11 @@ class LemburController extends Controller
                 ->where('us.roles','karyawan')
                 ->where('us.id_client',Auth::user()->id_client)
                 ->get();
-            $total_jam = DB::table('table_lembur')
-                ->selectRaw('SUM(CAST(total_jam as int)) as jam')
-                ->where('id_client',Auth::user()->id_client)
-                ->first()->jam;
+            // $total_jam = DB::table('table_lembur')
+            //     ->selectRaw('SUM(CAST(total_jam as int)) as jam')
+            //     ->where('id_client',Auth::user()->id_client)
+            //     ->first()->jam;
+            $total_jam = "0";
             $kr_lembur = DB::table('table_lembur')->distinct()->where('id_client',Auth::user()->id_client)->count('id_karyawan');
             $wait_lembur = Lembur::where('id_client',Auth::user()->id_client)->where('status','0')->count();
             if(in_array(Auth::user()->id_client,[3,4])) {

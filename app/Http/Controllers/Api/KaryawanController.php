@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Str;
 use DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
@@ -14,6 +15,7 @@ use App\Models\Jabatan;
 use App\Models\Filemanager;
 use App\Models\Divisi;
 use Illuminate\Http\UploadedFile;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -275,7 +277,7 @@ class KaryawanController extends Controller
             ]);
 
              // Simpan data ke tabel karyawan
-             Karyawan::create([
+            Karyawan::create([
                 'nama_karyawan'         => $request->nama_lengkap,
                 'id_karyawan'           => $request->id_karyawan,
                 'no_hp'                 => $request->no_hp,
@@ -461,6 +463,185 @@ class KaryawanController extends Controller
             // Add more mime types and their corresponding extensions here
         ];
         return $mimeToExt[$mimeType] ?? null;
+    }
+
+
+    function calculate(Request $request) {
+
+        $id_karyawan = $request->id_karyawan;
+        if($id_karyawan == "" || $id_karyawan == null ) {
+            return response()->json(['pesan' => 'ID karyawan dibutuhkan'],401);
+        }
+
+        $dataLogin = User::where('id_karyawan',$id_karyawan)->first();
+
+        if(!in_array($dataLogin->roles,['admin','korlap'])) {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses'],401);
+        }
+
+        $izin       = DB::table("table_izin as ti")
+                            ->join('table_karyawan as us','us.id_karyawan','=','ti.karyawan_id')
+                            ->where('ti.status','0')
+                            ->where('ti.id_client','LIKE','%'.$dataLogin->id_client.'%')
+                            ->count();
+        $lembur      = DB::table("table_lembur as ti")
+                            ->join('table_karyawan as us','us.id_karyawan','=','ti.id_karyawan')
+                            ->where('ti.status','0')
+                            ->where('ti.id_client','LIKE','%'.$dataLogin->id_client.'%')
+                            ->count();
+        $totalkr    = User::where('id_client',$dataLogin->id_client)->where('roles','karyawan')->count();
+        $total      = $izin + $lembur;
+
+        return response()->json(['totalApproval' => $total,'totalKr' => $total]);
+
+        // $data = User::where('id_cli')
+    }
+
+    function get_dataKaryawan(Request $request) {
+        $id_karyawan = $request->id_karyawan;
+
+        if($id_karyawan == "" || $id_karyawan == null ) {
+            return response()->json(['pesan' => 'ID Karyawan dibutuhkan.'],401);
+        }
+
+        $dataLogin = User::where("id_karyawan",$id_karyawan)->first();
+
+        if($dataLogin->roles != 'hrd') {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses.'],401);
+        }
+
+        if($dataLogin->roles == 'hrd'){
+            $data =  DB::table('table_karyawan as tk')->select('tk.*','us.name','us.roles')
+                ->join('users as us','us.id_karyawan','=','tk.id_karyawan')
+                ->where('us.roles','!=','karyawan')
+                ->where('us.id','!=',$dataLogin->id)
+                ->orderBy('created_at','DESC')
+                ->get();
+        }else {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses'],401);
+        }
+
+        $result = [];
+
+        foreach($data as $key) {
+            $result[] = [
+                'nama_lengkap'      => Str::title($key->nama_karyawan),
+                'id_karyawan'       => $key->id_karyawan,
+                'foto_profile'      => foto_profile($key->id_karyawan),
+                'divisi'            => Divisi::find($key->divisi)->nama_divisi,
+                'jabatan'           => Jabatan::find($key->jabatan)->nama_jabatan,
+                'join_date'         => Carbon::parse($key->join_date)->translatedFormat('d F Y'),
+                'end_date'          => Carbon::parse($key->end_date)->translatedFormat('d F Y'),
+                'gol_karyawan'      => $key->gol_karyawan,
+                'marital'           => $key->marital,
+                'lokasi_kerja'      => Clients::find($key->lokasi_kerja)->nama_client,
+                'kategori'          => $key->kategori == 'pusat' ? 'Karyawan Pusat (Kantor PT.PFI)' : 'Karyawan Internal Pusat (Project)',
+                'detail'            => $this->detail_data($key->id_karyawan),
+                'dokumen'           => $this->detail_dokumen($key->id_karyawan),
+
+            ];
+        }
+
+        return response()->json(['data' => $result]);
+
+    }
+
+    function detail_data($id_karyawan) {
+        $dataUser = User::where('id_karyawan',$id_karyawan)->first();
+
+        $dataKaryawan = Karyawan::where('id_karyawan',$id_karyawan)->first();
+
+        $result = [
+            'foto_profile'          => foto_profile($id_karyawan),
+            'username'              => $dataUser->username,
+            'tipe_akun'             => $dataUser->roles,
+            'email'                 => $dataUser->email,
+            'nama_lengkap'          => $dataUser->name,
+            'nomor_hp'              => $dataKaryawan->no_hp,
+            'tempat_lahir'          => $dataKaryawan->tempat_lahir,
+            'tanggal_lahir'         => Carbon::parse($dataKaryawan->tanggal_lahir)->translatedFormat('d F Y'),
+            'jenis_kelamin'         => $dataKaryawan->jenis_kelamin == 'L' ? 'Laki-Laki' : 'Perempuan',
+            'alamat'                => $dataKaryawan->alamat,
+            'alamat_domisili'       => $dataKaryawan->alamat_domisili,
+            'usia'                  => $dataKaryawan->usia,
+            'agama'                 => $dataKaryawan->agama,
+            'nama_suami_istri'      => $dataKaryawan->nama_s_i,
+            'nama_anak'             => $dataKaryawan->nama_anak,
+            'jumlah_anak'           => $dataKaryawan->jmlh_anak,
+            'nama_ibu'              => $dataKaryawan->nama_ibu,
+            'nama_ayah'             => $dataKaryawan->nama_bapa,
+            'pendidikan'            => $dataKaryawan->pendidikan,
+
+            'id_karyawan'           => $dataKaryawan->id_karyawan,
+            'lokasi_kerja'          => Clients::find($dataUser->id_client)->nama_client,
+            'jabatan'               => Jabatan::find($dataKaryawan->jabatan)->nama_jabatan,
+            'divisi'                => Divisi::find($dataKaryawan->divisi)->nama_divisi,
+            'join_date'             => Carbon::parse($dataKaryawan->join_date)->translatedFormat('d F Y'),
+            'end_date'              => Carbon::parse($dataKaryawan->end_date)->translatedFormat('d F Y'),
+            'nomor_sio'             => $dataKaryawan->no_sio,
+            'tunjangan_jabatan'     => $dataKaryawan->tJabatan,
+            'tunjangan_transport'   => $dataKaryawan->tTransport,
+            'gol_karyawan'          => $dataKaryawan->gol_karyawan,
+            'marital'               => $dataKaryawan->marital,
+            'no_npwp'               => $dataKaryawan->no_npwp,
+            'no_kpj'                => $dataKaryawan->no_kpj,
+            'no_jkn'                => $dataKaryawan->no_jkn
+        ];
+
+        return $result;
+    }
+
+    function detail_dokumen($id_karyawan){
+        $data = Filemanager::where("id_karyawan",$id_karyawan)->get();
+        $result = [];
+        foreach($data as $key) {
+            $result[] = [
+                'filename' => $key->filename,
+                'path'     => asset($key->path),
+                'file'     => $key->slug,
+            ];
+        }
+
+        return $result;
+    }
+
+
+    function calculate_admin_korlap(Request $request) {
+        $id_karyawan = $request->id_karyawan;
+
+        if($id_karyawan == "" || $id_karyawan == null) {
+            return response()->json(['pesan' => 'ID Karyawan dibutuhkan'],422);
+        }
+
+        $queryID = User::where('id_karyawan',$id_karyawan);
+
+        if($queryID->count() == 0) {
+            return response()->json(['pesan' => 'ID Karyawan tidak terdaftar'],401);
+        }
+
+        $dataUser = $queryID->first();
+
+        if(!in_array($dataUser->roles,['admin','korlap'])) {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses'],401);
+        }
+        $izin       = DB::table("table_izin as ti")
+                            ->join('table_karyawan as us','us.id_karyawan','=','ti.karyawan_id')
+                            ->where('ti.status','0')
+                            ->where('ti.id_client','LIKE','%'.$dataUser->id_client.'%')
+                            ->count();
+        $lembur     = DB::table("table_lembur as ti")
+                            ->join('table_karyawan as us','us.id_karyawan','=','ti.id_karyawan')
+                            ->where('ti.status','0')
+                            ->where('ti.id_client','LIKE','%'.$dataUser->id_client.'%')
+                            ->count();
+        $totalkr    = User::where('id_client',$dataUser->id_client)->where('roles','karyawan')->count();
+        $total      = $izin + $lembur;
+
+        $result     = ['total_approval' => $total,'total_karyawan' => $totalkr];
+
+        return response()->json(['data' => $result]);
+
+
     }
 
 

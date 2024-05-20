@@ -1,22 +1,23 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\LoginController;
-use App\Http\Controllers\Api\LemburController;
-use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\Api\CutiController;
-use App\Http\Controllers\Api\IzinController;
-use App\Http\Controllers\Api\AbsensiController;
+use App\Http\Controllers\Api\ReferensikerjaController;
 use App\Http\Controllers\Api\UploadImageController;
 use App\Http\Controllers\Api\PreorderController;
-use App\Http\Controllers\Api\ReferensikerjaController;
 use App\Http\Controllers\Api\KaryawanController;
-use App\Models\Filemanager;
-use App\Models\Bank;
-use App\Models\Karyawan;
-// use App\Models\Filemanager;
+use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\AbsensiController;
+use App\Http\Controllers\Api\LemburController;
+use App\Http\Controllers\Api\LoginController;
+use App\Http\Controllers\Api\CutiController;
+use App\Http\Controllers\Api\IzinController;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
+use Illuminate\Http\Request;
+use App\Models\Filemanager;
+use App\Models\Karyawan;
+use App\Models\Bank;
+
+// use App\Models\Filemanager;
 
 
 /*
@@ -85,6 +86,9 @@ Route::prefix('lembur')->group(function() {
     Route::get('manager',[LemburController::class,'get_data_lembur_manager']);
     Route::get('data-shift',[LemburController::class,'getShift']);
     Route::get('file/{id}',[LemburController::class,'viewFile'])->name('download-lembur');
+    Route::get('shift/{id_client}',[LemburController::class,'getDataShift']);
+    Route::post('create-karyawan',[LemburController::class,'createLemburKrExternal']);
+    Route::get('admin-korlap',[LemburController::class,'getDataLemburAdmin']);
 });
 
 Route::prefix('izin')->group(function() {
@@ -95,6 +99,7 @@ Route::prefix('izin')->group(function() {
     Route::get('data-izin-spv-hrd',[IzinController::class,'get_izin_hrd']);
     Route::get('data-izin-direktur-hrd',[IzinController::class,'get_izin_direktur_hrd']);
     Route::get('file/{id}',[IzinController::class,'viewFile'])->name('download-izin');
+    route::get('data-izin-adm',[IzinController::class,'getDataIzinAdmin']);
 
 });
 
@@ -108,6 +113,7 @@ Route::prefix('absensi')->group(function() {
     Route::get('filter',[AbsensiController::class,'filterData']);
     Route::get('hrd',[AbsensiController::class,'data_absensi_hrd']);
     Route::get('adm/{gol_karyawan}',[AbsensiController::class,'get_absensi_admin_korlap']);
+
 });
 
 Route::prefix('preorder')->group(function() {
@@ -117,14 +123,6 @@ Route::prefix('preorder')->group(function() {
     Route::get('file/{id}',[PreorderController::class,'viewFile'])->name('download-preorder');
 
 });
-
-Route::post('save-ttd',[AbsensiController::class,'save_ttd_mobile']);
-
-Route::get('profile',[ProfileController::class,'index']);
-
-Route::get('convert-svg',[LemburController::class,'convertSvgToPng']);
-
-Route::post('update-password',[ProfileController::class,'updatePassword']);
 
 route::prefix('upload')->group(function() {
     Route::post('image',[UploadImageController::class,'upload']);
@@ -144,6 +142,9 @@ Route::prefix('karyawan')->group(function() {
     Route::get('jabatan',[KaryawanController::class,'jabatan']);
     Route::get('divisi',[KaryawanController::class,'divisi']);
     Route::get('marital',[KaryawanController::class,'marital']);
+    Route::get('calculate',[KaryawanController::class,'calculate']);
+    Route::get('data/{roles}',[KaryawanController::class,'get_dataKaryawan']);
+    Route::get('calculate-adm',[KaryawanController::class,'calculate_admin_korlap']);
 });
 
 route::middleware(['auth'])->group(function() {
@@ -151,4 +152,9 @@ route::middleware(['auth'])->group(function() {
         return response()->json(Auth::user()->name);
     });
 });
+
+Route::post('save-ttd',[AbsensiController::class,'save_ttd_mobile']);
+Route::get('profile',[ProfileController::class,'index']);
+Route::get('convert-svg',[LemburController::class,'convertSvgToPng']);
+Route::post('update-password',[ProfileController::class,'updatePassword']);
 
