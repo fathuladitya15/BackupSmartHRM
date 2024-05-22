@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\LemburController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\CutiController;
 use App\Http\Controllers\Api\IzinController;
+use App\Http\Controllers\Api\PengumumanController;
+use App\Http\Controllers\Api\PeringatanController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
@@ -70,6 +72,8 @@ Route::prefix('cuti')->group(function() {
     Route::post('update',[CutiController::class,'update_status']);
     Route::get('kategori-cuti',[CutiController::class,'get_kategori_cuti']);
     Route::get('file/{idCuti}',[CutiController::class,'viewFile'])->name("download-cuti");
+    Route::get('admin-korlap',[CutiController::class,'getDataCutiAdmin']);
+
 
 
 });
@@ -121,6 +125,8 @@ Route::prefix('preorder')->group(function() {
     Route::post('acc-order',[PreorderController::class,'acc_spv_internal']);
     Route::post('ttd-order',[PreorderController::class,'ttd_direktur']);
     Route::get('file/{id}',[PreorderController::class,'viewFile'])->name('download-preorder');
+    Route::get('data-admin-korlap',[PreorderController::class,'getPreOrderAdmin']);
+    Route::post('create-admin-korlap',[PreorderController::class,'createPreOrderAdmin']);
 
 });
 
@@ -132,6 +138,8 @@ route::prefix('upload')->group(function() {
 Route::prefix('rf')->group(function() {
     Route::get('data',[ReferensikerjaController::class,'get_data']);
     Route::post('update',[ReferensiKerjaController::class,'update_status']);
+    Route::get('data-admin',[ReferensiKerjaController::class,'getReferensiKerjaAdmin']);
+    Route::post('create-data-admin',[ReferensiKerjaController::class,'createReferensiKerja']);
 });
 
 Route::prefix('karyawan')->group(function() {
@@ -145,6 +153,15 @@ Route::prefix('karyawan')->group(function() {
     Route::get('calculate',[KaryawanController::class,'calculate']);
     Route::get('data/{roles}',[KaryawanController::class,'get_dataKaryawan']);
     Route::get('calculate-adm',[KaryawanController::class,'calculate_admin_korlap']);
+});
+
+Route::prefix('pengumuman')->group(function() {
+    Route::get('get-admin',[PengumumanController::class,'getPengumumanAdmin']);
+});
+
+Route::prefix('peringatan')->group(function() {
+    Route::get('get-admin',[PeringatanController::class,'getPeringatanAdmin']);
+    Route::post('create-admin',[PeringatanController::class,'createPeringatanAdmin']);
 });
 
 route::middleware(['auth'])->group(function() {

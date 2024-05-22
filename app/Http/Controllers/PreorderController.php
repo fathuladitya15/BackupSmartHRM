@@ -63,9 +63,9 @@ class PreorderController extends Controller
             'batas_waktu'   =>  'required',
             'diajukan_oleh' =>  'required',
         ],[
-            'bulan.required'            => 'Bulan wajib diisis',
+            'bulan.required'            => 'Bulan wajib diisi',
             'no_po.required'            => 'Nomor Pre Order wajib diisis',
-            'divisi.required'           => 'Divis wajib diisi',
+            'divisi.required'           => 'Divisi wajib diisi',
             'tanggal.required'          => 'Tanggal wajib diisi',
             'batas_waktu.required'      => 'Batas waktu wajib diisi',
             'diajukan_oleh.required'    => 'Diajukan oleh siapa wajib diisi',
@@ -78,6 +78,10 @@ class PreorderController extends Controller
         }
 
         $ttd = Filemanager::where('id_karyawan',Auth::user()->id_karyawan)->where("slug",'signature')->first();
+
+        if(!$ttd) {
+            return response()->json(['pesan' => 'Buat tanda tangan terlebih dahulu.'],422);
+        }
 
 
         $dataCreate = [

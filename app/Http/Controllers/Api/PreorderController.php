@@ -36,7 +36,7 @@ class PreorderController extends Controller
         if(!in_array($Divisi, ['MPO','General Affair ( GA )'])) {
             return response()->json(['pesan' => 'Anda tidak mempunyai akses'],401);
         }
-        
+
         $Data           = PreOrder::where('id_client',$request->id_client)->orderBy('created_at','DESC')->get();
         $result         = [];
 
@@ -87,12 +87,12 @@ class PreorderController extends Controller
     }
 
     function data_barang($id) {
-        $hitungData     = DB::table('table_barang_po')->where('id_pre_order',$id)->count();  
-        
+        $hitungData     = DB::table('table_barang_po')->where('id_pre_order',$id)->count();
+
         if($hitungData > 1) {
             $data           = DB::table('table_barang_po')->where('id_pre_order',$id)->get();
             $result = [];
-    
+
             foreach ($data as $key ) {
                 $result[] = [
                     // 'id'            => $key['id'],
@@ -152,14 +152,14 @@ class PreorderController extends Controller
 
     function acc_spv_internal(Request $request) {
         $id_karyawan    = $request->id_karyawan;
-        
+
         if($id_karyawan == null || $id_karyawan == ""){
             return response()->json(['pesan' => 'ID Karyawan dibutuhkan'],422);
         }
 
         $DataUser       = User::where("id_karyawan",$id_karyawan)->first();
 
-        
+
         $idPreOrder         =   $request->id_pre_order;
         $id_client_PreORder = PreOrder::find($idPreOrder)->id_client;
 
@@ -185,12 +185,12 @@ class PreorderController extends Controller
     }
 
     function reject_spv_internal(Request $request) {
-        
+
     }
 
     function ttd_direktur(Request $request) {
         $id_karyawan    = $request->id_karyawan;
-        
+
         if($id_karyawan == null || $id_karyawan == ""){
             return response()->json(['pesan' => 'ID Karyawan dibutuhkan'],422);
         }
@@ -210,7 +210,7 @@ class PreorderController extends Controller
         }
 
         $ttdPath                =   Filemanager::where('id_karyawan',$id_karyawan)->where('slug','signature')->first()->path;
-        
+
         $getData                =   PreOrder::find($idPreOrder);
         $getData->status        = 2;
         $getData->ttd_direktur  = $ttdPath;
@@ -218,6 +218,74 @@ class PreorderController extends Controller
         $getData->update();
 
         return response()->json(['pesan' => 'Permintaan Pembelian berhasil disetujui dan ditandatangani.'],200);
+    }
+
+    function getPreOrderAdmin(Request $request) {
+        $id_karyawan = $request->id_karyawan;
+
+        if($id_karyawan  == null || $id_karyawan  == "") {
+            return response()->json(['pesan' => "ID Karyawan dibutuhkan."],422);
+        }
+
+        $cekID = User::where('id_karyawan',$id_karyawan);
+
+        if($cekID->count() == 0){
+            return response()->json(['pesan' => "ID Karyawan tidak terdaftar."],404);
+        }
+
+        $dataUser = $cekID->first();
+
+        if(!in_array($dataUser->roles,['admin','korlap'])) {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses.'],401);
+        }
+
+        $id_client = $dataUser->id_client;
+
+        $data = PreOrder::where("id_client", $id_client)->where('id_user',$dataUser->id)->get();
+
+        $result = [];
+        foreach($data as $key) {
+            $result[] = [
+                'id'            => $key->id,
+                'nomor_po'      => $key->no_po,
+                'bulan'         => $key->bulan,
+                'tanggal'       => Carbon::parse($key->tanggal)->translatedFormat('d F Y'),
+                'divisi'        => $key->divisi,
+                'dibuat_oleh'   => $key->dibuat_oleh,
+                'batas_waktu'   => Carbon::parse($key->batas_waktu)->translatedFormat('d F Y'),
+                'jumlah'        => $this->HitungJumlahPreOrder($key->id),
+                'status'        => $this->info_status($key->status),
+                'acc'           => $key->status == 2 ? 1 : 0,
+                'detail_request'=> $this->data_barang($key->id),
+                'link'          => $key->status == 2 ? $this->getLinkDownload($key->id) : "",
+            ];
+        }
+
+        return response()->json(['data' => $result]);
+    }
+
+    function createPreOrderAdmin(Request $request) {
+        $id_karyawan = $request->id_karyawan;
+
+        if($id_karyawan  == null || $id_karyawan  == "") {
+            return response()->json(['pesan' => "ID Karyawan dibutuhkan."],422);
+        }
+
+        $cekID = User::where('id_karyawan',$id_karyawan);
+
+        if($cekID->count() == 0){
+            return response()->json(['pesan' => "ID Karyawan tidak terdaftar."],404);
+        }
+
+        $dataUser = $cekID->first();
+
+        if(!in_array($dataUser->roles,['admin','korlap'])) {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses.'],401);
+        }
+
+        $id_client = $dataUser->id_client;
+
+        return response()->json(['data' => $id_client]);
     }
 
 }

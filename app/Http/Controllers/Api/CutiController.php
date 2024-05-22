@@ -222,7 +222,7 @@ class CutiController extends Controller
     function get_data_cuti_dir_hrd(Request $request) {
 
         // Response apabila id karyawan kosong
-        if($request->id_karyawan == null || $request->id_karyawan == "" ){ 
+        if($request->id_karyawan == null || $request->id_karyawan == "" ){
             return response()->json(['pesan' => 'ID Karyawan dibutuhkan'],422);
         }
 
@@ -259,10 +259,10 @@ class CutiController extends Controller
                     'acc'               => $key['status'] >= 1 ? 1 : 0,
                     'created_at'    => $key['created_at'],
                     'detail'            => $this->detail_data($key['id']),
-    
+
                 ];
             }
-            $res = ['data' => $result];            
+            $res = ['data' => $result];
         }
         else {
             $data       = Cuti::where('status','>=',2)->orderBy('created_at','DESC')->get();
@@ -284,13 +284,13 @@ class CutiController extends Controller
                     'acc'               => $key['status'] == 4 ? 1 : 0,
                     'created_at'    => $key['created_at'],
                     'detail'            => $this->detail_data($key['id']),
-    
+
                 ];
             }
             $res        = ['data' => $result];
         }
-        
-       
+
+
         return response($res);
 
 
@@ -430,7 +430,7 @@ class CutiController extends Controller
         $user   = User::where('id_karyawan',$id)->first();
         $result = [
             'kategori'      => $data->kategori,
-            'karyawanType'  => $user->roles,  
+            'karyawanType'  => $user->roles,
         ];
         return $result;
     }
@@ -449,6 +449,26 @@ class CutiController extends Controller
         $getName    = Karyawan::where('id_karyawan',$get)->first()->nama_karyawan;
 
         return $getName;
+    }
+
+    function getDataCutiAdmin(Request $request) {
+        $id_karyawan = $request->id_karyawan;
+
+        if($id_karyawan  == null || $id_karyawan  == "") {
+            return response()->json(['pesan' => "ID Karyawan dibutuhkan."],422);
+        }
+
+        $cekID = User::where('id_karyawan',$id_karyawan);
+
+        if($cekID->count() == 0){
+            return response()->json(['pesan' => "ID Karyawan tidak terdaftar."],404);
+        }
+
+        $dataUser = $cekID->first();
+
+        if(!in_array($dataUser->roles,['admin','korlap'])) {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses.'],401);
+        }
     }
 
 }
