@@ -50,94 +50,20 @@ class LoginController extends Controller
 
 
         if($datauser->count() == 0) { // Cek apabila data tidak tersedia
-
             return response()->json(['status' => FALSE,'messages' => 'Akun anda belum terdaftar.' ]);
         }
 
-        $dataKaryawan       = Karyawan::where('id_karyawan',$datauser->first()->id_karyawan)->first();
-        $divisi             = $dataKaryawan->divisi()->first()->nama_divisi;
-        $jabatan            = $dataKaryawan->jabatan()->first()->nama_jabatan;
-        $namaClient         = Clients::find($dataKaryawan->lokasi_kerja);
-        // Cek apabila data tersedia
 
+        if($this->roleMatchesLoginAs($request)){
+            if ($this->attemptLogin($request)) {
 
-        $userLoginsRoles    = $datauser->first()->roles;    // Sebagai
-        $asLogin            = $request->get('roles') == 'admin' ? 'project' : 'internal';
-
-        if(in_array($userLoginsRoles,['spv-internal','admin','korlap'])) {
-            if($asLogin == 'internal'){
-                $updateData         = User::find($datauser->first()->id);
-                if($userLoginsRoles == 'spv-internal') {
-                    $updateData->roles  = 'kr-pusat';
-                    $updateData->update();
-                }else {
-                    $updateData->roles  = 'kr-project';
-                    $updateData->update();
+                if ($request->hasSession()) {
+                    $request->session()->put('auth.password_confirmed_at', time());
                 }
-            }
-        }
 
-        if($userLoginsRoles == 'karyawan') {
-            if($asLogin == 'project') {
-                $r = 'Anda tidak terdaftar dalam management PFI';
-                return response()->json(['status' => FALSE,'messages' => $r]);
-            }
-        }
-
-        if(in_array($userLoginsRoles,['hrd','direktur','manajer','general-affair'])) {
-            if($asLogin == 'project') {
-                $r = 'Anda login sebagai Atasan';
-            }else if($asLogin == 'internal') {
-                $r = 'Anda login sebagai Karyawan Biasa';
-            }
-        }
-
-        if(in_array($userLoginsRoles, ['kr-project','kr-pusat'])) {
-            $updateData         = User::find($datauser->first()->id);
-            if($asLogin == 'project'){
-                if($jabatan == "Admin") {
-                     $updateData->roles = 'admin';
-                     $updateData->update();
-                }
-                if($jabatan == 'Supervisor') {
-                    $updateData->roles = 'spv-internal';
-                    $updateData->update();
-                }
-                if($jabatan == 'Koordinator Lapangan') {
-                    $updateData->roles = 'korlap';
-                    $updateData->update();
-                }
-                if(divisi($datauser->first()->id_karyawan) == 3) {
-
-                    return response()->json(['pesan' => 'Anda anda terdaftar sebagai karyawan']);
-                }
-            }
-        }
-
-        if($userLoginsRoles == 'general-affair') {
-            $updateData         = User::find($datauser->first()->id);
-            if($asLogin == 'internal') {
-                $updateData->roles  = 'kr-pusat';
-                $updateData->update();
-                // return response()->json(['roles' => $userLoginsRoles ,'asLogin' => $asLogin]);
-            }else if($asLogin == 'project') {
-                if($jabatan == 'Manager')
-                $updateData->roles  = 'general-affair';
-                $updateData->update();
-                // return response()->json(['roles' => $userLoginsRoles,'asLogin' => $asLogin]);
-            }
-        }
-
-
-
-
-        if ($this->attemptLogin($request)) {
-
-            if ($request->hasSession()) {
-                $request->session()->put('auth.password_confirmed_at', time());
+                return $this->sendLoginResponse($request);
             }
 
-            return $this->sendLoginResponse($request);
         }
         return $this->sendFailedLoginResponse($request);
 
@@ -151,6 +77,7 @@ class LoginController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+
     protected function validateLogin(Request $request)
     {
         $request->validate([
@@ -213,6 +140,36 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
+        $asLogin            = $request->get('roles') == 'admin' ? 'project' : 'internal';
+        $karyawan           = Karyawan::where('id_karyawan',$user->id_karyawan)->first();
+        $jabatan            = $karyawan->jabatan()->first()->nama_jabatan;
+        if( $asLogin == 'project' &&  in_array($user->roles,['kr-pusat','kr-project']) ) {
+            if($jabatan == 'Supervisor') {
+                if($karyawan->divisi == 4) {
+                    $user->roles = 'hrd';
+                    $user->save();
+                }else {
+                    $user->roles = 'spv-internal';
+                    $user->save();
+                }
+            }else if($jabatan == 'Manager') {
+                $user->roles = 'manajer';
+                $user->save();
+            }
+        }
+        else if($user->roles == 'spv-internal' && $asLogin == 'internal') { // SPV Login Karyawan PFI
+            $user->roles = 'kr-project';
+            $user->save();
+        }
+        else if($user->roles == 'hrd' && $asLogin == 'internal') { // HRD Login Karyawan PFI
+            $user->roles = 'kr-pusat';
+            $user->save();
+        }
+        else if($user->roles == 'manajer' && $asLogin == 'internal') { // Manager Login Karyawan PFI
+            $user->roles = 'kr-pusat';
+            $user->save();
+        }
+
         $ip = $_SERVER["REMOTE_ADDR"];
         $exist = UserLogins::where('user_ip',$ip)->first();
         $userLogin = new UserLogins();
@@ -311,5 +268,36 @@ class LoginController extends Controller
     protected function guard()
     {
         return Auth::guard();
+    }
+
+    protected function roleMatchesLoginAs(Request $request)
+    {
+        $credentials    = $this->credentials($request);
+        $user           = Auth::getProvider()->retrieveByCredentials($credentials);
+        $loginAs        = $request->get('roles') == 'admin' ? 'project' : 'internal';
+        $jabatan        = Karyawan::where('id_karyawan',$user->id_karyawan)->first()->jabatan()->first()->nama_jabatan;
+
+        if ($user) {
+            // Cek kecocokan role dengan pilihan login_as
+            if ($user->roles == 'karyawan' && $loginAs != 'internal') {
+                if ($request->expectsJson()) {
+                    throw ValidationException::withMessages([
+                        'role' => ['Akun anda tidak memiliki akses management PFI.'],
+                    ])->status(422);
+                }
+                return false;
+            }
+            else if($user->roles == 'direktur' && $loginAs == 'internal' ) {
+                if ($request->expectsJson()) {
+                    throw ValidationException::withMessages([
+                        'role' => ['Akun anda tidak memiliki terdaftar sebagai karyawan.'],
+                    ])->status(422);
+                }
+                return false;
+            }
+            // Tambahkan logika lain jika ada role lain yang harus dicek
+        }
+
+        return true;
     }
 }

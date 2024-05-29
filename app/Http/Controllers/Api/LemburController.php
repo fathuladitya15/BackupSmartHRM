@@ -862,4 +862,11 @@ class LemburController extends Controller
         return $result;
     }
 
+    function getLemburSpv($tipe_karyawan,Request $request) {
+
+        $isSPV = isSupervisorProject($request->id_karyawan);
+
+        return response()->json(['pesan']);
+    }
+
 }

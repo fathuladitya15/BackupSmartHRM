@@ -233,3 +233,35 @@ if(!function_exists('divisi')){
         return $data->divisi;
     }
 }
+
+if(!function_exists('isAdmin')) {
+    function isAdmin($id_karyawan) {
+
+        if($id_karyawan == null || $id_karyawan == "" ) {
+            return response()->json(['pesan' => 'ID karyawan dibutuhkan.'],422);
+        }
+        $user = User::where('id_karyawan',$id_karyawan)->first()->roles;
+
+        if($user != 'admin') {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses.'],422);
+        }
+
+        return true;
+    }
+}
+
+if(!function_exists('isSupervisorProject')){
+    function isSupervisorProject($id_karyawan) {
+        if($id_karyawan == null || $id_karyawan == "" ) {
+            return response()->json(['pesan' => 'ID karyawan dibutuhkan.'],422);
+        }
+        $user = User::where('id_karyawan',$id_karyawan)->first()->roles;
+
+        if($user != 'spv-internal') {
+            return response()->json(['pesan' => 'Anda tidak memiliki akses.']);
+        }
+
+        return true;
+    }
+}
+

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Validator;
 use Str;
 use App\Models\User;
 use App\Models\Karyawan;
 use App\Models\Clients;
 use App\Models\Jabatan;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,35 +19,65 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        $as_login           = $request->as_login;
-        $cekIdKaryawan      = User::where('username', $request->get('username'))->count();
 
-        if($cekIdKaryawan > 0) {
-            $dataKaryawan   = User::where('username', $request->get('username'))->first();
-            $getRoles       = $dataKaryawan->roles;
-            if($as_login == 'internal') {
-                if(in_array($getRoles,['kr-pusat','kr-project','karyawan'])){
-                    $logedIn = 'Logged In';
-                }else {
-                    $logedIn = 'Akun anda tidak terdaftar sebagai karyawan';
-                    return response()->json(['response_code' => 401,'pesan' => $logedIn],401);
-                }
+        // VALIDASI
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string',
+            'password' => 'required'
+        ],[
+            'username.required'     => 'Username wajib diisi.',
+            'password.required'     => 'Password wajib diisi.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['pesan' => $validator->errors()->first()], 422);
+        }
+        $queryUser  = User::where('username', $request->get('username'));
+        $user       = $queryUser->first();
+        $as_login   = $request->as_login;
+
+        if($user) {
+             // Cek kecocokan role dengan pilihan login_as
+             if ($user->roles == 'karyawan' && $as_login != 'internal') {
+                return response()->json(['pesan' => 'Akun anda tidak memiliki akses management PFI.'],422);
             }
-            if($as_login == 'project') {
-                if(in_array($getRoles,['kr-pusat','kr-project','karyawan'])){
-                    $logedIn = 'Akun anda tidak terdaftar sebagai management PFI';
-                    return response()->json(['response_code' => 401,'pesan' => $logedIn],401);
-                }else {
-                    $logedIn = 'Logged In';
-                }
+            else if($user->roles == 'direktur' && $as_login == 'internal' ) {
+                return response()->json(['pesan' => 'Akun anda tidak memiliki terdaftar sebagai karyawan.'],422);
             }
-        }else {
-            $dataKaryawan   = 'Akun anda tidak terdaftar';
-            $getRoles       = '';
-            $logedIn        = '';
-            return response()->json(['response_code' => 404,'pesan' => $dataKaryawan],404);
         }
 
+        if($queryUser->count() == 0) {
+            return response()->json(['pesan' => "Akun anda tidak terdaftar."],404);
+        }
+
+        $karyawan           = Karyawan::where('id_karyawan',$user->id_karyawan)->first();
+        $jabatan            = $karyawan->jabatan()->first()->nama_jabatan;
+        if($as_login == 'project' &&  in_array($user->roles,['kr-pusat','kr-project']) ) {
+            if($jabatan == 'Supervisor') {
+                if($karyawan->divisi == 4) {
+                    $user->roles = 'hrd';
+                    $user->save();
+                }else {
+                    $user->roles = 'spv-internal';
+                    $user->save();
+                }
+            }else if($jabatan == 'Manager') {
+                $user->roles = 'manajer';
+                $user->save();
+            }
+        }
+        else if($user->roles == 'spv-internal' && $as_login == 'internal') { // SPV Login Karyawan PFI
+            $user->roles = 'kr-project';
+            $user->save();
+        }
+        else if($user->roles == 'hrd' && $as_login == 'internal') { // HRD Login Karyawan PFI
+            $user->roles = 'kr-pusat';
+            $user->save();
+        }
+        else if($user->roles == 'manajer' && $as_login == 'internal') { // Manager Login Karyawan PFI
+            $user->roles = 'kr-pusat';
+            $user->save();
+        }
 
         $loginData = ['username' => $request->username,'password' => $request->password];
 
@@ -80,17 +110,16 @@ class LoginController extends Controller
 
             ];
             return response()->json([
-                'response_code' => 200,
                 'pesan'       => 'Login Berhasil',
                 'conntent'      => $result,
             ],200);
         }else{
             return response()->json([
-                'response_code' => 404,
-                'pesan' => 'Username atau Password Tidak sesuai!'
+                'pesan' => 'Username atau Password Tidak sesuai.'
             ],404);
         }
     }
+
 
     private function generateToken($userId)
     {

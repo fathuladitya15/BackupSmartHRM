@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use DB;
 use PDF;
 use Str;
+use Validator;
 
 class PreorderController extends Controller
 {
@@ -285,7 +286,54 @@ class PreorderController extends Controller
 
         $id_client = $dataUser->id_client;
 
-        return response()->json(['data' => $id_client]);
+        $validator  = Validator::make($request->all(),[
+            'bulan'         =>  'required',
+            'no_po'         =>  'required',
+            'divisi'        =>  'required',
+            'tanggal'       =>  'required',
+            'batas_waktu'   =>  'required',
+            'diajukan_oleh' =>  'required',
+        ],[
+            'bulan.required'            => 'Bulan wajib diisi',
+            'no_po.required'            => 'Nomor Pre Order wajib diisi',
+            'divisi.required'           => 'Divisi wajib diisi',
+            'tanggal.required'          => 'Tanggal wajib diisi',
+            'batas_waktu.required'      => 'Batas waktu wajib diisi',
+            'diajukan_oleh.required'    => 'Diajukan oleh siapa wajib diisi',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['pesan' => $validator->errors()->first()], 422);
+        }
+
+        $ttd = Filemanager::where('slug','signature')->where('id_karyawan',$dataUser->id_karyawan)->first();
+        $dataCreate = [
+            'bulan'             => $request->bulan,
+            'no_po'             => $request->no_po,
+            'tanggal'           => $request->tanggal,
+            'divisi'            => $request->divisi,
+            'batas_waktu'       => $request->batas_waktu,
+            'dibuat_oleh'       => $request->diajukan_oleh,
+            'ttd_pembuat'       => $ttd->path,
+            'id_user'           => $dataUser->id,
+            'id_client'         => $dataUser->id_client,
+        ];
+
+        PreOrder::create($dataCreate);
+
+        return response()->json(['pesan' => 'Permintaan Pembelian berhasil dibuat']);
+    }
+
+    function getDataGA(Request $request) {
+        $id_karyawan = $request->id_karyawan;
+
+        if($id_karyawan == null || $id_karyawan == ""){
+            return response()->json(['pesan' => 'ID Karyawan dibutuhkan'],422);
+        }
+
+        $dataKaryawan = Karyawan::where("id_karyawan",$id_karyawan)->first();
+        $divisi       = $dataKaryawan->disivi()->first()->nama_divisi;
+
+        return response()->json(['pesan' => $divisi]);
     }
 
 }

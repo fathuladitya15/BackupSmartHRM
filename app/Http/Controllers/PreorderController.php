@@ -301,6 +301,8 @@ class PreorderController extends Controller
         $pdf->setPaper('A4', 'landscape');
         return $pdf->stream($filename);
     }
+
+
 }
 
 

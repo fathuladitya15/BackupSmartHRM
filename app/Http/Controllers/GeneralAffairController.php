@@ -23,7 +23,7 @@ class GeneralAffairController extends Controller
 
     function data(Request $request) {
 
-        $data  = PreOrder::where('id_client',$request->id_client)->get();
+        $data   = PreOrder::where('id_client',$request->id_client)->get();
         $dt     = DataTables::of($data)
         ->addIndexColumn()
         ->addColumn('aksi', function($row) {

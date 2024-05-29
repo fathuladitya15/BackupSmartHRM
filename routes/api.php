@@ -127,6 +127,7 @@ Route::prefix('preorder')->group(function() {
     Route::get('file/{id}',[PreorderController::class,'viewFile'])->name('download-preorder');
     Route::get('data-admin-korlap',[PreorderController::class,'getPreOrderAdmin']);
     Route::post('create-admin-korlap',[PreorderController::class,'createPreOrderAdmin']);
+    Route::get('data-ga',[PreorderController::class,'getDataGA']);
 
 });
 
