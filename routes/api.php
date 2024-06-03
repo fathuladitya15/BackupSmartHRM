@@ -108,6 +108,7 @@ Route::prefix('izin')->group(function() {
 });
 
 Route::prefix('absensi')->group(function() {
+    Route::post('request-absensi',[AbsensiController::class,'create_request_attendance']);
     Route::get('data-karyawan',[AbsensiController::class,'get_data_absensi']);
     Route::post('clock-in',[AbsensiController::class,'create_absensi']);
     Route::post('clock-out',[AbsensiController::class,'update_absensi']);

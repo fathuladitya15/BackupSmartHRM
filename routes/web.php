@@ -34,6 +34,7 @@ use App\Http\Controllers\GeneralAffairController;
 use App\Http\Controllers\DirekturController;
 use App\Http\Controllers\FirebaseController;
 use App\Http\Controllers\RequestAbsensiController;
+use App\Http\Controllers\RequestAttendanceController;
 
 use App\Models\Filemanager;
 
@@ -93,7 +94,9 @@ Route::middleware('revalidate')->group(function() {
             Route::get('/home', [HomeController::class, 'index'])->name('home');
 
             Route::prefix('Absensi')->group(function() {
-                Route::get('index',[AbsensiController::class,'form_absensi'])->name("absensi");
+                Route::get('',[AbsensiController::class,'form_absensi'])->name("absensi");
+                Route::get('request',[RequestAttendanceController::class,'index'])->name('request.absensi.request');
+                Route::get('data-request',[RequestAttendanceController::class,'data'])->name('data.absensi.request');
                 Route::post('cekin',[AbsensiController::class,'cek_in'])->name('absensi-cekin');
             });
 

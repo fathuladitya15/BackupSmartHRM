@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Str;
 use DB;
 use File;
 use App\Http\Controllers\Controller;
@@ -12,6 +13,8 @@ use App\Models\Filemanager;
 use App\Models\Clients;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Models\RequestAttendace;
+use Validator;
 
 class AbsensiController extends Controller
 {
@@ -263,5 +266,152 @@ class AbsensiController extends Controller
         }else {
             return response()->json(['pesan' => 'Anda tidak memiliki akses'],401);
         }
+    }
+
+    function create_request_attendance(Request $request) {
+        $data           = RequestAttendace::all();
+        $dateNow        = Carbon::now()->format('Y-m-d');
+        $dataMaster     = Karyawan::where('id_karyawan',$request->id_karyawan);
+        $dataUser       = User::where('id_karyawan',$request->id_karyawan)->first();
+
+        // Cek absensi perhari ini.
+        $dataMasterAtt  = RequestAttendace::where('request_date',$request->tanggal)->where('id_karyawan',$request->id_karyawan);
+        $id_client      = $dataUser->id_client;
+
+
+        if($dataMasterAtt->count() == 0 ) {
+            $rules = [
+                'tanggal'       => 'required',
+                'jam'           => 'required',
+                'id_karyawan'   => 'required',
+                'lokasi_absen'  => 'required',
+                'detail_lokasi' => 'required',
+                'latitude'      => 'required',
+                'longitude'     => 'required',
+            ];
+
+            $message = [
+                'tanggal.required'      => 'Tanggal Absensi belum diisi.',
+                'jam.required'          => 'Jam Absensi belum diiisi.',
+                'id_karyawan.required'  => 'ID karyawan tidak diketahui',
+                'lokasi_absen.required' => 'Lokasi absen tidak diketahui.',
+                'detail_lokasi'         => 'Detail lokasi absen tidak diketahui',
+                'latitude.required'     => 'Latitde tidak diketahui',
+                'longitude.required'    => 'Longitude tidak diketahui',
+            ];
+
+            if($dataUser->roles == 'karyawan') {
+                $newRules   = ['shift' => 'required'];
+                $newMessage = ['shift.required' => 'Shift belum diisi.'];
+
+                $rules      = array_merge($rules,$newRules);
+                $message    = array_merge($message,$newMessage);
+            }
+
+            $validator = Validator::make($request->all(),$rules,$message);
+
+            if($validator->fails()) {
+                return response()->json(['pesan' => $validator->errors()->first()]);
+            }
+
+            RequestAttendace::create([
+                'id_karyawan'           => $request->id_karyawan,
+                'request_date'          => $request->tanggal,
+                'request_time'          => $request->jam,
+                'lokasi_absen'          => $request->lokasi_absen,
+                'detail_lokasi_absen'   => $request->detail_lokasi,
+                'latitude'              => $request->latitude,
+                'longitude'             => $request->longiutde,
+                'shift'                 => $request->shift
+            ]);
+
+            // $cekLokasi = $this->cekLokasi($id_client,$request->latitude,$request->longitude,$request->lokasi_absen);
+            return response()->json(['Cek Lokasi' => ""]);
+
+        }else {
+
+            $getLatest = RequestAttendace::where('id_karyawan',$request->id_karyawan)->latest()->first();
+
+            if($getLatest->status == 0) {
+                $pesan = ['pesan' => 'Pending'];
+
+            }else if($getLatest->status == 1) {
+                $pesan = ['pesan' => 'Disetujui'];
+
+            }else if($getLatest->status == 2) {
+                RequestAttendace::create([
+                    'id_karyawan'           => $request->id_karyawan,
+                    'request_date'          => $request->tanggal,
+                    'request_time'          => $request->jam,
+                    'lokasi_absen'          => $request->lokasi_absen,
+                    'detail_lokasi_absen'   => $request->detail_lokasi,
+                    'latitude'              => $request->latitude,
+                    'longitude'             => $request->longiutde,
+                    'shift'                 => $request->shift
+
+                ]);
+                $pesan = ['pesan' => 'Buat Baru' ,'status' => 2];
+            }
+            return response()->json($pesan);
+        }
+    }
+
+    function cekLokasi($id_client,$latitude,$longitude,$lokasi) {
+        // KOORDINAT FIX PERUSAHAAN
+        $clients        = Clients::find($id_client);
+        $c_lat          = Str::limit($clients->latitude,10,'');
+        $c_long         = Str::limit($clients->longitude,11,'');
+
+        // KOORDINAT ABSENSI
+        $address        = $lokasi;
+        $lat            = Str::limit($latitude,10,'');
+        $long           = Str::limit($longitude,11,'');
+
+        // VALIDASI KOORDINAT
+        $lat_from   =   $c_lat;
+        $long_from  =   $c_long;
+
+        $lat_To     =   $lat;
+        $long_To    =   $long;
+
+        // KONVERSI KOODINAT DARI PERUSAHAAN DENGAN KOORIDINAT ABSENSI
+        $theta  = $long_from - $long_To;
+        $dist   = sin(deg2rad($lat_from)) * sin(deg2rad($lat_To)) +  cos(deg2rad($lat_from)) * cos(deg2rad($lat_To)) * cos(deg2rad($theta));
+        $dist   = acos($dist);
+        $dist   = rad2deg($dist);
+
+
+        // MENGUBAH DARI MILE KE KM
+        $miles  = $dist * 60 * 1.1515;
+
+        $distance = ($miles * 1.609344).' km';
+        // dd($distance);
+
+
+        // AMBIL 3 KARAKTER SAJA
+        $decimals = Str::limit($distance,3,'');
+
+        // KONVERSI DARI KM KE METER
+        $km = $decimals;
+        $meter = 1000;
+
+        // VALIDASI METER
+        $max = 0.5;
+        $MeterFrom = $km * $meter;
+        if($MeterFrom > $max) {
+            $r          = "Anda terlalu jauh";
+        }else {
+            $r          = "Lokasi disetujui";
+        }
+
+        $detail     = ". Jarak anda ".$km."Km  dari lokasi yang sudah ditentukan.";
+        $data = [
+            'Alamat'                => $address,
+            'Lat,Lon Absen'         => $lat.','.$long,
+            'Lat, Lon Lokasi Kerja' => $c_lat.','.$c_long,
+            'pesan'                 => $r. $detail,
+        ];
+
+        return $data;
     }
 }

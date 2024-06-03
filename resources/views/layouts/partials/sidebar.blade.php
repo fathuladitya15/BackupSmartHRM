@@ -77,7 +77,7 @@
                     @endif
 
                     {{-- ABSENSI --}}
-                    <li class="menu-item {{  menuOpen(['shift','absensi-data','absensi-search-one','absensi','list-index']) }} ">
+                    <li class="menu-item {{  menuOpen(['shift','absensi-data','absensi-search-one','absensi','list-index','request.absensi.request']) }} ">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-calendar"></i>
                             <div data-i18n="">Absensi</div>
@@ -129,6 +129,11 @@
                                 <li class="menu-item {{ menuActive('absensi') }}">
                                     <a href="{{ route('absensi') }}" class="menu-link" >
                                     <div data-i18n="Basic">Absensi Anda</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item {{ menuActive('request.absensi.request') }}">
+                                    <a href="{{ route('request.absensi.request') }}" class="menu-link" >
+                                    <div data-i18n="Basic">Request Absensi Anda</div>
                                     </a>
                                 </li>
                             @endif
