@@ -497,27 +497,29 @@
                     </li>
                 @endif
 
-                @if(divisi(Auth::user()->id_karyawan) == 3)
-                    @php
-                      $data = App\Models\Clients::where("nama_client",'!=','PT Proven Force Indonesia')->get();
-                    @endphp
-                    <li class="menu-item {{  menuOpen(['pre-order-ga']) }} ">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons bx bx-cart"></i>
-                            <div data-i18n="Authentications">Permintaan Pembelian</div>
-                        </a>
+                @if(Auth::user()->roles != 'superadmin')
+                    @if(divisi(Auth::user()->id_karyawan) == 3)
+                        @php
+                        $data = App\Models\Clients::where("nama_client",'!=','PT Proven Force Indonesia')->get();
+                        @endphp
+                        <li class="menu-item {{  menuOpen(['pre-order-ga']) }} ">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <i class="menu-icon tf-icons bx bx-cart"></i>
+                                <div data-i18n="Authentications">Permintaan Pembelian</div>
+                            </a>
 
-                        <ul class="menu-sub">
-                            @foreach ($data as $item)
-                                <li class="menu-item  {{ $item->nama_client == Request::segment(3)  ? 'active' : ""  }}">
-                                    <a href="{{ route('pre-order-ga',['id_client' => HashVariable($item->id)]) }}" class="menu-link " >
-                                        <div data-i18n="Basic">{{ $item->nama_client }} </div>
-                                    </a>
-                                </li>
-                            @endforeach
+                            <ul class="menu-sub">
+                                @foreach ($data as $item)
+                                    <li class="menu-item  {{ $item->nama_client == Request::segment(3)  ? 'active' : ""  }}">
+                                        <a href="{{ route('pre-order-ga',['id_client' => HashVariable($item->id)]) }}" class="menu-link " >
+                                            <div data-i18n="Basic">{{ $item->nama_client }} </div>
+                                        </a>
+                                    </li>
+                                @endforeach
 
-                        </ul>
-                    </li>
+                            </ul>
+                        </li>
+                    @endif
                 @endif
                 {{-- PENGUMUMAN --}}
 

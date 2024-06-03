@@ -644,5 +644,48 @@ class KaryawanController extends Controller
 
     }
 
+    function editKaryawan($id,Request $request) {
+        $id_karyawan_pembuat = $request->id_karyawan_pembuat;
+
+        if($id_karyawan_pembuat == "" || $id_karyawan_pembuat == null) {
+            return response()->json(['pesan' => "ID Karyawan pembuat dibutukan"],422);
+        }
+
+        $dataMaster = User::where('id_karyawan',$id_karyawan_pembuat);
+
+        if($dataMaster->count() == 0) {
+            return response()->json(['pesan' => 'ID Karyawan tidak ditemukan.'],404);
+        }
+
+        $roles = $dataMastre->roles;
+        $dataKaryawan = Karyawan::find($id);
+        $dataUser     = User::find($id);
+
+        if($roles == 'hrd') {
+
+        }
+
+        $dataKaryawan = Karyawan::find($id);
+        $dataUser     = User::find($id);
+
+        $result = [
+                'id'                => $dataUser->id,
+                'nama_lengkap'      => Str::title($dataKaryawan->nama_karyawan),
+                'id_karyawan'       => $dataUser->id_karyawan,
+                'foto_profile'      => foto_profile($dataUser->id_karyawan),
+                'divisi'            => $dataKaryawan->divisi,
+                'jabatan'           => $dataKaryawan->jabatan,
+                'join_date'         => Carbon::parse($data_karyawan->join_date)->translatedFormat('d F Y'),
+                'end_date'          => Carbon::parse($data_karyawan->end_date)->translatedFormat('d F Y'),
+                'gol_karyawan'      => $key->gol_karyawan,
+                'marital'           => $key->marital,
+                'lokasi_kerja'      => Clients::find($key->lokasi_kerja)->nama_client,
+                'kategori'          => $key->kategori == 'pusat' ? 'Karyawan Pusat (Kantor PT.PFI)' : 'Karyawan Internal Pusat (Project)',
+                'detail'            => $this->detail_data($key->id_karyawan),
+                'dokumen'           => $this->detail_dokumen($key->id_karyawan),
+
+        ];
+    }
+
 
 }

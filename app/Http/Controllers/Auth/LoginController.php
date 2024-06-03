@@ -140,34 +140,40 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        $asLogin            = $request->get('roles') == 'admin' ? 'project' : 'internal';
-        $karyawan           = Karyawan::where('id_karyawan',$user->id_karyawan)->first();
-        $jabatan            = $karyawan->jabatan()->first()->nama_jabatan;
-        if( $asLogin == 'project' &&  in_array($user->roles,['kr-pusat','kr-project']) ) {
-            if($jabatan == 'Supervisor') {
-                if($karyawan->divisi == 4) {
-                    $user->roles = 'hrd';
-                    $user->save();
-                }else {
-                    $user->roles = 'spv-internal';
+
+        if(!$user->roles == 'admin') {
+            $asLogin            = $request->get('roles') == 'admin' ? 'project' : 'internal';
+            $karyawan           = Karyawan::where('id_karyawan',$user->id_karyawan)->first();
+
+            $jabatan            = $karyawan->jabatan()->first()->nama_jabatan;
+
+            if( $asLogin == 'project' &&  in_array($user->roles,['kr-pusat','kr-project']) ) {
+                if($jabatan == 'Supervisor') {
+                    if($karyawan->divisi == 4) {
+                        $user->roles = 'hrd';
+                        $user->save();
+                    }else {
+                        $user->roles = 'spv-internal';
+                        $user->save();
+                    }
+                }else if($jabatan == 'Manager') {
+                    $user->roles = 'manajer';
                     $user->save();
                 }
-            }else if($jabatan == 'Manager') {
-                $user->roles = 'manajer';
+            }
+            else if($user->roles == 'spv-internal' && $asLogin == 'internal') { // SPV Login Karyawan PFI
+                $user->roles = 'kr-project';
                 $user->save();
             }
-        }
-        else if($user->roles == 'spv-internal' && $asLogin == 'internal') { // SPV Login Karyawan PFI
-            $user->roles = 'kr-project';
-            $user->save();
-        }
-        else if($user->roles == 'hrd' && $asLogin == 'internal') { // HRD Login Karyawan PFI
-            $user->roles = 'kr-pusat';
-            $user->save();
-        }
-        else if($user->roles == 'manajer' && $asLogin == 'internal') { // Manager Login Karyawan PFI
-            $user->roles = 'kr-pusat';
-            $user->save();
+            else if($user->roles == 'hrd' && $asLogin == 'internal') { // HRD Login Karyawan PFI
+                $user->roles = 'kr-pusat';
+                $user->save();
+            }
+            else if($user->roles == 'manajer' && $asLogin == 'internal') { // Manager Login Karyawan PFI
+                $user->roles = 'kr-pusat';
+                $user->save();
+            }
+
         }
 
         $ip = $_SERVER["REMOTE_ADDR"];
@@ -187,7 +193,6 @@ class LoginController extends Controller
             $userLogin->country_code = @implode(',',$info['code']);
             $userLogin->country =  @implode(',', $info['country']);
         }
-
         $userAgent = getOsBrowser();
         $userLogin->user_id = $user->id;
         $userLogin->user_ip =  $ip;
@@ -275,11 +280,11 @@ class LoginController extends Controller
         $credentials    = $this->credentials($request);
         $user           = Auth::getProvider()->retrieveByCredentials($credentials);
         $loginAs        = $request->get('roles') == 'admin' ? 'project' : 'internal';
-        $jabatan        = Karyawan::where('id_karyawan',$user->id_karyawan)->first()->jabatan()->first()->nama_jabatan;
 
         if ($user) {
             // Cek kecocokan role dengan pilihan login_as
             if ($user->roles == 'karyawan' && $loginAs != 'internal') {
+                // $jabatan        = Karyawan::where('id_karyawan',$user->id_karyawan)->first()->jabatan()->first()->nama_jabatan;
                 if ($request->expectsJson()) {
                     throw ValidationException::withMessages([
                         'role' => ['Akun anda tidak memiliki akses management PFI.'],
