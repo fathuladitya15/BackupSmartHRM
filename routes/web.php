@@ -97,6 +97,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('',[AbsensiController::class,'form_absensi'])->name("absensi");
                 Route::get('request',[RequestAttendanceController::class,'index'])->name('request.absensi.request');
                 Route::get('data-request',[RequestAttendanceController::class,'data'])->name('data.absensi.request');
+                Route::get('get-kr-select',[RequestAttendanceController::class,'getDataKaryawan'])->name('data.absensi.request.karyawan');
                 Route::post('cekin',[AbsensiController::class,'cek_in'])->name('absensi-cekin');
             });
 

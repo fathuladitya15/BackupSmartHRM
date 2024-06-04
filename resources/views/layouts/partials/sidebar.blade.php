@@ -131,12 +131,12 @@
                                     <div data-i18n="Basic">Absensi Anda</div>
                                     </a>
                                 </li>
+                                @endif
                                 <li class="menu-item {{ menuActive('request.absensi.request') }}">
                                     <a href="{{ route('request.absensi.request') }}" class="menu-link" >
-                                    <div data-i18n="Basic">Request Absensi Anda</div>
+                                    <div data-i18n="Basic">Request Absensi </div>
                                     </a>
                                 </li>
-                            @endif
 
                         </ul>
                     </li>

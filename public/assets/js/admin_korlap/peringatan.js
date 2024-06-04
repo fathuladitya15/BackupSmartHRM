@@ -1,6 +1,13 @@
 var table  = $('#myTable').dataTable({
     processing: true,
     serverSide: true,
+    ajax: {
+        url: url_data,
+        data: function (d) {
+            d.name = $('#name').val();
+            d.email = $('#email').val();
+        }
+    },
     ajax: url_data,
     columns: [{
         data: 'DT_RowIndex',

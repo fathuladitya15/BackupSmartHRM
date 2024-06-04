@@ -23,5 +23,6 @@ class RequestAttendace extends Model
         'status',
         'latitude',
         'longitude',
+        'id_client'
     ];
 }

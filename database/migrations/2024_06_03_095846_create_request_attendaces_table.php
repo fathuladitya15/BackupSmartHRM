@@ -22,6 +22,9 @@ return new class extends Migration
             $table->string('approved_on')->nullable();
             $table->string('shift');
             $table->string('catatan');
+            $table->string('id_client');
+            $table->string('latitude');
+            $table->string('longitude');
             $table->string('status')->default(0);
             $table->timestamps();
         });

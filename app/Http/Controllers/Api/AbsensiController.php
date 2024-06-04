@@ -269,14 +269,63 @@ class AbsensiController extends Controller
     }
 
     function create_request_attendance(Request $request) {
-        $data           = RequestAttendace::all();
-        $dateNow        = Carbon::now()->format('Y-m-d');
-        $dataMaster     = Karyawan::where('id_karyawan',$request->id_karyawan);
-        $dataUser       = User::where('id_karyawan',$request->id_karyawan)->first();
 
-        // Cek absensi perhari ini.
-        $dataMasterAtt  = RequestAttendace::where('request_date',$request->tanggal)->where('id_karyawan',$request->id_karyawan);
+        // TANGGAL PER HARI INI
+        $dateNow        = Carbon::now()->format('Y-m-d');
+        // TABLE KARYAWAN
+        $dataMaster     = Karyawan::where('id_karyawan',$request->id_karyawan);
+        // TABLE USER
+        $dataUser       = User::where('id_karyawan',$request->id_karyawan)->first();
+        // TABLE REQUEST ATTENDANCE BERDASARKAN TANGGAL SEKARANG
+        $masterAttNow   = RequestAttendace::where('request_date',$dateNow)->where('id_karyawan',$request->id_karyawan);
+        // TABLE REQUEST ATTENDANCE BERDASARKAN TANGGAL CLIENT
+        $dataMasterAtt  = RequestAttendace::where('request_date',$request->tanggal)->where('id_karyawan ',$request->id_karyawan);
+        // ID CLIENT KARYAWAN
         $id_client      = $dataUser->id_client;
+
+
+        // CEK PERSAMAAN TANGGAL REQUEST DAN TANGGAL SERVER
+
+        if($request->tanggal == $dateNow){
+
+           $cekAttAvailable = $masterAttNow->count();
+
+           if($cekAttAvailable == 0) {
+                // BUAT REQUEST ABSENSI
+                $status = TRUE;
+                $this->insertDatabase($request,$status,$id_client);
+
+                return response()->json(['pesan' => 'Absensi Hari ini '.$cekAttAvailable]);
+            }else {
+
+                // CEK DATA TERAKHIR BERDASARKAN TANGGAL REQUEST ABSENSI PER HARI INI DAN ID KARYAWAN
+                $getLatest          = $dataMasterAtt->latest()->first();
+
+                // GET STATUS TERAKHIR DARI DATA DI ATAS
+                $getStatusLatest    = $getLatest->status;
+
+                if($getStatusLatest == 0) {
+                    $pesan = 'Pending';
+                    $pesan .= ', Button Absen Disabled';
+                }
+                elseif($getStatusLatest == 1) {
+                    $pesan = 'Disetujui';
+                    $pesan .= ' Absen hari ini berhasil';
+                }
+                elseif($getStatusLatest == 2) {
+                    $pesan = 'Absensi anda Ditolak';
+                    $pesan .= '. Silahkan request absensi kembali';
+                    // $this->insertDatabase($request,$status == FALSE);
+                }
+                return response()->json(['pesan' => $pesan]);
+            }
+
+        }else {
+            return response()->json(['pesan' => 'Tanggal sama dengan tanggal server']);
+        }
+
+
+        return response()->json(['Cek absensi Hari ini' => $masterAttNow->count()]);
 
 
         if($dataMasterAtt->count() == 0 ) {
@@ -314,16 +363,16 @@ class AbsensiController extends Controller
                 return response()->json(['pesan' => $validator->errors()->first()]);
             }
 
-            RequestAttendace::create([
-                'id_karyawan'           => $request->id_karyawan,
-                'request_date'          => $request->tanggal,
-                'request_time'          => $request->jam,
-                'lokasi_absen'          => $request->lokasi_absen,
-                'detail_lokasi_absen'   => $request->detail_lokasi,
-                'latitude'              => $request->latitude,
-                'longitude'             => $request->longiutde,
-                'shift'                 => $request->shift
-            ]);
+            // RequestAttendace::create([
+            //     'id_karyawan'           => $request->id_karyawan,
+            //     'request_date'          => $request->tanggal,
+            //     'request_time'          => $request->jam,
+            //     'lokasi_absen'          => $request->lokasi_absen,
+            //     'detail_lokasi_absen'   => $request->detail_lokasi,
+            //     'latitude'              => $request->latitude,
+            //     'longitude'             => $request->longiutde,
+            //     'shift'                 => $request->shift
+            // ]);
 
             // $cekLokasi = $this->cekLokasi($id_client,$request->latitude,$request->longitude,$request->lokasi_absen);
             return response()->json(['Cek Lokasi' => ""]);
@@ -339,21 +388,36 @@ class AbsensiController extends Controller
                 $pesan = ['pesan' => 'Disetujui'];
 
             }else if($getLatest->status == 2) {
-                RequestAttendace::create([
-                    'id_karyawan'           => $request->id_karyawan,
-                    'request_date'          => $request->tanggal,
-                    'request_time'          => $request->jam,
-                    'lokasi_absen'          => $request->lokasi_absen,
-                    'detail_lokasi_absen'   => $request->detail_lokasi,
-                    'latitude'              => $request->latitude,
-                    'longitude'             => $request->longiutde,
-                    'shift'                 => $request->shift
+                // RequestAttendace::create([
+                //     'id_karyawan'           => $request->id_karyawan,
+                //     'request_date'          => $request->tanggal,
+                //     'request_time'          => $request->jam,
+                //     'lokasi_absen'          => $request->lokasi_absen,
+                //     'detail_lokasi_absen'   => $request->detail_lokasi,
+                //     'latitude'              => $request->latitude,
+                //     'longitude'             => $request->longiutde,
+                //     'shift'                 => $request->shift
 
-                ]);
+                // ]);
                 $pesan = ['pesan' => 'Buat Baru' ,'status' => 2];
             }
             return response()->json($pesan);
         }
+    }
+
+    function insertDatabase($request, $status,$id_client) {
+        RequestAttendace::create([
+            'id_karyawan'           => $request->id_karyawan,
+            'request_date'          => $request->tanggal,
+            'request_time'          => $request->jam,
+            'lokasi_absen'          => $request->lokasi_absen,
+            'detail_lokasi_absen'   => $request->detail_lokasi,
+            'latitude'              => $request->latitude,
+            'longitude'             => $request->longiutde,
+            'shift'                 => $request->shift,
+            'id_client'             => $id_client,
+        ]);
+        return $status;
     }
 
     function cekLokasi($id_client,$latitude,$longitude,$lokasi) {
