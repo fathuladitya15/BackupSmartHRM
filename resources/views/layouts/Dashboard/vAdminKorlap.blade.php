@@ -137,10 +137,7 @@
     </div>
 
     <div class="row">
-        <button onclick="startFCM()"
-            class="btn btn-danger btn-flat">Allow notification
-        </button>
-        <form action="{{ route('send.web-notification') }}" method="POST">
+        <form action="{{ route('send.web-notification') }}" method="POST" id="kirim-notif">
             @csrf
             <div class="form-group">
                 <label>Message Title</label>
@@ -159,36 +156,49 @@
 @endsection
 @push('js')
 <script>
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     var xhr =
-    // })
-    function startFCM() {
-        messaging.requestPermission().then(function () {
-                return messaging.getToken()
+    // function startFCM() {
+    //     messaging.requestPermission().then(function () {
+    //             return messaging.getToken()
+    //         })
+    //         .then(function (response) {
+    //             $.ajaxSetup({
+    //                 headers: {
+    //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //                 }
+    //             });
+    //             $.ajax({
+    //                 url: '{{ route("store.token") }}',
+    //                 type: 'POST',
+    //                 data: {
+    //                     token: response
+    //                 },
+    //                 dataType: 'JSON',
+    //                 success: function (response) {
+    //                     alert('Token stored.');
+    //                 },
+    //                 error: function (error) {
+    //                     alert(error);
+    //                 },
+    //             });
+    //         }).catch(function (error) {
+    //             alert(error);
+    //         });
+    // }
+
+        $("#kirim-notif").submit(function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url : $(this).attr('action'),
+                data: $(this).serialize(),
+                type: "POST",
+                success: function(s) {
+                    console.log(s);
+                    $("#kirim-notif").trigger('reset');
+                },error : function(e) {
+                    console.log(e);
+                }
             })
-            .then(function (response) {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-                $.ajax({
-                    url: '{{ route("store.token") }}',
-                    type: 'POST',
-                    data: {
-                        token: response
-                    },
-                    dataType: 'JSON',
-                    success: function (response) {
-                        alert('Token stored.');
-                    },
-                    error: function (error) {
-                        alert(error);
-                    },
-                });
-            }).catch(function (error) {
-                alert(error);
-            });
-    }
+        })
 </script>
 @endpush

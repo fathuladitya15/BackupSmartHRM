@@ -45,6 +45,10 @@ class AbsensiController extends Controller
         return response()->json(['data' => $result],200);
     }
 
+    function absenMasuk(Request $request) {
+
+    }
+
     function create_absensi(Request $request) {
 
 
@@ -272,14 +276,19 @@ class AbsensiController extends Controller
 
         // TANGGAL PER HARI INI
         $dateNow        = Carbon::now()->format('Y-m-d');
+
         // TABLE KARYAWAN
         $dataMaster     = Karyawan::where('id_karyawan',$request->id_karyawan);
+
         // TABLE USER
         $dataUser       = User::where('id_karyawan',$request->id_karyawan)->first();
+
         // TABLE REQUEST ATTENDANCE BERDASARKAN TANGGAL SEKARANG
         $masterAttNow   = RequestAttendace::where('request_date',$dateNow)->where('id_karyawan',$request->id_karyawan);
+
         // TABLE REQUEST ATTENDANCE BERDASARKAN TANGGAL CLIENT
         $dataMasterAtt  = RequestAttendace::where('request_date',$request->tanggal)->where('id_karyawan ',$request->id_karyawan);
+
         // ID CLIENT KARYAWAN
         $id_client      = $dataUser->id_client;
 
@@ -290,12 +299,17 @@ class AbsensiController extends Controller
 
            $cekAttAvailable = $masterAttNow->count();
 
-           if($cekAttAvailable == 0) {
+            if($cekAttAvailable == 0) {
+
                 // BUAT REQUEST ABSENSI
                 $status = TRUE;
-                $this->insertDatabase($request,$status,$id_client);
+                if($dataUser->roles == 'karyawan') {
+                    $this->insertDatabase($request,$status,$id_client);
+                }else{
+                    $this->insertDatabase($request,$status,1);
+                }
 
-                return response()->json(['pesan' => 'Absensi Hari ini '.$cekAttAvailable]);
+                return response()->json(['pesan' => 'Request absensi berhasil']);
             }else {
 
                 // CEK DATA TERAKHIR BERDASARKAN TANGGAL REQUEST ABSENSI PER HARI INI DAN ID KARYAWAN
@@ -315,93 +329,18 @@ class AbsensiController extends Controller
                 elseif($getStatusLatest == 2) {
                     $pesan = 'Absensi anda Ditolak';
                     $pesan .= '. Silahkan request absensi kembali';
-                    // $this->insertDatabase($request,$status == FALSE);
+                    $status = TRUE;
+                    if($dataUser->roles == 'karyawan') {
+                        $this->insertDatabase($request,$status,$id_client);
+                    }else{
+                        $this->insertDatabase($request,$status,1);
+                    }
                 }
                 return response()->json(['pesan' => $pesan]);
             }
 
         }else {
-            return response()->json(['pesan' => 'Tanggal sama dengan tanggal server']);
-        }
-
-
-        return response()->json(['Cek absensi Hari ini' => $masterAttNow->count()]);
-
-
-        if($dataMasterAtt->count() == 0 ) {
-            $rules = [
-                'tanggal'       => 'required',
-                'jam'           => 'required',
-                'id_karyawan'   => 'required',
-                'lokasi_absen'  => 'required',
-                'detail_lokasi' => 'required',
-                'latitude'      => 'required',
-                'longitude'     => 'required',
-            ];
-
-            $message = [
-                'tanggal.required'      => 'Tanggal Absensi belum diisi.',
-                'jam.required'          => 'Jam Absensi belum diiisi.',
-                'id_karyawan.required'  => 'ID karyawan tidak diketahui',
-                'lokasi_absen.required' => 'Lokasi absen tidak diketahui.',
-                'detail_lokasi'         => 'Detail lokasi absen tidak diketahui',
-                'latitude.required'     => 'Latitde tidak diketahui',
-                'longitude.required'    => 'Longitude tidak diketahui',
-            ];
-
-            if($dataUser->roles == 'karyawan') {
-                $newRules   = ['shift' => 'required'];
-                $newMessage = ['shift.required' => 'Shift belum diisi.'];
-
-                $rules      = array_merge($rules,$newRules);
-                $message    = array_merge($message,$newMessage);
-            }
-
-            $validator = Validator::make($request->all(),$rules,$message);
-
-            if($validator->fails()) {
-                return response()->json(['pesan' => $validator->errors()->first()]);
-            }
-
-            // RequestAttendace::create([
-            //     'id_karyawan'           => $request->id_karyawan,
-            //     'request_date'          => $request->tanggal,
-            //     'request_time'          => $request->jam,
-            //     'lokasi_absen'          => $request->lokasi_absen,
-            //     'detail_lokasi_absen'   => $request->detail_lokasi,
-            //     'latitude'              => $request->latitude,
-            //     'longitude'             => $request->longiutde,
-            //     'shift'                 => $request->shift
-            // ]);
-
-            // $cekLokasi = $this->cekLokasi($id_client,$request->latitude,$request->longitude,$request->lokasi_absen);
-            return response()->json(['Cek Lokasi' => ""]);
-
-        }else {
-
-            $getLatest = RequestAttendace::where('id_karyawan',$request->id_karyawan)->latest()->first();
-
-            if($getLatest->status == 0) {
-                $pesan = ['pesan' => 'Pending'];
-
-            }else if($getLatest->status == 1) {
-                $pesan = ['pesan' => 'Disetujui'];
-
-            }else if($getLatest->status == 2) {
-                // RequestAttendace::create([
-                //     'id_karyawan'           => $request->id_karyawan,
-                //     'request_date'          => $request->tanggal,
-                //     'request_time'          => $request->jam,
-                //     'lokasi_absen'          => $request->lokasi_absen,
-                //     'detail_lokasi_absen'   => $request->detail_lokasi,
-                //     'latitude'              => $request->latitude,
-                //     'longitude'             => $request->longiutde,
-                //     'shift'                 => $request->shift
-
-                // ]);
-                $pesan = ['pesan' => 'Buat Baru' ,'status' => 2];
-            }
-            return response()->json($pesan);
+            return response()->json(['pesan' => 'Tidak bisa absen sebelum atau sesudah hari ini'],422);
         }
     }
 
@@ -413,9 +352,10 @@ class AbsensiController extends Controller
             'lokasi_absen'          => $request->lokasi_absen,
             'detail_lokasi_absen'   => $request->detail_lokasi,
             'latitude'              => $request->latitude,
-            'longitude'             => $request->longiutde,
+            'longitude'             => $request->longitude,
             'shift'                 => $request->shift,
             'id_client'             => $id_client,
+            'divisi'                => $request->divisi,
         ]);
         return $status;
     }

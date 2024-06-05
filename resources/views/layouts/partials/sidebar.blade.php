@@ -137,7 +137,6 @@
                                     <div data-i18n="Basic">Request Absensi </div>
                                     </a>
                                 </li>
-
                         </ul>
                     </li>
 
@@ -446,7 +445,12 @@
 
                             </ul>
                         </li>
-
+                        <li class="menu-item {{  menuOpen(['request.absensi.request']) }}">
+                            <a href="{{ route('request.absensi.request') }}" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-list-ol"></i>
+                            <div>Request Absensi</div>
+                            </a>
+                        </li>
                     @endif
                     {{-- LEMBUR --}}
                     @php

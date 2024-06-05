@@ -194,7 +194,7 @@
         </div>
     </div>
 </div>
-
+<button onclick="startFCM()">Allow Notification</button>
 
 <!-- END FIRST COLUMN -->
 @endsection
@@ -202,7 +202,34 @@
 
 <script>
     var table = $("#table_riwayat").dataTable();
-
+    function startFCM() {
+        messaging.requestPermission().then(function () {
+                return messaging.getToken()
+            })
+            .then(function (response) {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '{{ route("store.token") }}',
+                    type: 'POST',
+                    data: {
+                        token: response
+                    },
+                    dataType: 'JSON',
+                    success: function (response) {
+                        alert('Token stored.');
+                    },
+                    error: function (error) {
+                        alert(error);
+                    },
+                });
+            }).catch(function (error) {
+                alert(error);
+            });
+    }
 </script>
 
 @endpush

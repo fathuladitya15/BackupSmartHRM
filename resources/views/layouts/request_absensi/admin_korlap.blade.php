@@ -82,7 +82,7 @@
     <div class="col-xxl">
         <div class="card mb-4">
             <div class="card-header d-flex align-items-center justify-content-between" >
-                <h5 class="mb-0">Request Absensi {{ $dateNow }} </h5>
+                <h5 class="mb-0">Request Absensi </h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">
@@ -90,6 +90,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Tanggal</th>
                                 <th>ID Karyawan</th>
                                 <th>Divisi</th>
                                 <th>Jabatan</th>
@@ -100,6 +101,7 @@
                                 <th>Shift</th>
                                 <th>Catatan</th>
                                 <th>Status</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -118,6 +120,9 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     var url_data = "{{ route('data.absensi.request') }}";
+    var loading  = '<span class="visually-hidden"></span><div class="spinner-border spinner-border-sm" role="status"></div>';
+    var checkIcon    = '<i class="bx bx-check"></i>Setujui';
+    var xIcon       = '<i class="bx bx-x-circle"></i>Tolak';
 
     $(document).ready(function() {
         var table  = $("#myTable").dataTable({
@@ -136,6 +141,10 @@
                 orderable: false,
                 searchable: false
             },{
+                data: 'tanggal',
+                name: 'tanggal',
+            },
+            {
                 data: 'id_karyawan',
                 name: 'id_karyawan',
             },{
@@ -166,6 +175,9 @@
             },{
                 data: 'status',
                 name: 'status'
+            },{
+                data :'aksi',
+                name : 'aksi',
             }]
         })
 
@@ -200,6 +212,74 @@
         $('#search').on('click', function() {
             table.DataTable().ajax.reload();
         });
+
+        $(document).on('click','.btn_acc', function() {
+            var id  = $(this).data('id');
+            var btn = document.getElementById('btn_acc'+id)
+            $.ajax({
+                url: "{{ route('update.absensi.request') }}",
+                type: "POST",
+                data : {id : id, status : 1 },
+                beforeSend: function() {
+                    btn.innerHTML = loading
+                    btn.disabled  = true;
+                },success : function(s) {
+                    console.log(s);
+                    table.DataTable().ajax.reload();
+                },error : function(e) {
+                    console.log(e);
+                },complete : function() {
+                    btn.disabled  = false;
+                    btn.innerHTML = checkIcon;
+
+                }
+            })
+        })
+
+        $(document).on('click','.btn_reject', function() {
+            var id = $(this).data('id');
+            var btn = document.getElementById('btn_rjt'+id)
+            $.ajax({
+                url: "{{ route('update.absensi.request') }}",
+                type: "POST",
+                data : {id : id, status : 2 },
+                beforeSend: function() {
+                    btn.innerHTML = loading
+                    btn.disabled  = true;
+                },success : function(s) {
+                    console.log(s);
+                    table.DataTable().ajax.reload();
+                },error : function(e) {
+                    console.log(e);
+                },complete : function() {
+                    btn.disabled  = false;
+                    btn.innerHTML = xIcon;
+
+                }
+            })
+        })
+
+        function update(id,status,btn) {
+            console.log('Ini ID = '.id);
+            var btn   = document.getElementById(btn.id);
+            // $.ajax({
+            //     url: "{{ route('update.absensi.request') }}",
+            //     type: "POST",
+            //     data : {id : id, status : status },
+            //     beforeSend: function() {
+            //         btn.innerHTML = loading
+            //         btn.disabled  = true;
+            //     },success : function(s) {
+            //         console.log(s);
+            //     },error : function(e) {
+            //         console.log(e);
+            //     },complete : function() {
+            //         btn.disabled  = false;
+            //         btn.innerHTML = "U"
+
+            //     }
+            // })
+        }
     })
 </script>
 @endpush

@@ -98,6 +98,7 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('request',[RequestAttendanceController::class,'index'])->name('request.absensi.request');
                 Route::get('data-request',[RequestAttendanceController::class,'data'])->name('data.absensi.request');
                 Route::get('get-kr-select',[RequestAttendanceController::class,'getDataKaryawan'])->name('data.absensi.request.karyawan');
+                Route::post('update-request-absensi',[RequestAttendanceController::class,'update'])->name('update.absensi.request');
                 Route::post('cekin',[AbsensiController::class,'cek_in'])->name('absensi-cekin');
             });
 
@@ -312,8 +313,6 @@ Route::middleware('revalidate')->group(function() {
                 Route::get('/pre-order-direktur/{nama_client}/{id}', function($c,$id) {
                     abort(500);
                 })->name('direktur-pre-order-index');
-
-
             });
 
             // Route::get('/pre-order/{nama_client}/referensi-kerja/{id}',[ReferensiKerjaController::class,'index_direktur'])->name('direktur-rf-index');

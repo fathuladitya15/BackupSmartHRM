@@ -181,29 +181,61 @@
     </script>
 
     <script>
-    const firebaseConfig = {
+        const firebaseConfig = {
 
-        apiKey: 'AIzaSyA_T_z7YTOWgcVqgGZYCQWcySxNtgkOsKw',
-        authDomain: 'pushnotification-52987.firebaseapp.com',
-        projectId: 'pushnotification-52987',
-        storageBucket: 'pushnotification-52987.appspot.com',
-        messagingSenderId: '773466760609',
-        appId: '1:773466760609:web:6c689b798f25081ac157e0',
-        measurementId: 'G-NYL0QLL715',
-    };
-
-    // Inisialisasi Firebase
-    firebase.initializeApp(firebaseConfig);
-    const messaging = firebase.messaging();
-
-    messaging.onMessage(function(payload) {
-        const title = payload.notification.title;
-        const options = {
-            body: payload.notification.body,
-            icon: payload.notification.icon,
+            apiKey: 'AIzaSyA_T_z7YTOWgcVqgGZYCQWcySxNtgkOsKw',
+            authDomain: 'pushnotification-52987.firebaseapp.com',
+            projectId: 'pushnotification-52987',
+            storageBucket: 'pushnotification-52987.appspot.com',
+            messagingSenderId: '773466760609',
+            appId: '1:773466760609:web:6c689b798f25081ac157e0',
+            measurementId: 'G-NYL0QLL715',
         };
-        new Notification(title, options);
-    });
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        messaging.onMessage(function(payload) {
+            const title = payload.notification.title;
+            const options = {
+                body: payload.notification.body,
+                icon: payload.notification.icon,
+            };
+            new Notification(title, options);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            messaging.requestPermission().then(function () {
+                // console.log(messaging.getToken());
+                return messaging.getToken()
+            }).then(function (response) {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '{{ route("store.token") }}',
+                    type: 'POST',
+                    data: {
+                        token: response
+                    },
+                    dataType: 'JSON',
+                    success: function (response) {
+                        console.log('Token Stored');
+                        // alert('Token stored.');
+                    },
+                    error: function (error) {
+                        // alert(error);
+                        console.log(error);
+                    },
+                });
+            }).catch(function (error) {
+                // alert(error);
+                console.log(error);
+            });
+        })
 
 
     </script>
