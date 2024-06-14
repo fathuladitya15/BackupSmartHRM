@@ -181,7 +181,7 @@
     </script>
 
     <script>
-        const firebaseConfig = {
+       const firebaseConfig = {
 
             apiKey: 'AIzaSyA_T_z7YTOWgcVqgGZYCQWcySxNtgkOsKw',
             authDomain: 'pushnotification-52987.firebaseapp.com',
@@ -197,45 +197,54 @@
         const messaging = firebase.messaging();
 
         messaging.onMessage(function(payload) {
-            const title = payload.notification.title;
-            const options = {
-                body: payload.notification.body,
-                icon: payload.notification.icon,
-            };
-            new Notification(title, options);
+        const title = payload.notification.title;
+        const options = {
+            body: payload.notification.body,
+            icon: payload.notification.icon,
+        };
+        new Notification(title, options);
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            messaging.requestPermission().then(function () {
-                // console.log(messaging.getToken());
-                return messaging.getToken()
-            }).then(function (response) {
-                $.ajaxSetup({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    }
-                });
-                $.ajax({
-                    url: '{{ route("store.token") }}',
-                    type: 'POST',
-                    data: {
-                        token: response
-                    },
-                    dataType: 'JSON',
-                    success: function (response) {
-                        console.log('Token Stored');
-                        // alert('Token stored.');
-                    },
-                    error: function (error) {
-                        // alert(error);
-                        console.log(error);
-                    },
-                });
+        messaging.requestPermission().then(function () {
+            // console.log(messaging.getToken());
+            return messaging.getToken()
+        }).then(function (response) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: '{{ route("store.token") }}',
+                type: 'POST',
+                data: {
+                    token: response
+                },
+                dataType: 'JSON',
+                success: function (response) {
+                    console.log('Token Stored');
+                    // alert('Token stored.');
+                },
+                error: function (error) {
+                    // alert(error);
+                    console.log(error);
+                },
+            });
             }).catch(function (error) {
                 // alert(error);
                 console.log(error);
             });
         })
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                }).catch(function(err) {
+                    console.log('Service Worker registration failed:', err);
+                });
+        }
 
 
     </script>

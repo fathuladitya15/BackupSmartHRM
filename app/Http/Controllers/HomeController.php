@@ -186,7 +186,9 @@ class HomeController extends Controller
 
         Auth::user()->save();
 
-        return response()->json(['token' => $request->token]);
+        $pushNotifikasi = sendPushNotification(Auth::user()->id,"TEST Notifikasi","Notifikasi kepada ".Auth::user()->name);
+
+        return response()->json(['token' => $request->token,'d' => $pushNotifikasi]);
         // return response()->json(['Token successfully stored.']);
 
     }

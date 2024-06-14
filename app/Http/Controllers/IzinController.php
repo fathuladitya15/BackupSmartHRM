@@ -74,9 +74,6 @@ class IzinController extends Controller
                 abort(404);
             }
         }
-
-
-
     }
 
     function self() {
@@ -236,8 +233,6 @@ class IzinController extends Controller
             }
         }
 
-
-
         return response()->json($pesan);
     }
 
@@ -288,7 +283,7 @@ class IzinController extends Controller
 
 
         $file       = $request->file_izin;
-        $filename   = "AIO_".$find->id.date("YmdHi").'.'.$file->getClientOriginalExtension();
+
         $path       = '/filemanager/file_izin/';
         $move_folder= $path.$filename;
 
@@ -345,4 +340,5 @@ class IzinController extends Controller
 
         return response()->json(['status' => TRUE,'title' => 'Sukses' ,'pesan' => 'Form pengajuan izin '.$data->nama_karyawan.' telah disetujui']);
     }
+
  }

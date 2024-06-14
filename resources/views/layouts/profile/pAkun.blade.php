@@ -126,6 +126,23 @@
         </form>
     </div>
 </div>
+<div class="card mb-4">
+    <div class="card-header d-flex align-items-center justify-content-between" >
+        <h5 class="mb-0">Notifikasi </h5>
+    </div>
+    <div class="card-body">
+        <div class="mb-3 col-12 mb-0">
+          <div class="alert alert-warning">
+            <h6 class="alert-heading fw-bold mb-1">Perizinan Notifikasi </h6>
+            <p class="mb-0">Klik tombol <b>Tes Notifikasi </b></p>
+          </div>
+        </div>
+        <form id="formAccountDeactivation">
+
+          <button type="button" id="notifikasi" onclick="startFCM()"  class="btn btn-danger deactivate-account">Test Notifikasi</button>
+        </form>
+      </div>
+</div>
 
 @push('js')
 <script>
@@ -261,5 +278,39 @@
             preview.src = URL.createObjectURL(file)
         }
     }
+    function startFCM() {
+        messaging.requestPermission().then(function () {
+                return messaging.getToken()
+            })
+            .then(function (response) {
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '{{ route("store.token") }}',
+                    type: 'POST',
+                    data: {
+                        token: response
+                    },
+                    dataType: 'JSON',
+                    success: function (response) {
+                        console.log(response);
+                        // console.log('Token stored.');
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    },
+                });
+            }).catch(function (error) {
+                console.log(error);
+            });
+    }
+    // $(document).on('click','#notifikasi', function() {
+    //     console.log("TES");
+
+    // })
+
 </script>
 @endpush

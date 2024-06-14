@@ -175,6 +175,13 @@ class RequestAttendanceController extends Controller
                     $r = $dataMaster->get();
                 }
             }
+        }else if($roles == 'manajer') {
+            $dataMaster = Karyawan::select('id_karyawan','nama_karyawan as name')->where('divisi',$dataKaryawan->divisi)->where('id_karyawan','!=',Auth::user()->id_karyawan);
+            if ($searchTerm) {
+                $r = $dataMaster->where('nama_karyawan','like',"%$searchTerm%")->orWhere('id_karyawan','like',"%$searchTerm%")->get();
+            } else {
+                $r = $dataMaster->get();
+            }
         }
 
 
@@ -222,11 +229,20 @@ class RequestAttendanceController extends Controller
 
 
         $data = RequestAttendace::find($request->id);
+        $idUser = User::where('id_karyawan',$data->id_karyawan)->first();
+        $dataMasterKaryawan = Karyawan::where('id_karyawan',$data->id_karyawan)->first();
+
+
         if($request->status == 2) {
             $p = "Request absensi ditolak";
             $data->status = $request->status;
             $data->update();
-            $pushNotifikasi = sendPushNotification(17,"Request Absensi ditolak ","Silahkan pengajuan request absensi kembali");
+            if($idUser->device_token != null) {
+                $pushNotifikasi = sendPushNotification($idUser->id,"Request Absensi ditolak ","Silahkan pengajuan request absensi kembali");
+            }else {
+                $pushNotifikasi = sendPushNotification(Auth::user()->id,"Request Absensi ","Notifikasi tidak terkirim ke ".$idUser->name);
+
+            }
         }else {
             $p = "Request absensi disetujui";
             $data->status       = $request->status;
@@ -234,8 +250,26 @@ class RequestAttendanceController extends Controller
             $data->approved_on = Carbon::now()->format('Y-m-d');
             $data->update();
 
+            $absen_masuk = [
+                'id_karyawan'               => $request->id_karyawan,
+                'nama_karyawan'             => $idUser->name,
+                'divisi'                    => $dataMasterKaryawan->divisi()->first()->nama_divisi,
+                'jabatan'                   => $dataMasterKaryawan->jabatan()->first()->nama_jabatan,
+                'tanggal'                   => $data->request_date,
+                'jam_masuk'                 => $data->request_time,
+                'lokasi_absen_masuk'        => $data->lokasi_absen,
+                'detail_lokasi_absen_masuk' => $data->detail_lokasi_absen,
+                'shift'                     => $data->divisi == null ? "Non Shift" : $data->shift,
+                'catatan'                   => $request->catatan,
+                'id_client'                 => $data->divisi == null ? 1 : $data->id_client,
+            ];
+            Absensi::create($absen_masuk);
+            if($idUser->device_token != null) {
+                $pushNotifikasi = sendPushNotification(17,"Request Absensi disetujui ","Absen masuk berhasil");
+            }else{
+                $pushNotifikasi = sendPushNotification(Auth::user()->id,"Request Absensi ","Notifikasi tidak terkirim ke ".$idUser->name);
 
-            $pushNotifikasi = sendPushNotification(17,"Request Absensi disetujui ","Absen masuk berhasil");
+            }
 
         }
         return response()->json(['pesan' => $p ]);

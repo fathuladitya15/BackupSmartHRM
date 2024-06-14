@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('latitude');
             $table->string('longitude');
             $table->string('status')->default(0);
+            $table->string('divisi');
             $table->timestamps();
         });
     }

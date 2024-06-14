@@ -544,6 +544,15 @@
                 </li>
 
                 @endif
+
+                @if (Auth::user()->roles == 'manajer')
+                <li class="menu-item {{  menuOpen(['request.absensi.request']) }}">
+                    <a href="{{ route('request.absensi.request') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-list-ol"></i>
+                    <div>Request Absensi</div>
+                    </a>
+                </li>
+                @endif
             </ul>
           </aside>
           <!-- / Menu -->

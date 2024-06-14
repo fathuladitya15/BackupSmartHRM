@@ -224,8 +224,8 @@
 
 
 @push('js')
-<script src="https://cdn.tiny.cloud/1/sm1yq4m3clzmzqnwsv0frgjbxnf3a7hy5ckbkyjmcr3oyf9c/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-
+{{-- <script src="https://cdn.tiny.cloud/1/sm1yq4m3clzmzqnwsv0frgjbxnf3a7hy5ckbkyjmcr3oyf9c/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script> --}}
+<script src="https://cdn.tiny.cloud/1/9h75et982pi3v864zimcbw7o2sdnv2k3j1dk5fchhp3ta7cc/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
     var tinymceConfig = {
         selector: 'textarea',

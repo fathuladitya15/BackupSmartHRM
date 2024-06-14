@@ -225,6 +225,7 @@
                     btn.disabled  = true;
                 },success : function(s) {
                     console.log(s);
+                    swal.fire('Sukses','Request Absensi disetujui','success');
                     table.DataTable().ajax.reload();
                 },error : function(e) {
                     console.log(e);
